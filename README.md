@@ -2,21 +2,23 @@
 wsulibraries-accessibilityapps
 
 ## Project summary
-    In accordance with and in shared pursuit of WSU's research exchange mission, we
-would like to help create a space designed to preserve and share university scholarship.
-Within a single and shared digital repository, not only do we want a limitless array of knowledge
-from articles, books, papers, and reports, but we want this digital media to be accessible to all.
-This starts, first, with these digital documents meeting the standards set out by W3C, an
-international community trying to bring public work together by providing concrete standards for
+
+    In accordance with and in shared pursuit of WSU's research exchange mission, we\
+would like to help create a space designed to preserve and share university scholarship.\
+Within a single and shared digital repository, not only do we want a limitless array of knowledge\
+from articles, books, papers, and reports, but we want this digital media to be accessible to all.\
+This starts, first, with these digital documents meeting the standards set out by W3C, an\
+international community trying to bring public work together by providing concrete standards for\
 websites and digital media.
-    Many digital works are brought to the research exchange repository lacking the initial
-accessibility standards for digital media set out by the international community, and has resulted
-in an unknown but copious amount of educational media with sub-optimal accessibility. Our
-goal is to create an application that can take a pdf and create a modified version that does not
-change the comprehension or meaning of the work but heightens that document's accessibility
-to that of W3C standards. We wish to then streamline this process, with it not just assisting a
-single document, but that of an entire repository, to make the entire WSU research exchange
-significantly more accessible to all.
+
+Many digital works are brought to the research exchange repository lacking the initial\
+accessibility standards for digital media set out by the international community, and has resulted\
+in an unknown but copious amount of educational media with sub-optimal accessibility. Our\
+goal is to create an application that can take a pdf and create a modified version that does not\
+change the comprehension or meaning of the work but heightens that document's accessibility\
+to that of W3C standards. We wish to then streamline this process, with it not just assisting a\
+single document, but that of an entire repository, to make the entire WSU research exchange\
+significantly more accessible to all.\
 
 
 ### One-sentence description of the project
