@@ -1,5 +1,4 @@
-# Project Name 
-wsulibraries-accessibilityapps
+# wsulibraries-accessibilityapps
 
 ## Project summary
 
