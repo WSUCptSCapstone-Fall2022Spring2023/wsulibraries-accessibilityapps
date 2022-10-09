@@ -18,7 +18,7 @@ goal is to create an application that can take a pdf and create a modified versi
 change the comprehension or meaning of the work but heightens that document's accessibility\
 to that of W3C standards. We wish to then streamline this process, with it not just assisting a\
 single document, but that of an entire repository, to make the entire WSU research exchange\
-significantly more accessible to all.\
+significantly more accessible to all.
 
 
 ### One-sentence description of the project
@@ -79,4 +79,4 @@ https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibility
 
 ## License
 
-TODO: Add License Here.
+https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/LICENSE.md
