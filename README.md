@@ -3,7 +3,7 @@ wsulibraries-accessibilityapps
 
 ## Project summary
 
-    In accordance with and in shared pursuit of WSU's research exchange mission, we\
+In accordance with and in shared pursuit of WSU's research exchange mission, we\
 would like to help create a space designed to preserve and share university scholarship.\
 Within a single and shared digital repository, not only do we want a limitless array of knowledge\
 from articles, books, papers, and reports, but we want this digital media to be accessible to all.\
@@ -27,11 +27,11 @@ To create software that can transform documents in W3C accessible documents.
 
 ### Additional information about the project
 
-    In our quest to bring more accessibility to the WSU research exchange, we have landed
-on a few key accessibility features to focus on, at least at the start, which can be expanded to
-other things as our project progresses. These initial features include document metadata, color
-contrast, tagging, alternative text for images, and reading order. Our desire is to create a fully
-automated system of taking pdf documents and converting them into these more accessible
+In our quest to bring more accessibility to the WSU research exchange, we have landed\
+on a few key accessibility features to focus on, at least at the start, which can be expanded to\
+other things as our project progresses. These initial features include document metadata, color\
+contrast, tagging, alternative text for images, and reading order. Our desire is to create a fully\
+automated system of taking pdf documents and converting them into these more accessible\
 versions.
 
 ## Installation
