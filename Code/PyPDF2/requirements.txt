@@ -1,0 +1,3 @@
+PyPDF2
+PyPDF2[image]
+pillow
