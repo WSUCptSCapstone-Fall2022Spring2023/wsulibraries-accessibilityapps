@@ -1,9 +1,9 @@
 #!/usr/bin/env python
+
 """ This file contains main() which is where our application begins.
 """
-
 # * Modules
-from src.document_harvester import *
+from src.document import *
 
 # ? VSCode Extensions Used:
 # ?     - Better Comments
@@ -23,7 +23,9 @@ __status__ = "Development"
 def main():
     """ This is where our application starts.
     """
-    print("Hello")
+    example = Document("example.pdf") # retrieved from .../data/input/example.pdf
+    print("document title: {}".format(example.get_title()))
+
 
 if __name__ == "__main__":
     main()
