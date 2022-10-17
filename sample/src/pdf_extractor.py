@@ -5,6 +5,8 @@
 # Description: Extracts the data from a pdf as html.
 # ==================================================
 
+# ! Do we still want to use pdfminer? Currently using PyPDF2
+
 import os
 
 TEST_PDF = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/testInput.pdf"

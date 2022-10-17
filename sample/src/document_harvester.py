@@ -8,7 +8,7 @@
 
 from PyPDF2 import PdfReader
 
-def test_reader():
+def test_reader(h):
     reader = PdfReader("example.pdf")
     number_of_pages = len(reader.pages)
     page = reader.pages[0]
@@ -23,9 +23,3 @@ def test_image_reader():
         with open(str(count) + image_file_object.name, "wb") as fp:
             fp.write(image_file_object.data)
             count += 1
-
-def main():
-    test_image_reader()
-
-if __name__ == "__main__":
-    main()
