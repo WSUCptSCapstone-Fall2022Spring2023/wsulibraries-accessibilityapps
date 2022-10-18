@@ -18,4 +18,4 @@ def create_document_tags(reader):
         reader (PdfReader): PDF Handler that gives editable access to a PDF
     """
     # TODO: Implement Tagging according to W3C guidelines.
-    pass    
+    pass
