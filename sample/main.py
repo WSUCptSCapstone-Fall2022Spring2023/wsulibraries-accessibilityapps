@@ -23,8 +23,8 @@ __status__ = "Development"
 def main():
     """ This is where our application starts.
     """
-    example = Document("example.pdf") # retrieved from .../data/input/example.pdf
-    print("document title: {}".format(example.get_title()))
+    doc1 = Document("example.pdf") # retrieved from .../data/input/example.pdf
+    print("document title: {}".format(doc1.get_title()))    
 
 
 if __name__ == "__main__":

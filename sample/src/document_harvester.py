@@ -48,6 +48,24 @@ def set_output_directory(path, local=True):
     else:
         OUTPUT_DIRECTORY = path
 
+# Last Edit By: Reagan Kelley
+# * Edit Details: Initial implementation
+def harvest_document(filename, using_directory=False):
+    """Opens a PDF file and returns a reader for it.
+
+    Args:
+        filename (string): The name of the PDF that will be processed.
+        using_directory (bool, optional): If True: Path/filename.pdf given.
+        If False: Just filename.pdf given. Defaults to False.
+
+    Returns:
+        PdfReader: A PDF file reader for the given filename.
+    """
+    if(using_directory):
+            return PdfReader(filename)
+    else:
+        return PdfReader(INPUT_DIRECTORY + "\\" + filename)
+
 # ! temporary debugging function
 def test_reader(h):
     reader = PdfReader("example.pdf")
