@@ -3,7 +3,7 @@
 """ This file contains main() which is where our application begins.
 """
 # * Modules
-from src.document import *
+from src.accessible_document import AccessibleDocument
 
 # ? VSCode Extensions Used:
 # ?     - Better Comments
@@ -23,8 +23,9 @@ __status__ = "Development"
 def main():
     """ This is where our application starts.
     """
-    doc1 = Document("example.pdf") # retrieved from .../data/input/example.pdf
-    doc1.get_info()
+    doc1 = AccessibleDocument("example.pdf") # retrieved from .../data/input/example.pdf
+    doc1.generate_tags()
+
 
 if __name__ == "__main__":
     main()

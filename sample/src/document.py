@@ -4,9 +4,9 @@
 """
 
 # * Modules
+from asyncio.windows_events import NULL
 from PyPDF2 import PdfReader
 from src.document_harvester import harvest_document
-from src.document_tagger import create_document_tags
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Skeleton Code
@@ -15,7 +15,7 @@ class Document:
     """
     # Last Edit By: Reagan Kelley
     # * Edit Details: Initial implementation
-    def __init__(self, filename, using_directory=False):
+    def __init__(self, filename=NULL, using_directory=False):
         """Create instance of Document class object.
 
         Args:
@@ -23,11 +23,15 @@ class Document:
             using_directory (bool, optional): If True: Path/filename.pdf given.
             If False: Just filename.pdf given. Defaults to False.
         """
-        self.reader = harvest_document(filename, using_directory)
+        print("document init called.")
+        if(filename != NULL):
+            self.reader = harvest_document(filename, using_directory)
+        self.filename = filename
+        
     
     # Last Edit By: Reagan Kelley
     # * Edit Details: Initial implementation
-    def get_title(self):
+    def get_filename(self):
         """Gets the title of the document
 
         Returns:
@@ -35,21 +39,15 @@ class Document:
         """
         return self.reader.metadata.title
     
-    # Last Edit By: Reagan Kelley
-    # * Edit Details: Initial implementation
-    def create_document_tags(self):
-        """Post-condition: Document will have proper tagging in accordance to W3C guidelines.
-        """
-        self.reader = create_document_tags(self.reader)
-
-    
     def get_info(self):
+        # ! Debugging function: Currently testing proper reading of pdf.
         info = self.reader.getDocumentInfo()
         nb_pages = self.reader.getNumPages()
         info = dict(info)
         info['nb_pages'] = nb_pages
         for key, value in sorted(info.items()):
             print(f"{key:<15}: {value}")
+    
 
         
 

@@ -8,15 +8,17 @@
 
 # * Modules
 from PyPDF2 import PdfReader
+from src.document import Document
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Skeleton Code -- Not Done
-def create_document_tags(reader):
+def generate_tags(doc = Document()):
     """Post-condition: Document will be a PDF tagged document.
 
     Args:
-        reader (PdfReader): PDF Handler that gives editable access to a PDF
+        doc (Document((), optional): PDF handler that allows edits to be made. Defaults to Document().
     """
+    print("generate_tags() -> pass.")
     # TODO: Implement PDF Tagging according to W3C guidelines.
     # TODO: Get tags from metadata and edit/add them.
-    pass
+    return doc
