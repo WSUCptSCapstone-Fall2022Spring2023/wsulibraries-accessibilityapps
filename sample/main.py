@@ -25,7 +25,7 @@ def main():
     """
     doc1 = AccessibleDocument("example.pdf") # retrieved from .../data/input/example.pdf
     doc1.generate_tags()
-
+    doc1.create_alternative_text()
 
 if __name__ == "__main__":
     main()

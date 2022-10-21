@@ -7,7 +7,7 @@
 """
 
 # * Modules
-from PyPDF2 import PdfReader
+from asyncio.windows_events import NULL
 from src.document import Document
 
 # Last Edit By: Reagan Kelley
@@ -16,8 +16,10 @@ def generate_tags(doc = Document()):
     """Post-condition: Document will be a PDF tagged document.
 
     Args:
-        doc (Document((), optional): PDF handler that allows edits to be made. Defaults to Document().
     """
+    # If Document doc has no file opened, then do not run this algorithm.
+    if(doc.get_filename() == NULL):
+        return NULL
     print("generate_tags() -> pass.")
     # TODO: Implement PDF Tagging according to W3C guidelines.
     # TODO: Get tags from metadata and edit/add them.

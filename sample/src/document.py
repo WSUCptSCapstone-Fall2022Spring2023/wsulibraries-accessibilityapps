@@ -23,7 +23,6 @@ class Document:
             using_directory (bool, optional): If True: Path/filename.pdf given.
             If False: Just filename.pdf given. Defaults to False.
         """
-        print("document init called.")
         if(filename != NULL):
             self.reader = harvest_document(filename, using_directory)
         self.filename = filename
