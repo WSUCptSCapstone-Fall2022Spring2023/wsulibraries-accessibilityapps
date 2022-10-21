@@ -6,7 +6,7 @@
 # * Modules
 from PyPDF2 import PdfReader
 from src.document_harvester import harvest_document
-from src.create_document_tags import create_document_tags
+from src.document_tagger import create_document_tags
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Skeleton Code
@@ -41,6 +41,15 @@ class Document:
         """Post-condition: Document will have proper tagging in accordance to W3C guidelines.
         """
         self.reader = create_document_tags(self.reader)
+
+    
+    def get_info(self):
+        info = self.reader.getDocumentInfo()
+        nb_pages = self.reader.getNumPages()
+        info = dict(info)
+        info['nb_pages'] = nb_pages
+        for key, value in sorted(info.items()):
+            print(f"{key:<15}: {value}")
 
         
 

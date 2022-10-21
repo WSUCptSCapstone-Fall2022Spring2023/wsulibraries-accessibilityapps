@@ -12,10 +12,11 @@ from PyPDF2 import PdfReader
 # Last Edit By: Reagan Kelley
 # * Edit Details: Skeleton Code -- Not Done
 def create_document_tags(reader):
-    """Post-condition: Document will have proper tagging in accordance to W3C guidelines.
+    """Post-condition: Document will be a PDF tagged document.
 
     Args:
         reader (PdfReader): PDF Handler that gives editable access to a PDF
     """
-    # TODO: Implement Tagging according to W3C guidelines.
+    # TODO: Implement PDF Tagging according to W3C guidelines.
+    # TODO: Get tags from metadata and edit/add them.
     pass
