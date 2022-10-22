@@ -5,6 +5,7 @@
 """
 
 # * Modules
+from asyncio.windows_events import NULL
 from src.document import Document
 from src.pdf_transform.document_tagger import generate_tags
 from src.pdf_transform.alt_text_adder import check_alt_text, create_alternative_text
@@ -19,7 +20,7 @@ class AccessibleDocument(Document):
         Document (Document): Parent Class
     """
 
-    def __init__(self, filename, using_directory=False):
+    def __init__(self, filename=NULL, using_directory=False):
         """Create a new instance of AccessibleDocument.
 
         Args:

@@ -27,6 +27,7 @@ def main():
     doc1.generate_tags()
     doc1.create_alternative_text()
     doc1.check_color_contrast()
+    doc1.export_document()
 
 if __name__ == "__main__":
     main()
