@@ -6,8 +6,9 @@
 
 # * Modules
 from src.document import Document
-from src.document_tagger import generate_tags
-from src.alt_text_adder import check_alt_text, create_alternative_text
+from src.pdf_transform.document_tagger import generate_tags
+from src.pdf_transform.alt_text_adder import check_alt_text, create_alternative_text
+from src.pdf_transform.color_contrast_adder import check_color_contrast
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Added Generate Tags
@@ -42,3 +43,11 @@ class AccessibleDocument(Document):
         """
         self = check_alt_text(self)
         self = create_alternative_text(self)
+
+    # Last Edit By: Reagan Kelley
+    # * Edit Details: Initial implementation
+    def check_color_contrast(self):
+        """ Given a document and its metadata, checks all text and background
+            contrast and fixes it when it is not in-line with W3C standards.
+        """
+        self = check_color_contrast(self)

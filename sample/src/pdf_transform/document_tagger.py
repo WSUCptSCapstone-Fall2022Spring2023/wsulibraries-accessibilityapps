@@ -16,6 +16,7 @@ def generate_tags(doc = Document()):
     """Post-condition: Document will be a PDF tagged document.
 
     Args:
+        doc (Document((), optional): PDF handler that allows edits to be made. Defaults to Document().
     """
     # If Document doc has no file opened, then do not run this algorithm.
     if(doc.get_filename() == NULL):
