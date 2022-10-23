@@ -4,8 +4,10 @@
 """
 # * Modules
 from asyncio.windows_events import NULL
-from operator import truth
+from colorama import init
+from termcolor import colored
 from src.accessible_document import AccessibleDocument
+from src.document_harvester import INPUT_DIRECTORY 
 
 # ? VSCode Extensions Used:
 # ?     - Better Comments
@@ -66,9 +68,12 @@ class TerminalApplication():
 
         if(self.__IsInt(self.response)):
             self.val = int(self.response)
-            
-            if(self.response == 1):
+            if(self.val == 1):
                 self.__get_new_document()
+            if(self.val == 2 and self.exit_number != 2):
+                self.__run_accessibility_pipeline()
+            if(self.val == 3 and self.exit_number != 3):
+                self.doc.export_document()
         print("")
 
     # Last Edit By: Reagan Kelley
@@ -81,12 +86,19 @@ class TerminalApplication():
         """
         print("---------------------------------------------")
         print("WSU Libraries: Document Transformer")
-        print("Current File: {}".format("Nothing Open" if not self.doc.IsOpen() else self.doc.get_filename()))
+        print("Current File: ", end='')
+        print(colored("{}".format("Nothing Open" if not self.doc.is_open() else self.doc.get_filename()), 'magenta'))
         print("---------------------------------------------")
         option_number = 1
         
         print("\t{}. Open new file".format(option_number))
         option_number += 1
+
+        if(self.doc.is_open()):
+            print("\t{}. Run Accessibility Pipeline".format(option_number))
+            option_number += 1
+            print("\t{}. Export File".format(option_number))
+            option_number += 1
 
         print("\t{}. Exit".format(option_number))
         return option_number
@@ -96,8 +108,22 @@ class TerminalApplication():
     def __get_new_document(self):
         """ Opens a new document to edit.
         """
-        filename = input("\tName of Document (local to data): ")
+        global INPUT_DIRECTORY
+        filename = input("Name of Document (local path): \n{}\\".format(INPUT_DIRECTORY))
         self.doc.open_document(filename=filename)
+        if(not self.doc.is_open()):
+            print(colored("No file opened: Invalid Path", "red"))
+    
+    # Last Edit By: Reagan Kelley
+    # * Edit Details: Initial implementation
+    def __run_accessibility_pipeline(self):
+        """ Run all accessibility pipeline functions.
+        """
+        self.doc.generate_tags()
+        self.doc.create_alternative_text()
+        self.doc.check_color_contrast()
+        self.doc.export_document()
+
 
 
 # Last Edit By: Reagan Kelley

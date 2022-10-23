@@ -2,3 +2,5 @@ PyPDF2
 PyPDF2[image]
 pillow
 fpdf
+colorama
+termcolor

@@ -39,12 +39,14 @@ class Document:
             using_directory (bool, optional): If True: Path/filename.pdf given.
             If False: Just filename.pdf given. Defaults to False.
         """
-        if(filename != NULL):
+        try:
             self.reader = harvest_document(filename, using_directory)
-        self.filename = filename
+            self.filename = filename
+        except:
+            self.filename = NULL
     
 
-    def IsOpen(self):
+    def is_open(self):
         """ Returns true if there is a file open for editing.
 
         Returns:
