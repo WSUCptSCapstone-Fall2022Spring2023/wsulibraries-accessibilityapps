@@ -26,8 +26,14 @@ parsedHtml = BeautifulSoup(output_string.getvalue(), 'html.parser')
 # format the parsed html file
 formattedOutput = parsedHtml.prettify()
 
-divTextSectionsAndFontSize = [] # TODO need to get the size of the font and make sure it is consistent in the div
+FONT_SIZE_STR = "font-size:"
+
+# will be formatted as a list[tuple(span info, text size)]
+divTextInfo = []
 for div in parsedHtml.findAll('div'):
+    # keep track of the font size in the div
+    divFontSize = None
+
     # to store a list of tuples of (text, font-style)
     spanTextSectionsAndFont = []
     for span in div.findAll('span'):
@@ -41,9 +47,42 @@ for div in parsedHtml.findAll('div'):
             continue
 
         # store the text and font style from the span
-        spanTextSectionsAndFont.append((spanText, span.attrs['style']))
-    print(spanTextSectionsAndFont)
+        spanAttributes = span.attrs['style']
+        spanTextSectionsAndFont.append((spanText, spanAttributes))
     
+        # update the font size
+        # get the starting index of the font size
+        fontSizeIndex = spanAttributes.find(FONT_SIZE_STR)
+        if fontSizeIndex != -1:
+            # get the end index of the font size
+            textWithFontSizeAtStart = spanAttributes[fontSizeIndex + len(FONT_SIZE_STR):]
+            fontSizeEndIndex = textWithFontSizeAtStart.find("px")
+            if fontSizeEndIndex != -1:
+                # get the font size
+                fontSize = float(textWithFontSizeAtStart[:fontSizeEndIndex])
+
+                # update the font size and make sure it matches previous font size in the div
+                if divFontSize is None:
+                    divFontSize = fontSize
+                elif fontSize != divFontSize:
+                    # font size in the div is not constant
+                    # TODO round the font size to the most common one in the div
+                    raise Exception("div contains varried font sizes, " +
+                        "including at least " + str(fontSize) + " and " + str(divFontSize))
+
+    # skip empty spans
+    if len(spanTextSectionsAndFont) == 0:
+        continue
+
+    # no font size detected
+    if divFontSize is None:
+        raise Exception("No font size detected.")
+
+    # add the span data to the div info
+    divTextInfo.append((spanTextSectionsAndFont, fontSize))
+
+    # TODO delete these lines later
+    print(spanTextSectionsAndFont)
     print()
 
 # write to an html file
