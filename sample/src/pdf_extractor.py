@@ -6,14 +6,13 @@
 # ==================================================
 
 import os
+from io import StringIO
 from bs4 import BeautifulSoup
+from pdfminer.layout import LAParams
+from pdfminer.high_level import extract_text_to_fp
 
 TEST_PDF = os.path.dirname(os.path.abspath(__file__)) + "/../../tests/testInput.pdf"
 TEST_OUTPUT_HTML = os.path.dirname(os.path.abspath(__file__)) + "/../../tests/testOutput.html"
-
-from io import StringIO
-from pdfminer.high_level import extract_text_to_fp
-from pdfminer.layout import LAParams
 
 # read the pdf
 output_string = StringIO()
@@ -31,8 +30,11 @@ FONT_SIZE_STR = "font-size:"
 # will be formatted as a list[tuple(span info, text size)]
 divTextInfo = []
 for div in parsedHtml.findAll('div'):
-    # keep track of the font size in the div
-    divFontSize = None
+    # keep track of the font sizes in the div, a list of tuples of (font size, text length using that size)
+    # used to get a normalized font size for the div, which usually just ends up being the font
+    # size for all the spans, but sometimes there are little variations and in that case, the most
+    # commonly appearing font size is used for a unified div. TODO may want to investigate this approach later
+    fontSizeDistribution = []
 
     # to store a list of tuples of (text, font-style)
     spanTextSectionsAndFont = []
@@ -61,29 +63,24 @@ for div in parsedHtml.findAll('div'):
                 # get the font size
                 fontSize = float(textWithFontSizeAtStart[:fontSizeEndIndex])
 
-                # update the font size and make sure it matches previous font size in the div
-                if divFontSize is None:
-                    divFontSize = fontSize
-                elif fontSize != divFontSize:
-                    # font size in the div is not constant
-                    # TODO round the font size to the most common one in the div
-                    raise Exception("div contains varried font sizes, " +
-                        "including at least " + str(fontSize) + " and " + str(divFontSize))
-
+                fontSizeDistribution.append((fontSize, len(spanText)))
+    
     # skip empty spans
     if len(spanTextSectionsAndFont) == 0:
         continue
 
-    # no font size detected
-    if divFontSize is None:
-        raise Exception("No font size detected.")
+    # calculate the most commonly appearing font size in the div
+    fontSizeDistributionDict = {}
+    for fontSize, textLen in fontSizeDistribution:
+        if fontSize not in fontSizeDistributionDict.keys():
+            fontSizeDistributionDict[fontSize] = 0
+        fontSizeDistributionDict[fontSize] += textLen
+    divFontSize = sorted(fontSizeDistributionDict.items(), key=lambda sizeLenTup : sizeLenTup[1], reverse=True)[0][0]
 
     # add the span data to the div info
-    divTextInfo.append((spanTextSectionsAndFont, fontSize))
+    divTextInfo.append((spanTextSectionsAndFont, divFontSize))
 
-    # TODO delete these lines later
-    print(spanTextSectionsAndFont)
-    print()
+print(divTextInfo)
 
 # write to an html file
 # (this will not be in the final product, but is 
