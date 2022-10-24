@@ -4,7 +4,6 @@
 """
 # * Modules
 from asyncio.windows_events import NULL
-from colorama import init
 from termcolor import colored
 from src.accessible_document import AccessibleDocument
 from src.document_harvester import INPUT_DIRECTORY 
