@@ -5,14 +5,18 @@
 # Description: Extracts the data from a pdf as html.
 # ==================================================
 
+# imports
 import os
 from io import StringIO
 from bs4 import BeautifulSoup
 from pdfminer.layout import LAParams
 from pdfminer.high_level import extract_text_to_fp
 
-TEST_PDF = os.path.dirname(os.path.abspath(__file__)) + "/../../tests/testInput.pdf"
-TEST_OUTPUT_HTML = os.path.dirname(os.path.abspath(__file__)) + "/../../tests/testOutput.html"
+# constants
+TEST_PDF = os.path.dirname(os.path.abspath(__file__)) + '/../../tests/testInput.pdf'
+TEST_OUTPUT_HTML = os.path.dirname(os.path.abspath(__file__)) + '/../../tests/testOutput.html'
+FONT_SIZE_STR = 'font-size'
+FONT_FAMILY_STR = 'font-family'
 
 # read the pdf
 output_string = StringIO()
@@ -25,7 +29,24 @@ parsedHtml = BeautifulSoup(output_string.getvalue(), 'html.parser')
 # format the parsed html file
 formattedOutput = parsedHtml.prettify()
 
-FONT_SIZE_STR = "font-size:"
+def getAttributes(attributeStr: str) -> 'dict[str, str]':
+    '''Returns a name to value mapping of html attributes given an unparsed attribute str.
+
+    Args:
+        attributeStr (str): The string representing the unparsed attributes of the html.
+    '''
+    attributeDict = {}
+    # the attributes will be formatted like 'font-family: TimesNewRoman; font-size:10px'
+    # split up the attributes into each name:value pair
+    for attribute in attributeStr.split(';'):
+        # split the attribute into the name and value
+        (name, value) = attribute.split(':')
+        # remove the leading and trailing whitespace
+        name = name.strip()
+        value = value.strip()
+        # add the attribute to the dictionary
+        attributeDict[name] = value
+    return attributeDict
 
 # will be formatted as a list[tuple(span info, text size)]
 divTextInfo = []
@@ -41,29 +62,20 @@ for div in parsedHtml.findAll('div'):
     for span in div.findAll('span'):
         # get the text from the span without indentation or line 
         # breaks or double spaces or trailing/leading whitespace
-        spanText = span.get_text().replace("\n", "").replace(
-            "\t", "").replace("  ", " ").strip()
+        spanText = span.get_text().replace('\n', '').replace(
+            '\t', '').replace('  ', ' ').strip()
 
         # skip over empty spans
-        if spanText == "":
+        if spanText == '':
             continue
 
         # store the text and font style from the span
-        spanAttributes = span.attrs['style']
-        spanTextSectionsAndFont.append((spanText, spanAttributes))
+        spanAttributes = getAttributes(span.attrs['style'])
+        spanTextSectionsAndFont.append((spanText, spanAttributes[FONT_FAMILY_STR]))
     
         # update the font size
-        # get the starting index of the font size
-        fontSizeIndex = spanAttributes.find(FONT_SIZE_STR)
-        if fontSizeIndex != -1:
-            # get the end index of the font size
-            textWithFontSizeAtStart = spanAttributes[fontSizeIndex + len(FONT_SIZE_STR):]
-            fontSizeEndIndex = textWithFontSizeAtStart.find("px")
-            if fontSizeEndIndex != -1:
-                # get the font size
-                fontSize = float(textWithFontSizeAtStart[:fontSizeEndIndex])
-
-                fontSizeDistribution.append((fontSize, len(spanText)))
+        fontSize = spanAttributes[FONT_SIZE_STR]
+        fontSizeDistribution.append((fontSize, len(spanText)))
     
     # skip empty spans
     if len(spanTextSectionsAndFont) == 0:
@@ -79,8 +91,6 @@ for div in parsedHtml.findAll('div'):
 
     # add the span data to the div info
     divTextInfo.append((spanTextSectionsAndFont, divFontSize))
-
-print(divTextInfo)
 
 # write to an html file
 # (this will not be in the final product, but is 
