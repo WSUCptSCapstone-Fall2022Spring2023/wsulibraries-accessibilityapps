@@ -19,15 +19,12 @@ FONT_SIZE_STR = 'font-size'
 FONT_FAMILY_STR = 'font-family'
 
 # read the pdf
-output_string = StringIO()
+pdfContent = StringIO()
 with open(TEST_PDF, 'rb') as fin:
-    extract_text_to_fp(fin, output_string, laparams=LAParams(),output_type='html', codec=None)
+    extract_text_to_fp(fin, pdfContent, laparams=LAParams(),output_type='html', codec=None)
 
 # parse the html file
-parsedHtml = BeautifulSoup(output_string.getvalue(), 'html.parser')
-
-# format the parsed html file
-formattedOutput = parsedHtml.prettify()
+parsedHtml = BeautifulSoup(pdfContent.getvalue(), 'html.parser')
 
 def getAttributes(attributeStr: str) -> 'dict[str, str]':
     '''Returns a name to value mapping of html attributes given an unparsed attribute str.
@@ -91,6 +88,31 @@ for div in parsedHtml.findAll('div'):
 
     # add the span data to the div info
     divTextInfo.append((spanTextSectionsAndFont, divFontSize))
+
+# start the output html lines
+outputHtmlLines = [
+    '<html>',
+    '<head>',
+    '<meta content="text/html" http-equiv="Content-Type"/>',
+    '</head>',
+    '<body>'
+]
+
+# add information to the html from the processed data
+for (spanInfo, textSize) in divTextInfo:
+    outputHtmlLines.append('<div style="' + FONT_SIZE_STR + ':' + textSize + '">')
+    for text, font in spanInfo:
+        outputHtmlLines.append('<p style="' + FONT_FAMILY_STR + ':' + font + '">')
+        outputHtmlLines.append(text)
+        outputHtmlLines.append('</p>')
+    outputHtmlLines.append('</div>')
+
+# finish the output html lines
+outputHtmlLines.append('</body>')
+outputHtmlLines.append('</html>')
+
+# generate a formatted html from the lines
+formattedOutput = BeautifulSoup('\n'.join(outputHtmlLines), 'html.parser').prettify()
 
 # write to an html file
 # (this will not be in the final product, but is 
