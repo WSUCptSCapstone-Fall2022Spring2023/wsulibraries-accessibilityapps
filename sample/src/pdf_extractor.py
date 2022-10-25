@@ -19,78 +19,78 @@ FONT_SIZE_STR = 'font-size'
 FONT_FAMILY_STR = 'font-family'
 
 # read the pdf
-pdfContent = StringIO()
+pdf_content = StringIO()
 with open(TEST_PDF, 'rb') as fin:
-    extract_text_to_fp(fin, pdfContent, laparams=LAParams(),output_type='html', codec=None)
+    extract_text_to_fp(fin, pdf_content, laparams=LAParams(),output_type='html', codec=None)
 
 # parse the html file
-parsedHtml = BeautifulSoup(pdfContent.getvalue(), 'html.parser')
+parsed_html = BeautifulSoup(pdf_content.getvalue(), 'html.parser')
 
-def getAttributes(attributeStr: str) -> 'dict[str, str]':
+def get_attributes(attribute_str: str) -> 'dict[str, str]':
     '''Returns a name to value mapping of html attributes given an unparsed attribute str.
 
     Args:
-        attributeStr (str): The string representing the unparsed attributes of the html.
+        attribute_str (str): The string representing the unparsed attributes of the html.
     '''
-    attributeDict = {}
+    attribute_dict = {}
     # the attributes will be formatted like 'font-family: TimesNewRoman; font-size:10px'
     # split up the attributes into each name:value pair
-    for attribute in attributeStr.split(';'):
+    for attribute in attribute_str.split(';'):
         # split the attribute into the name and value
         (name, value) = attribute.split(':')
         # remove the leading and trailing whitespace
         name = name.strip()
         value = value.strip()
         # add the attribute to the dictionary
-        attributeDict[name] = value
-    return attributeDict
+        attribute_dict[name] = value
+    return attribute_dict
 
 # will be formatted as a list[tuple(span info, text size)]
-divTextInfo = []
-for div in parsedHtml.findAll('div'):
+div_text_info = []
+for div in parsed_html.findAll('div'):
     # keep track of the font sizes in the div, a list of tuples of (font size, text length using that size)
     # used to get a normalized font size for the div, which usually just ends up being the font
     # size for all the spans, but sometimes there are little variations and in that case, the most
     # commonly appearing font size is used for a unified div. TODO may want to investigate this approach later
-    fontSizeDistribution = []
+    font_size_distribution = []
 
     # to store a list of tuples of (text, font-style)
-    spanTextSectionsAndFont = []
+    span_text_sections_and_font = []
     for span in div.findAll('span'):
         # get the text from the span without indentation or line 
         # breaks or double spaces or trailing/leading whitespace
-        spanText = span.get_text().replace('\n', '').replace(
+        span_text = span.get_text().replace('\n', '').replace(
             '\t', '').replace('  ', ' ').strip()
 
         # skip over empty spans
-        if spanText == '':
+        if span_text == '':
             continue
 
         # store the text and font style from the span
-        spanAttributes = getAttributes(span.attrs['style'])
-        spanTextSectionsAndFont.append((spanText, spanAttributes[FONT_FAMILY_STR]))
+        span_attributes = get_attributes(span.attrs['style'])
+        span_text_sections_and_font.append((span_text, span_attributes[FONT_FAMILY_STR]))
     
         # update the font size
-        fontSize = spanAttributes[FONT_SIZE_STR]
-        fontSizeDistribution.append((fontSize, len(spanText)))
+        font_size = span_attributes[FONT_SIZE_STR]
+        font_size_distribution.append((font_size, len(span_text)))
     
     # skip empty spans
-    if len(spanTextSectionsAndFont) == 0:
+    if len(span_text_sections_and_font) == 0:
         continue
 
     # calculate the most commonly appearing font size in the div
-    fontSizeDistributionDict = {}
-    for fontSize, textLen in fontSizeDistribution:
-        if fontSize not in fontSizeDistributionDict.keys():
-            fontSizeDistributionDict[fontSize] = 0
-        fontSizeDistributionDict[fontSize] += textLen
-    divFontSize = sorted(fontSizeDistributionDict.items(), key=lambda sizeLenTup : sizeLenTup[1], reverse=True)[0][0]
+    font_size_distribution_dict = {}
+    for font_size, text_len in font_size_distribution:
+        if font_size not in font_size_distribution_dict.keys():
+            font_size_distribution_dict[font_size] = 0
+        font_size_distribution_dict[font_size] += text_len
+    div_font_size = sorted(font_size_distribution_dict.items(), key=lambda sizeLenTup : sizeLenTup[1], reverse=True)[0][0]
 
     # add the span data to the div info
-    divTextInfo.append((spanTextSectionsAndFont, divFontSize))
+    div_text_info.append((span_text_sections_and_font, div_font_size))
 
 # start the output html lines
-outputHtmlLines = [
+output_html_lines = [
     '<html>',
     '<head>',
     '<meta content="text/html" http-equiv="Content-Type"/>',
@@ -99,23 +99,23 @@ outputHtmlLines = [
 ]
 
 # add information to the html from the processed data
-for (spanInfo, textSize) in divTextInfo:
-    outputHtmlLines.append('<div style="' + FONT_SIZE_STR + ':' + textSize + '">')
-    for text, font in spanInfo:
-        outputHtmlLines.append('<p style="' + FONT_FAMILY_STR + ':' + font + '">')
-        outputHtmlLines.append(text)
-        outputHtmlLines.append('</p>')
-    outputHtmlLines.append('</div>')
+for (span_info, text_size) in div_text_info:
+    output_html_lines.append('<div style="' + FONT_SIZE_STR + ':' + text_size + '">')
+    for text, font in span_info:
+        output_html_lines.append('<p style="' + FONT_FAMILY_STR + ':' + font + '">')
+        output_html_lines.append(text)
+        output_html_lines.append('</p>')
+    output_html_lines.append('</div>')
 
 # finish the output html lines
-outputHtmlLines.append('</body>')
-outputHtmlLines.append('</html>')
+output_html_lines.append('</body>')
+output_html_lines.append('</html>')
 
 # generate a formatted html from the lines
-formattedOutput = BeautifulSoup('\n'.join(outputHtmlLines), 'html.parser').prettify()
+formatted_output = BeautifulSoup('\n'.join(output_html_lines), 'html.parser').prettify()
 
 # write to an html file
 # (this will not be in the final product, but is 
 # helpful to look around in to see what is going on)
 with open(TEST_OUTPUT_HTML, 'w', encoding='utf-8') as output_file:
-    output_file.write(formattedOutput)
+    output_file.write(formatted_output)
