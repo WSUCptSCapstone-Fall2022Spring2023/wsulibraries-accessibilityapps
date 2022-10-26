@@ -121,7 +121,6 @@ class TerminalApplication():
         self.doc.generate_tags()
         self.doc.create_alternative_text()
         self.doc.check_color_contrast()
-        self.doc.export_document()
 
 
 
