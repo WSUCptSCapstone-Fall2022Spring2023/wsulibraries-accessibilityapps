@@ -23,7 +23,7 @@ __status__ = "Development"
 def main():
     """ This is where our application starts.
     """
-    doc1 = AccessibleDocument("tagged.pdf") # retrieved from .../data/input/example.pdf
+    doc1 = AccessibleDocument("example.pdf") # retrieved from .../data/input/example.pdf
     doc1.generate_tags()
 
 if __name__ == "__main__":

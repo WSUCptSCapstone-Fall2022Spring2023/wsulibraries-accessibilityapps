@@ -4,7 +4,6 @@
 """
 
 # * Modules
-from asyncio.windows_events import NULL
 from PyPDF2 import PdfReader
 from src.document_harvester import harvest_document
 from src.document_exporter import export_document
@@ -16,7 +15,7 @@ class Document:
     """
     # Last Edit By: Reagan Kelley
     # * Edit Details: Initial implementation
-    def __init__(self, filename=NULL, using_directory=False):
+    def __init__(self, filename=None, using_directory=False):
         """Create instance of Document class object.
 
         Args:
@@ -24,13 +23,13 @@ class Document:
             using_directory (bool, optional): If True: Path/filename.pdf given.
             If False: Just filename.pdf given. Defaults to False.
         """
-        if(filename != NULL):
+        if(filename != None):
             self.reader = harvest_document(filename, using_directory)
         self.filename = filename
     
     # Last Edit By: Reagan Kelley
     # * Edit Details: Initial implementation
-    def open_document(self, filename=NULL, using_directory=False):
+    def open_document(self, filename=None, using_directory=False):
         """ Opens a PDF for editing. If a file is already opened, 
             this will close it and start writing to this one instead.
 
@@ -43,7 +42,7 @@ class Document:
             self.reader = harvest_document(filename, using_directory)
             self.filename = filename
         except:
-            self.filename = NULL
+            self.filename = None
     
 
     def is_open(self):
@@ -52,7 +51,7 @@ class Document:
         Returns:
             Bool: If a file is opened.
         """
-        return self.filename != NULL
+        return self.filename != None
 
     # Last Edit By: Reagan Kelley
     # * Edit Details: Initial implementation
@@ -70,8 +69,8 @@ class Document:
         Returns:
             string: document title
         """
-        if(self.filename == NULL):
-            return NULL
+        if(self.filename == None):
+            return None
         return self.reader.metadata.title
     
     def get_info(self):
