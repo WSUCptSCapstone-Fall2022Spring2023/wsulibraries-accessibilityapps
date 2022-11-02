@@ -241,6 +241,7 @@ class TagTree():
             self.__loc = self.__root
             self.__parent = []
             self.__sister = []
+            self.__local_sister_count = 0
         def get_tag(self):
             return self.__loc
         
@@ -257,6 +258,8 @@ class TagTree():
                 raise Exception("Up: Out of bounds; currently at root.")
             self.__loc = self.__parent[-1]
             self.__parent.pop()
+            while(self.__local_sister_count > 0):
+                self.__sister.pop()
             return self
         
         def Down(self):
@@ -272,6 +275,7 @@ class TagTree():
                 raise Exception("Down: Out of bounds; current tag has no children.")
             self.__parent.append(self.__loc)
             self.__loc = self.__loc.get_child()
+            self.__local_sister_count = 0
             return self
 
         def Next(self):
@@ -287,6 +291,7 @@ class TagTree():
                 raise Exception("Next: Out of bounds; current tag has no following tag.")
             self.__sister.append(self.__loc)
             self.__loc = self.__loc.get_next()
+            self.__local_sister_count += 1
             return self
 
         def Back(self):
@@ -298,10 +303,11 @@ class TagTree():
             Returns:
                 Cursor: The cursor itself will be returned at its new position.
             """
-            if(len(self.__sister) == 0):
+            if(self.__local_sister_count == 0):
                 raise Exception("Next: Out of bounds; current tag is the first child.")
             self.__loc = self.__sister[-1]
             self.__sister.pop()
+            self.__local_sister_count -= 1
             return self
 
     def __init__(self, root = '<document>'):
