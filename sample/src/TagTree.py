@@ -8,10 +8,6 @@ import inspect
 import sys
 from abc import ABC, abstractmethod
 
-class TagTree():
-    def __init__(self, tree_list):
-        pass
-
 # Last Edit By: Reagan Kelley
 # * Edit Details: Initial implementation
 def TagFactory(tag_name):
@@ -102,7 +98,7 @@ class Tag(ABC):
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Initial implementation
-class Document(Tag):
+class DocumentTag(Tag):
     """	Represents a complete document
 
     Args:
@@ -233,3 +229,17 @@ class P(Tag):
     
     def __str__(self):
         return "<P>"
+
+class TagTree():
+    class __cursor():
+        def __init__(self, root):
+            super.__init__()
+            self.__root = root
+            self.__loc = root
+        
+        def get_tag(self):
+            return str(self.__loc)
+
+    def __init__(self, __root = DocumentTag):
+        self.__root = __root
+        self.Cursor = self.__cursor(self.__root)
