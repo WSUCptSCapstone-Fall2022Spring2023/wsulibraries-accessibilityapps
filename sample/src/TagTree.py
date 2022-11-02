@@ -40,9 +40,9 @@ class Tag(ABC):
         ABC (Abstract Class): Marks this as an abstract class.
     """
     def __init__(self):
-        self.data = None
-        self.child = None
-        self.next = None
+        self.__data = None
+        self.__child = None
+        self.__next = None
 
     @abstractmethod
     def __str__(self):
@@ -55,10 +55,10 @@ class Tag(ABC):
         Returns:
             _type_: Could be anything
         """
-        return self.data
+        return self.__data
 
     def set_data(self, data):
-        self.data = data
+        self.__data = data
         
     def get_child(self):
         """Returns the child tag
@@ -66,7 +66,7 @@ class Tag(ABC):
         Returns:
             Tag: Returns the child tag of this tag.
         """
-        return self.child
+        return self.__child
     
     def get_next(self):
         """Returns the next tag in the tree.
@@ -74,23 +74,27 @@ class Tag(ABC):
         Returns:
             Tag: The next tag in the tag tree.
         """
-        return self.next
+        return self.__next
     
-    def set_child(self, child):
+    def set_child(self, child_tag_name, child_data=None):
         """Sets the child of this tag.
 
         Args:
             child (Tag): This will lead to a lower hierarchy in the tree.
         """
-        self.child = child
+        self.__child = TagFactory(child_tag_name)
+        if child_data is not None:
+            self.__child.set_data(child_data)
+        return self.__child
     
-    def set_next(self, next):
+    def set_next(self, next_tag_name):
         """Sets the next tag in the tree
 
         Args:
             next (Tag): This tag will have the same hierarchy as the given tag.
         """
-        self.next = next
+        self.__next = TagFactory(next_tag_name)
+        return self.__next
     
 # ===========================================================
 # ALL DEFINED TAG TYPES BELOW
@@ -232,14 +236,85 @@ class P(Tag):
 
 class TagTree():
     class __cursor():
-        def __init__(self, root):
-            super.__init__()
+        def __init__(self, root = TagFactory('<document>')):
             self.__root = root
-            self.__loc = root
-        
+            self.__loc = self.__root
+            self.__parent = []
+            self.__sister = []
         def get_tag(self):
-            return str(self.__loc)
+            return self.__loc
+        
+        def Up(self):
+            """Move the cursor to point up to its parent tag.
 
-    def __init__(self, __root = DocumentTag):
-        self.__root = __root
+            Raises:
+                Exception: If at root, will throw error.
+
+            Returns:
+                Cursor: The cursor itself will be returned at its new position.
+            """
+            if(self.__loc == self.__root):
+                raise Exception("Up: Out of bounds; currently at root.")
+            self.__loc = self.__parent[-1]
+            self.__parent.pop()
+            return self
+        
+        def Down(self):
+            """Move the cursor to point down to its child.
+
+            Raises:
+                Exception: If cursor has no children, will throw error.
+
+            Returns:
+                Cursor: The cursor itself will be returned at its new position.
+            """
+            if self.__loc.get_child() == None:
+                raise Exception("Down: Out of bounds; current tag has no children.")
+            self.__parent.append(self.__loc)
+            self.__loc = self.__loc.get_child()
+            return self
+
+        def Next(self):
+            """Move the cursor to the next tag in the same level hierarchy.
+
+            Raises:
+                Exception: If no more tags in this hierarchy, will throw error.
+
+            Returns:
+                Cursor: The cursor itself will be returned at its new position.
+            """
+            if self.__loc.get_next() == None:
+                raise Exception("Next: Out of bounds; current tag has no following tag.")
+            self.__sister.append(self.__loc)
+            self.__loc = self.__loc.get_next()
+            return self
+
+        def Back(self):
+            """Move the cursor to the left or previous tag in the same level hierarchy.
+
+            Raises:
+                Exception: If the first child at this level, will throw error.
+
+            Returns:
+                Cursor: The cursor itself will be returned at its new position.
+            """
+            if(len(self.__sister) == 0):
+                raise Exception("Next: Out of bounds; current tag is the first child.")
+            self.__loc = self.__sister[-1]
+            self.__sister.pop()
+            return self
+
+    def __init__(self, root = '<document>'):
+        self.__root = TagFactory(root)
         self.Cursor = self.__cursor(self.__root)
+    
+    def traverse_tree(self, print_it=True):
+        return self.__traverse_tree_helper(self.__root, print_it)
+    
+    def __traverse_tree_helper(self, current, print_it=True):
+        if(current == None):
+            return None
+        if print_it == True and (current.get_data() != None):
+            print(current.get_data())
+        self.__traverse_tree_helper(current.get_child(), print_it)
+        self.__traverse_tree_helper(current.get_next(), print_it)

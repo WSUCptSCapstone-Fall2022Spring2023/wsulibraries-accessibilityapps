@@ -8,7 +8,7 @@
 
 # * Modules
 from src.document import Document
-from src.TagTree import TagTree
+from src.TagTree import Tag, TagTree
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Started implementing tag trees
@@ -19,7 +19,21 @@ def generate_tags(doc = Document()):
         doc (Document((), optional): PDF handler that allows edits to be made. Defaults to Document().
     """
     tree = TagTree()
-    print(tree.Cursor.get_tag())
+    tree.Cursor.get_tag().set_data("This is a document")
+    print(tree.Cursor.get_tag().get_data())
+
+    tree.Cursor.get_tag().set_child('<H1>').set_data("This is a heading")
+    print(tree.Cursor.Down().get_tag().get_data())
+    tree.Cursor.get_tag().set_next('<H1>').set_data('This is the second heading.')
+    print(tree.Cursor.Up().get_tag().get_data())
+    
+    print(tree.Cursor.Down().Next().get_tag().get_data())
+    tree.Cursor.Back().get_tag().set_child("<P>", "This is a paragraph")
+    print(tree.Cursor.Down().get_tag().get_data())
+
+    print("\n")
+    tree.traverse_tree()
+
     # TODO: Implement PDF Tagging according to W3C guidelines.
     # TODO: Get tags from metadata and edit/add them.
     return doc
