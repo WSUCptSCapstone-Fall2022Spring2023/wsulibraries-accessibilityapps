@@ -1,2 +1,1 @@
-pip install pdfminer.six
-pip install bs4
+pip install pdfminer.six bs4
