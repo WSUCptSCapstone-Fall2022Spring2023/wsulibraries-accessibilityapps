@@ -76,24 +76,26 @@ class Tag(ABC):
         """
         return self.__next
     
-    def set_child(self, child_tag_name, child_data=None):
+    def set_child(self, child_tag_name, data=None):
         """Sets the child of this tag.
 
         Args:
             child (Tag): This will lead to a lower hierarchy in the tree.
         """
         self.__child = TagFactory(child_tag_name)
-        if child_data is not None:
-            self.__child.set_data(child_data)
+        if data is not None:
+            self.__child.set_data(data)
         return self.__child
     
-    def set_next(self, next_tag_name):
+    def set_next(self, next_tag_name, data=None):
         """Sets the next tag in the tree
 
         Args:
             next (Tag): This tag will have the same hierarchy as the given tag.
         """
         self.__next = TagFactory(next_tag_name)
+        if data is not None:
+            self.__next.set_data(data)
         return self.__next
     
 # ===========================================================
@@ -260,6 +262,7 @@ class TagTree():
             self.__parent.pop()
             while(self.__local_sister_count > 0):
                 self.__sister.pop()
+                self.__local_sister_count -= 1
             return self
         
         def Down(self):
