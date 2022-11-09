@@ -1,6 +1,7 @@
 # wsulibraries-accessibilityapps
 
-## Project summary
+## Project Summary
+
 
 In accordance with and in shared pursuit of WSU's research exchange mission, we\
 would like to help create a space designed to preserve and share university scholarship.\
@@ -19,48 +20,46 @@ to that of W3C standards. We wish to then streamline this process, with it not j
 single document, but that of an entire repository, to make the entire WSU research exchange\
 significantly more accessible to all.
 
+### To create software that can transform documents in W3C accessible documents, allowing those with various disabilities equitable access to information.
 
-### One-sentence description of the project
 
-To create software that can transform documents in W3C accessible documents.
-
-### Additional information about the project
-
-In our quest to bring more accessibility to the WSU research exchange, we have landed\
-on a few key accessibility features to focus on, at least at the start, which can be expanded to\
-other things as our project progresses. These initial features include document metadata, color\
-contrast, tagging, alternative text for images, and reading order. Our desire is to create a fully\
-automated system of taking pdf documents and converting them into these more accessible\
-versions.
+### In our quest to bring more accessibility to the WSU research exchange, we have landed on a few key accessibility features to focus on, at least at the start, which can be expanded to other things as our project progresses. These initial features include document metadata, color contrast, tagging, alternative text for images, and reading order. Our desire is to create a fully automated system of taking pdf documents and converting them into these more accessible versions.
 
 ## Installation
 
-N/A
+To use this application, clone the repo and run main.py (or terminal_application.py)
 
 ### Prerequisites
 
-None
+* Latest Version of Python
+* Pip install all modules through requirements.txt
 
 ### Add-ons
 
-None
+No Add ons.
 
 ### Installation Steps
 
-None
+* Clone repo
+* Pip install -r requirements
+
 
 ## Functionality
 
-None
+* Run terminal_application.py to run CLI
+* (Terminal Option) Open a PDF for accessibility processing
+* (Terminal Option) Run accessibility pipeline
+* (Terminal Option) Export and download transformed document
+
 
 ## Known Problems
 
-No known problems.
-
+Many pipeline accessibility transformations are not operational at this time.
+Importer and Exporter functionality is still WIP.
 
 ## Contributing
 
-Please follow the steps below if you wish to contribute to our project.
+TODO: Leave the steps below if you want others to contribute to your project.
 
 1. Fork it!
 2. Create your feature branch: `git checkout -b my-new-feature`
