@@ -21,11 +21,16 @@ single document, but that of an entire repository, to make the entire WSU resear
 significantly more accessible to all.
 
 ### Brief Description
-To create software that can transform documents in W3C accessible documents, allowing those with various disabilities equitable access to information.
+To create software that can transform documents in W3C accessible documents, allowing those with various\
+disabilities equitable access to information.
 
 
 ### Additional Information 
-In our quest to bring more accessibility to the WSU research exchange, we have landed on a few key accessibility features to focus on, at least at the start, which can be expanded to other things as our project progresses. These initial features include document metadata, color contrast, tagging, alternative text for images, and reading order. Our desire is to create a fully automated system of taking pdf documents and converting them into these more accessible versions.
+In our quest to bring more accessibility to the WSU research exchange, we have landed on a few key accessibility\
+features to focus on, at least at the start, which can be expanded to other things as our project progresses.\
+These initial features include document metadata, color contrast, tagging, alternative text for images, and\
+reading order. Our desire is to create a fully automated system of taking pdf documents and converting them\
+into these more accessible versions.
 
 ## Installation
 
@@ -71,11 +76,13 @@ TODO: Leave the steps below if you want others to contribute to your project.
 
 ## Additional Documentation
 
-https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/Project%20Description.pdf
+https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Project%20Description.pdf
 
-https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/Requirements%20and%20Specifications.pdf
+https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Requirements%20and%20Specifications.pdf
 
-https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/Solution%20Approach.pdf
+https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Solution%20Approach.pdf
+
+https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Requirements%20and%20Specifications.pdf
 
 ## License
 
