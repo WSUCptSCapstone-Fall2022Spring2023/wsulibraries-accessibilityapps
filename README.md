@@ -20,10 +20,12 @@ to that of W3C standards. We wish to then streamline this process, with it not j
 single document, but that of an entire repository, to make the entire WSU research exchange\
 significantly more accessible to all.
 
-### To create software that can transform documents in W3C accessible documents, allowing those with various disabilities equitable access to information.
+### Brief Description
+To create software that can transform documents in W3C accessible documents, allowing those with various disabilities equitable access to information.
 
 
-### In our quest to bring more accessibility to the WSU research exchange, we have landed on a few key accessibility features to focus on, at least at the start, which can be expanded to other things as our project progresses. These initial features include document metadata, color contrast, tagging, alternative text for images, and reading order. Our desire is to create a fully automated system of taking pdf documents and converting them into these more accessible versions.
+### Additional Information 
+In our quest to bring more accessibility to the WSU research exchange, we have landed on a few key accessibility features to focus on, at least at the start, which can be expanded to other things as our project progresses. These initial features include document metadata, color contrast, tagging, alternative text for images, and reading order. Our desire is to create a fully automated system of taking pdf documents and converting them into these more accessible versions.
 
 ## Installation
 
