@@ -13,7 +13,7 @@
 During this sprint our team began creating the code for our project. We started developing three of the main features of our project. The features we started developing are the document harvester, the document exporter and the document tagger. Trent has been working to get text and images extracted from pdf files into html documents and Marisa has been using the html document created to begin creating the document exporter. Trent has been having issues getting all the images from the original pdf to export correctly. Marisa has struggled with having a variable font size throughout the document since the function in python that sets the font size does not accept variable input. Reagan has been working on the document tagger and has created a tag tree structure. In doing so, he has realized that creating a tag tree structure of our own means that text to speech software might not recognize the tag tree and, as a result, won’t work properly. To create this documentation, our team has been creating branches on Github for each issue/feature and working on our individual features weekly.
 
 ## Unfinished Work
-Not applicable at this time.
+For this sprint, we did not finish the document exporter, the document harvester or the tag tree features. The document harvester still needs to be able to harvest images, the tag tree still needs to be implemented further and the document exporter needs to be able to register text style changes. These issues will be added to sprint 3 for completion.
 
 ## Completed Issues/User Stories
 Here are links to the issues that we completed in this sprint:
