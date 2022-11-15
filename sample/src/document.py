@@ -59,6 +59,9 @@ class Document:
         """ Transforms the metadata from codable data structures back into a usable and readable
             format: HTML
         """
+        # TODO use the paragraph objects to write a better exporting function that actually goes to a pdf
+        # (this is just a temporary exporting function before we get that working)
+
         # use the file path of the input file but change the extension to .html instead of .pdf
         export_to_html(self.div_text_info, self.file_path[:-len("pdf")] + "html")
 

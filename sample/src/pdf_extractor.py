@@ -6,7 +6,7 @@
 # ==================================================
 
 # imports
-from enum import Enum
+from src.paragraph import *
 from io import StringIO
 from bs4 import BeautifulSoup
 from pdfminer.layout import LAParams
@@ -15,14 +15,6 @@ from pdfminer.high_level import extract_text_to_fp
 # constants
 FONT_SIZE_STR = 'font-size'
 FONT_FAMILY_STR = 'font-family'
-
-class FontStyle(Enum):
-    '''Represents the style of text.'''
-    STANDARD = 1
-    BOLD = 2
-    ITALIC = 3
-    BOLD_ITALIC = 4
-    # TODO maybe add underline or strikethrough here
 
 def _get_font_style_delimeter(style: FontStyle, is_start: bool) -> str:
     '''Returns the html delimeter for a font style.
@@ -87,10 +79,8 @@ def _get_attributes(attribute_str: str) -> 'dict[str, str]':
         attribute_dict[name] = value
     return attribute_dict
 
-def extract_paragraphs_and_fonts_and_sizes(pdf_file_path: str) -> 'list[tuple[list[tuple[str, FontStyle]], str, str]]':
-    '''Returns a `list[tuple[span info, text size, font family]]` where the span info 
-    is a list of `(text, font style)` tuples and the text size is a string of something 
-    like '12px'.
+def extract_paragraphs_and_fonts_and_sizes(pdf_file_path: str) -> list[Paragraph]:
+    '''Returns a list of `Paragraph` objects extracted from the input pdf.
 
     Args:
         pdf_file_path (str): The string path of the pdf file to extract data from.
@@ -104,8 +94,7 @@ def extract_paragraphs_and_fonts_and_sizes(pdf_file_path: str) -> 'list[tuple[li
     # parse the html file
     parsed_html = BeautifulSoup(pdf_content.getvalue(), 'html.parser')
 
-    # will be formatted as a list[tuple(span info, text size, font family)]
-    div_text_info = []
+    paragraphs = []
     for div in parsed_html.findAll('div'):
         # keep track of the font sizes in the div, a list of tuples of (font size, text length using that size)
         # used to get a normalized font size for the div, which usually just ends up being the font
@@ -161,15 +150,15 @@ def extract_paragraphs_and_fonts_and_sizes(pdf_file_path: str) -> 'list[tuple[li
         div_font_family = sorted(font_family_distribution_dict.items(), key=lambda sizeLenTup : sizeLenTup[1], reverse=True)[0][0]
 
         # add the span data to the div info
-        div_text_info.append((span_text_sections_and_font_style, div_font_size, div_font_family))
+        paragraphs.append(Paragraph(span_text_sections_and_font_style, div_font_size, div_font_family))
     
-    return div_text_info
+    return paragraphs
 
-def export_to_html(div_text_info: 'list[tuple[list[tuple[str, FontStyle]], str, str]]', output_html_path: str):
-    '''Exports the pdf data from the `div_text_info` into an html file in the location `output_html_path`.
+def export_to_html(paragraphs: list[Paragraph], output_html_path: str):
+    '''Exports the pdf data from the `paragraphs` list into an html file in the location `output_html_path`.
 
     Args:
-        div_text_info (list[tuple[list[tuple[str, FontStyle]], str, str]]): The data representing an extracted pdf file.
+        paragraphs (list[Paragraph]): The data representing an extracted pdf file.
         output_html_path (str): The file location to output the html file.
     '''
 
@@ -183,10 +172,10 @@ def export_to_html(div_text_info: 'list[tuple[list[tuple[str, FontStyle]], str, 
     ]
 
     # add information to the html from the processed data
-    for (span_info, text_size, font_family) in div_text_info:
-        output_html_lines.append('<div style="' + FONT_SIZE_STR + ':' + text_size + '">')
-        output_html_lines.append('<p style="' + FONT_FAMILY_STR + ':' + font_family + '">')
-        for text, font_style in span_info:
+    for paragraph in paragraphs:
+        output_html_lines.append('<div style="' + FONT_SIZE_STR + ':' + paragraph.font_size + '">')
+        output_html_lines.append('<p style="' + FONT_FAMILY_STR + ':' + paragraph.font_family + '">')
+        for text, font_style in paragraph.text_info:
             output_html_lines.append(_get_font_style_delimeter(font_style, True))
             output_html_lines.append(text)
             output_html_lines.append(_get_font_style_delimeter(font_style, False))
