@@ -20,8 +20,8 @@ __maintainer__ = "Trent Bultsma"
 __email__ = "trent.bultsma@wsu.edu"
 __status__ = "Development"
 
-# Last Edit By: Reagan Kelley
-# * Edit Details: Initial implementation
+# Last Edit By: Trent Bultsma
+# * Edit Details: Use the pdf_extractor to get data from the pdf.
 class TerminalApplication():
     """Command line interface for Accessible Document application.
     """
@@ -101,14 +101,14 @@ class TerminalApplication():
         print("\t{}. Exit".format(option_number))
         return option_number
     
-    # Last Edit By: Reagan Kelley
-    # * Edit Details: Initial implementation
+    # Last Edit By: Trent Bultsma
+    # * Edit Details: Use the pdf_extractor to get data from the pdf.
     def __get_new_document(self):
         """ Opens a new document to edit.
         """
         global INPUT_DIRECTORY
-        filename = input("Name of Document (local path): \n{}\\".format(INPUT_DIRECTORY))
-        self.doc.open_document(filename=filename)
+        filename = INPUT_DIRECTORY + "/" + input("Name of Document (local path): \n{}\\".format(INPUT_DIRECTORY))
+        self.doc.open_document(filename)
         if(not self.doc.is_open()):
             print(colored("No file opened: Invalid Path", "red"))
     
