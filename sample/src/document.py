@@ -81,7 +81,3 @@ class Document:
         info['nb_pages'] = nb_pages
         for key, value in sorted(info.items()):
             print(f"{key:<15}: {value}")
-    
-
-        
-

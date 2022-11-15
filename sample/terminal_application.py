@@ -3,7 +3,6 @@
 """ This file contains main() which is where our application begins.
 """
 # * Modules
-from asyncio.windows_events import NULL
 from termcolor import colored
 from src.accessible_document import AccessibleDocument
 from src.document_harvester import INPUT_DIRECTORY 
