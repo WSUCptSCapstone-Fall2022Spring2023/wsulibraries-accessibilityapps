@@ -6,7 +6,6 @@
 # ==================================================
 
 # imports
-import os
 from enum import Enum
 from io import StringIO
 from bs4 import BeautifulSoup
@@ -14,8 +13,6 @@ from pdfminer.layout import LAParams
 from pdfminer.high_level import extract_text_to_fp
 
 # constants
-TEST_PDF = os.path.dirname(os.path.abspath(__file__)) + '/../../tests/testInput.pdf'
-TEST_OUTPUT_HTML = os.path.dirname(os.path.abspath(__file__)) + '/../../tests/testOutput.html'
 FONT_SIZE_STR = 'font-size'
 FONT_FAMILY_STR = 'font-family'
 
@@ -27,7 +24,7 @@ class FontStyle(Enum):
     BOLD_ITALIC = 4
     # TODO maybe add underline or strikethrough here
 
-def get_font_style_delimeter(style: FontStyle, is_start: bool) -> str:
+def _get_font_style_delimeter(style: FontStyle, is_start: bool) -> str:
     '''Returns the html delimeter for a font style.
     
     Args:
@@ -43,9 +40,9 @@ def get_font_style_delimeter(style: FontStyle, is_start: bool) -> str:
     elif style == FontStyle.ITALIC:
         return "<" + ("" if is_start else "/") + "em>"
     elif style == FontStyle.BOLD_ITALIC:
-        return get_font_style_delimeter(FontStyle.BOLD, is_start) + get_font_style_delimeter(FontStyle.ITALIC, is_start)
+        return _get_font_style_delimeter(FontStyle.BOLD, is_start) + _get_font_style_delimeter(FontStyle.ITALIC, is_start)
 
-def get_font_style(font_family_name: str) -> FontStyle:
+def _get_font_style(font_family_name: str) -> FontStyle:
     '''Returns the font style of a font.
 
     Args:
@@ -71,15 +68,7 @@ def get_font_style(font_family_name: str) -> FontStyle:
     else:
         return FontStyle.STANDARD
 
-# read the pdf
-pdf_content = StringIO()
-with open(TEST_PDF, 'rb') as fin:
-    extract_text_to_fp(fin, pdf_content, laparams=LAParams(),output_type='html', codec=None)
-
-# parse the html file
-parsed_html = BeautifulSoup(pdf_content.getvalue(), 'html.parser')
-
-def get_attributes(attribute_str: str) -> 'dict[str, str]':
+def _get_attributes(attribute_str: str) -> 'dict[str, str]':
     '''Returns a name to value mapping of html attributes given an unparsed attribute str.
 
     Args:
@@ -98,94 +87,127 @@ def get_attributes(attribute_str: str) -> 'dict[str, str]':
         attribute_dict[name] = value
     return attribute_dict
 
-# will be formatted as a list[tuple(span info, text size, font family)]
-div_text_info = []
-for div in parsed_html.findAll('div'):
-    # keep track of the font sizes in the div, a list of tuples of (font size, text length using that size)
-    # used to get a normalized font size for the div, which usually just ends up being the font
-    # size for all the spans, but sometimes there are little variations and in that case, the most
-    # commonly appearing font size is used for a unified div. TODO may want to investigate this approach later
-    font_size_distribution = []
-    # also keep track of the font to get the average font
-    font_family_distribution = []
+def extract_paragraphs_and_fonts_and_sizes(pdf_file_path: str) -> 'list[tuple[list[tuple[str, FontStyle]], str, str]]':
+    '''Returns a `list[tuple[span info, text size, font family]]` where the span info 
+    is a list of `(text, font style)` tuples and the text size is a string of something 
+    like '12px'.
 
-    # to store a list of tuples of (text, font style)
-    span_text_sections_and_font_style = []
-    for span in div.findAll('span'):
-        # get the text from the span without indentation or line 
-        # breaks or double spaces or trailing/leading whitespace
-        span_text = span.get_text().replace('\n', '').replace(
-            '\t', '').replace('  ', ' ').strip()
+    Args:
+        pdf_file_path (str): The string path of the pdf file to extract data from.
+    '''
 
-        # skip over empty spans
-        if span_text == '':
+    # read the pdf
+    pdf_content = StringIO()
+    with open(pdf_file_path, 'rb') as fin:
+        extract_text_to_fp(fin, pdf_content, laparams=LAParams(),output_type='html', codec=None)
+
+    # parse the html file
+    parsed_html = BeautifulSoup(pdf_content.getvalue(), 'html.parser')
+
+    # will be formatted as a list[tuple(span info, text size, font family)]
+    div_text_info = []
+    for div in parsed_html.findAll('div'):
+        # keep track of the font sizes in the div, a list of tuples of (font size, text length using that size)
+        # used to get a normalized font size for the div, which usually just ends up being the font
+        # size for all the spans, but sometimes there are little variations and in that case, the most
+        # commonly appearing font size is used for a unified div. TODO may want to investigate this approach later
+        font_size_distribution = []
+        # also keep track of the font to get the average font
+        font_family_distribution = []
+
+        # to store a list of tuples of (text, font style)
+        span_text_sections_and_font_style = []
+        for span in div.findAll('span'):
+            # get the text from the span without indentation or line 
+            # breaks or double spaces or trailing/leading whitespace
+            span_text = span.get_text().replace('\n', '').replace(
+                '\t', '').replace('  ', ' ').strip()
+
+            # skip over empty spans
+            if span_text == '':
+                continue
+
+            span_attributes = _get_attributes(span.attrs['style'])
+            
+            # update the average font family
+            font_family = span_attributes[FONT_FAMILY_STR]
+            font_family_distribution.append((font_family, len(span_text)))
+
+            # store the text and font style from the span
+            span_text_sections_and_font_style.append((span_text, _get_font_style(font_family)))
+        
+            # update the average font size
+            font_size = span_attributes[FONT_SIZE_STR]
+            font_size_distribution.append((font_size, len(span_text)))
+        
+        # skip empty spans
+        if len(span_text_sections_and_font_style) == 0:
             continue
 
-        span_attributes = get_attributes(span.attrs['style'])
-        
-        # update the average font family
-        font_family = span_attributes[FONT_FAMILY_STR]
-        font_family_distribution.append((font_family, len(span_text)))
+        # calculate the most commonly appearing font size in the div
+        font_size_distribution_dict = {}
+        for font_size, text_len in font_size_distribution:
+            if font_size not in font_size_distribution_dict.keys():
+                font_size_distribution_dict[font_size] = 0
+            font_size_distribution_dict[font_size] += text_len
+        div_font_size = sorted(font_size_distribution_dict.items(), key=lambda sizeLenTup : sizeLenTup[1], reverse=True)[0][0]
 
-        # store the text and font style from the span
-        span_text_sections_and_font_style.append((span_text, get_font_style(font_family)))
+        # calculate the most commonly appearing font family in the div
+        font_family_distribution_dict = {}
+        for font_family, text_len in font_family_distribution:
+            if font_family not in font_family_distribution_dict.keys():
+                font_family_distribution_dict[font_family] = 0
+            font_family_distribution_dict[font_family] += text_len
+        div_font_family = sorted(font_family_distribution_dict.items(), key=lambda sizeLenTup : sizeLenTup[1], reverse=True)[0][0]
+
+        # add the span data to the div info
+        div_text_info.append((span_text_sections_and_font_style, div_font_size, div_font_family))
     
-        # update the average font size
-        font_size = span_attributes[FONT_SIZE_STR]
-        font_size_distribution.append((font_size, len(span_text)))
-    
-    # skip empty spans
-    if len(span_text_sections_and_font_style) == 0:
-        continue
+    return div_text_info
 
-    # calculate the most commonly appearing font size in the div
-    font_size_distribution_dict = {}
-    for font_size, text_len in font_size_distribution:
-        if font_size not in font_size_distribution_dict.keys():
-            font_size_distribution_dict[font_size] = 0
-        font_size_distribution_dict[font_size] += text_len
-    div_font_size = sorted(font_size_distribution_dict.items(), key=lambda sizeLenTup : sizeLenTup[1], reverse=True)[0][0]
+def export_to_html(div_text_info: 'list[tuple[list[tuple[str, FontStyle]], str, str]]', output_html_path: str):
+    '''Exports the pdf data from the `div_text_info` into an html file in the location `output_html_path`.
 
-    # calculate the most commonly appearing font family in the div
-    font_family_distribution_dict = {}
-    for font_family, text_len in font_family_distribution:
-        if font_family not in font_family_distribution_dict.keys():
-            font_family_distribution_dict[font_family] = 0
-        font_family_distribution_dict[font_family] += text_len
-    div_font_family = sorted(font_family_distribution_dict.items(), key=lambda sizeLenTup : sizeLenTup[1], reverse=True)[0][0]
+    Args:
+        div_text_info (list[tuple[list[tuple[str, FontStyle]], str, str]]): The data representing an extracted pdf file.
+        output_html_path (str): The file location to output the html file.
+    '''
 
-    # add the span data to the div info
-    div_text_info.append((span_text_sections_and_font_style, div_font_size, div_font_family))
+    # start the output html lines
+    output_html_lines = [
+        '<html>',
+        '<head>',
+        '<meta content="text/html" http-equiv="Content-Type"/>',
+        '</head>',
+        '<body>'
+    ]
 
-# start the output html lines
-output_html_lines = [
-    '<html>',
-    '<head>',
-    '<meta content="text/html" http-equiv="Content-Type"/>',
-    '</head>',
-    '<body>'
-]
+    # add information to the html from the processed data
+    for (span_info, text_size, font_family) in div_text_info:
+        output_html_lines.append('<div style="' + FONT_SIZE_STR + ':' + text_size + '">')
+        output_html_lines.append('<p style="' + FONT_FAMILY_STR + ':' + font_family + '">')
+        for text, font_style in span_info:
+            output_html_lines.append(_get_font_style_delimeter(font_style, True))
+            output_html_lines.append(text)
+            output_html_lines.append(_get_font_style_delimeter(font_style, False))
+        output_html_lines.append('</p>')
+        output_html_lines.append('</div>')
 
-# add information to the html from the processed data
-for (span_info, text_size, font_family) in div_text_info:
-    output_html_lines.append('<div style="' + FONT_SIZE_STR + ':' + text_size + '">')
-    output_html_lines.append('<p style="' + FONT_FAMILY_STR + ':' + font_family + '">')
-    for text, font_style in span_info:
-        output_html_lines.append(get_font_style_delimeter(font_style, True))
-        output_html_lines.append(text)
-        output_html_lines.append(get_font_style_delimeter(font_style, False))
-    output_html_lines.append('</p>')
-    output_html_lines.append('</div>')
+    # finish the output html lines
+    output_html_lines.append('</body>')
+    output_html_lines.append('</html>')
 
-# finish the output html lines
-output_html_lines.append('</body>')
-output_html_lines.append('</html>')
+    # generate a formatted html from the lines
+    formatted_output = BeautifulSoup('\n'.join(output_html_lines), 'html.parser').prettify()
 
-# generate a formatted html from the lines
-formatted_output = BeautifulSoup('\n'.join(output_html_lines), 'html.parser').prettify()
+    # write to an html file
+    with open(output_html_path, 'w', encoding='utf-8') as output_file:
+        output_file.write(formatted_output)
 
-# write to an html file
-# (this will not be in the final product, but is 
-# helpful to look around in to see what is going on)
-with open(TEST_OUTPUT_HTML, 'w', encoding='utf-8') as output_file:
-    output_file.write(formatted_output)
+# run the code in this file for testing purposes
+if __name__ == '__main__':
+    import os
+    test_pdf = os.path.dirname(os.path.abspath(__file__)) + '/../../tests/testInput.pdf'
+    test_output_html = os.path.dirname(os.path.abspath(__file__)) + '/../../tests/testOutput.html'
+    div_text_info = extract_paragraphs_and_fonts_and_sizes(test_pdf)
+    export_to_html(div_text_info, test_output_html)
