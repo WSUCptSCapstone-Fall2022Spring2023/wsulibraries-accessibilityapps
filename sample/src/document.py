@@ -4,46 +4,46 @@
 """
 
 # * Modules
-from PyPDF2 import PdfReader
-from src.document_harvester import harvest_document
-from src.document_exporter import export_document
+import os
+from src.pdf_extractor import export_to_html
+from src.pdf_extractor import extract_paragraphs_and_fonts_and_sizes
 
-# Last Edit By: Reagan Kelley
-# * Edit Details: Skeleton Code
+# Last Edit By: Trent Bultsma
+# * Edit Details: Use the pdf_extractor to extract and export data.
 class Document:
     """Document is a class that allows us to alter and manipulate documents
     """
-    # Last Edit By: Reagan Kelley
-    # * Edit Details: Initial implementation
-    def __init__(self, filename=None, using_directory=False):
+    # Last Edit By: Trent Bultsma
+    # * Edit Details: Use the pdf_extractor to extract and export data.
+    def __init__(self, file_path=None):
         """Create instance of Document class object.
 
         Args:
-            filename (string): The name of the PDF that will be processed.
-            using_directory (bool, optional): If True: Path/filename.pdf given.
-            If False: Just filename.pdf given. Defaults to False.
+            file_path (string): The path name of the PDF that will be processed.
         """
-        if(filename != None):
-            self.reader = harvest_document(filename, using_directory)
-        self.filename = filename
+        self.open_document(file_path)
     
-    # Last Edit By: Reagan Kelley
-    # * Edit Details: Initial implementation
-    def open_document(self, filename=None, using_directory=False):
+    # Last Edit By: Trent Bultsma
+    # * Edit Details: Use the pdf_extractor to extract and export data.
+    def open_document(self, file_path:str=None):
         """ Opens a PDF for editing. If a file is already opened, 
             this will close it and start writing to this one instead.
 
         Args:
-            filename (string): The name of the PDF that will be processed.
-            using_directory (bool, optional): If True: Path/filename.pdf given.
-            If False: Just filename.pdf given. Defaults to False.
+            file_path (string): The path name of the PDF that will be processed.
         """
-        try:
-            self.reader = harvest_document(filename, using_directory)
-            self.filename = filename
-        except:
-            self.filename = None
-    
+        # default value for if opening the file fails
+        self.file_path = None
+        self.paragraphs = []
+
+        # make sure the file is a pdf
+        if file_path is not None and file_path.lower().endswith(".pdf"):
+            try:
+                # extract the data
+                self.paragraphs = extract_paragraphs_and_fonts_and_sizes(file_path)
+                self.file_path = file_path
+            except:
+                pass    
 
     def is_open(self):
         """ Returns true if there is a file open for editing.
@@ -51,37 +51,28 @@ class Document:
         Returns:
             Bool: If a file is opened.
         """
-        return self.filename != None
+        return self.file_path != None
 
-    # Last Edit By: Reagan Kelley
-    # * Edit Details: Initial implementation
+    # Last Edit By: Trent Bultsma
+    # * Edit Details: Use the pdf_extractor to extract and export data.
     def export_document(self):
         """ Transforms the metadata from codable data structures back into a usable and readable
-            format: PDF
+            format: HTML
         """
-        export_document(self.filename)
+        # TODO use the paragraph objects to write a better exporting function that actually goes to a pdf
+        # (this is just a temporary exporting function before we get that working)
 
-    # Last Edit By: Reagan Kelley
-    # * Edit Details: Initial implementation
+        # use the file path of the input file but change the extension to .html instead of .pdf
+        export_to_html(self.paragraphs, self.file_path[:-len("pdf")] + "html")
+
+    # Last Edit By: Trent Bultsma
+    # * Edit Details: Use the pdf_extractor to extract and export data.
     def get_filename(self):
         """Gets the title of the document
 
         Returns:
             string: document title
         """
-        if(self.filename == None):
+        if self.file_path is None:
             return None
-        return self.reader.metadata.title
-    
-    def get_info(self):
-        # ! Debugging function: Currently testing proper reading of pdf.
-        info = self.reader.getDocumentInfo()
-        nb_pages = self.reader.getNumPages()
-        info = dict(info)
-        info['nb_pages'] = nb_pages
-        for key, value in sorted(info.items()):
-            print(f"{key:<15}: {value}")
-    
-
-        
-
+        return os.path.basename(self.file_path)
