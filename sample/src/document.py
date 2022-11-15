@@ -34,13 +34,13 @@ class Document:
         """
         # default value for if opening the file fails
         self.file_path = None
-        self.div_text_info = []
+        self.paragraphs = []
 
         # make sure the file is a pdf
         if file_path is not None and file_path.lower().endswith(".pdf"):
             try:
                 # extract the data
-                self.div_text_info = extract_paragraphs_and_fonts_and_sizes(file_path)
+                self.paragraphs = extract_paragraphs_and_fonts_and_sizes(file_path)
                 self.file_path = file_path
             except:
                 pass    
@@ -63,7 +63,7 @@ class Document:
         # (this is just a temporary exporting function before we get that working)
 
         # use the file path of the input file but change the extension to .html instead of .pdf
-        export_to_html(self.div_text_info, self.file_path[:-len("pdf")] + "html")
+        export_to_html(self.paragraphs, self.file_path[:-len("pdf")] + "html")
 
     # Last Edit By: Trent Bultsma
     # * Edit Details: Use the pdf_extractor to extract and export data.
