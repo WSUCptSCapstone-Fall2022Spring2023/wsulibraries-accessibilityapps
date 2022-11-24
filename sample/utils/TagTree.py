@@ -87,15 +87,15 @@ class Tag(ABC):
             self.__child.set_data(data)
         return self.__child
     
-    def set_next(self, next_tag_name, data=None):
+    def set_next(self, next_tag_name, next_data=None):
         """Sets the next tag in the tree
 
         Args:
             next (Tag): This tag will have the same hierarchy as the given tag.
         """
         self.__next = TagFactory(next_tag_name)
-        if data is not None:
-            self.__next.set_data(data)
+        if next_data is not None:
+            self.__next.set_data(next_data)
         return self.__next
     
 # ===========================================================
@@ -322,8 +322,15 @@ class TagTree():
     
     def __traverse_tree_helper(self, current, print_it=True):
         if(current == None):
-            return None
-        if print_it == True and (current.get_data() != None):
-            print(current.get_data())
-        self.__traverse_tree_helper(current.get_child(), print_it)
-        self.__traverse_tree_helper(current.get_next(), print_it)
+            return ""
+        
+        ret = ""
+        if current.get_data() != None:
+            if print_it == True:
+                print(current.get_data())
+            else:
+                ret = current.get_data()
+
+        ret += self.__traverse_tree_helper(current.get_child(), print_it)
+        ret += self.__traverse_tree_helper(current.get_next(), print_it)
+        return ret

@@ -19,15 +19,13 @@ class AccessibleDocument(Document):
         Document (Document): Parent Class
     """
 
-    def __init__(self, filename=None, using_directory=False):
+    def __init__(self, file_path=None):
         """Create a new instance of AccessibleDocument.
 
         Args:
-            filename (string): The name of the PDF that will be processed.
-            using_directory (bool, optional): If True: Path/filename.pdf given.
-            If False: Just filename.pdf given. Defaults to False.
+            file_path (string): The path name of the PDF that will be processed.
         """
-        super().__init__(filename, using_directory)
+        super().__init__(file_path)
 
     # Last Edit By: Reagan Kelley
     # * Edit Details: Initial implementation
