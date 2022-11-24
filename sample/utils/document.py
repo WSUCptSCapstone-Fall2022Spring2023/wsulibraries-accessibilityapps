@@ -5,8 +5,8 @@
 
 # * Modules
 import os
-from src.pdf_extractor import export_to_html
-from src.pdf_extractor import extract_paragraphs_and_fonts_and_sizes
+from utils.pdf_extractor import export_to_html
+from utils.pdf_extractor import extract_paragraphs_and_fonts_and_sizes
 
 # Last Edit By: Trent Bultsma
 # * Edit Details: Use the pdf_extractor to extract and export data.
