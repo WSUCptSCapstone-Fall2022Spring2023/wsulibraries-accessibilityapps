@@ -162,6 +162,18 @@ def export_to_html(paragraphs: list[Paragraph], output_html_path: str):
         output_html_path (str): The file location to output the html file.
     '''
 
+    formatted_output = _get_exported_html_value(paragraphs)
+
+    # write to an html file
+    with open(output_html_path, 'w', encoding='utf-8') as output_file:
+        output_file.write(formatted_output)
+
+def _get_exported_html_value(paragraphs: list[Paragraph]) -> str:
+    '''Returns the contents of the html exported from the provided list of `Paragraph`s.
+
+    Args:
+        paragraphs (list[Paragraph]): The data representing an extracted pdf file.
+    '''
     # start the output html lines
     output_html_lines = [
         '<html>',
@@ -189,9 +201,7 @@ def export_to_html(paragraphs: list[Paragraph], output_html_path: str):
     # generate a formatted html from the lines
     formatted_output = BeautifulSoup('\n'.join(output_html_lines), 'html.parser').prettify()
 
-    # write to an html file
-    with open(output_html_path, 'w', encoding='utf-8') as output_file:
-        output_file.write(formatted_output)
+    return formatted_output
 
 # run the code in this file for testing purposes
 if __name__ == '__main__':
