@@ -4,8 +4,8 @@
 """
 # * Modules
 from termcolor import colored
-from src.accessible_document import AccessibleDocument
-from src.document_harvester import INPUT_DIRECTORY 
+from utils.accessible_document import AccessibleDocument
+from utils.document_harvester import INPUT_DIRECTORY 
 
 # ? VSCode Extensions Used:
 # ?     - Better Comments

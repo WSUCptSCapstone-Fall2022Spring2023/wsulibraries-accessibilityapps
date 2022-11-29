@@ -3,7 +3,7 @@
 """ This file contains main() which is where our application begins.
 """
 # * Modules
-from src.accessible_document import AccessibleDocument
+from utils.accessible_document import AccessibleDocument
 
 # ? VSCode Extensions Used:
 # ?     - Better Comments

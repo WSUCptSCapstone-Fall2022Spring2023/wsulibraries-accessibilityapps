@@ -5,10 +5,10 @@
 """
 
 # * Modules
-from src.document import Document
-from src.pdf_transform.document_tagger import generate_tags
-from src.pdf_transform.alt_text_adder import check_alt_text, create_alternative_text
-from src.pdf_transform.color_contrast_adder import check_color_contrast
+from utils.document import Document
+from utils.pdf_transform.document_tagger import generate_tags
+from utils.pdf_transform.alt_text_adder import check_alt_text, create_alternative_text
+from utils.pdf_transform.color_contrast_adder import check_color_contrast
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Added Generate Tags
