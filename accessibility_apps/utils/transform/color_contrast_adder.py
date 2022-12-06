@@ -7,7 +7,7 @@
 """
 # * Modules
 from asyncio.windows_events import NULL
-from src.document import Document
+from utils.document import Document
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Skeleton Code -- Not Done

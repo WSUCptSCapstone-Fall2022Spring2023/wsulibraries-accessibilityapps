@@ -4,7 +4,6 @@
 """
 
 import linecache
-import textwrap
 from fpdf import FPDF
 
 # Last Edit By: Reagan Kelley
