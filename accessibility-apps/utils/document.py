@@ -55,15 +55,22 @@ class Document:
 
     # Last Edit By: Trent Bultsma
     # * Edit Details: Use the pdf_extractor to extract and export data.
-    def export_document(self):
+    def export_document(self, file_path:str=None):
         """ Transforms the metadata from codable data structures back into a usable and readable
             format: HTML
+
+            Args:
+            file_path (string): The path name of the html doc to be exported.
         """
         # TODO use the paragraph objects to write a better exporting function that actually goes to a pdf
         # (this is just a temporary exporting function before we get that working)
 
-        # use the file path of the input file but change the extension to .html instead of .pdf
-        export_to_html(self.paragraphs, self.file_path[:-len("pdf")] + "html")
+        # use the file path of the input file but change the extension to .html instead of .pdf if file path not specified
+        if file_path is None:
+            file_path = self.file_path[:-len("pdf")] + "html"
+
+        # export the document
+        export_to_html(self.paragraphs, file_path)
 
     # Last Edit By: Trent Bultsma
     # * Edit Details: Use the pdf_extractor to extract and export data.

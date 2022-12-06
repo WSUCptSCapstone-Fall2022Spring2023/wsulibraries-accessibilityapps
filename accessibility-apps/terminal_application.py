@@ -5,7 +5,7 @@
 # * Modules
 from termcolor import colored
 from utils.accessible_document import AccessibleDocument
-from utils.harvest.document_harvester import INPUT_DIRECTORY 
+from utils.harvest.document_harvester import INPUT_DIRECTORY, OUTPUT_DIRECTORY
 
 # ? VSCode Extensions Used:
 # ?     - Better Comments
@@ -71,7 +71,7 @@ class TerminalApplication():
             if(self.val == 2 and self.exit_number != 2):
                 self.__run_accessibility_pipeline()
             if(self.val == 3 and self.exit_number != 3):
-                self.doc.export_document()
+                self.__export_document()
         print("")
 
     # Last Edit By: Reagan Kelley
@@ -106,11 +106,18 @@ class TerminalApplication():
     def __get_new_document(self):
         """ Opens a new document to edit.
         """
-        global INPUT_DIRECTORY
         filename = INPUT_DIRECTORY + "/" + input("Name of Document (local path): \n{}\\".format(INPUT_DIRECTORY))
         self.doc.open_document(filename)
         if(not self.doc.is_open()):
             print(colored("No file opened: Invalid Path", "red"))
+
+    # Last Edit By: Trent Bultsma
+    # * Edit Details: Change document exporting to go to the output directory.
+    def __export_document(self):
+        """ Opens a new document to edit.
+        """
+        filename = OUTPUT_DIRECTORY + "/" + self.doc.get_filename()[:-len("pdf")] + "html"
+        self.doc.export_document(filename)
     
     # Last Edit By: Reagan Kelley
     # * Edit Details: Initial implementation
@@ -120,7 +127,7 @@ class TerminalApplication():
         self.doc.generate_tags()
         self.doc.create_alternative_text()
         self.doc.check_color_contrast()
-        self.doc.export_document()
+        self.__export_document()
 
 
 
