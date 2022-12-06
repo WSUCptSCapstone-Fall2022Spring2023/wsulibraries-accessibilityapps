@@ -5,7 +5,7 @@
 # * Modules
 from termcolor import colored
 from utils.accessible_document import AccessibleDocument
-from utils.document_harvester import INPUT_DIRECTORY 
+from utils.harvest.document_harvester import INPUT_DIRECTORY 
 
 # ? VSCode Extensions Used:
 # ?     - Better Comments

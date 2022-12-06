@@ -8,7 +8,7 @@
 
 # * Modules
 from utils.document import Document
-from utils.TagTree import Tag, TagTree
+from utils.transform.TagTree import Tag, TagTree
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Started implementing tag trees

@@ -6,7 +6,7 @@
 # ==================================================
 
 # imports
-from ..utils.paragraph import *
+from utils.harvest.paragraph import *
 from io import StringIO
 from bs4 import BeautifulSoup
 from pdfminer.layout import LAParams
