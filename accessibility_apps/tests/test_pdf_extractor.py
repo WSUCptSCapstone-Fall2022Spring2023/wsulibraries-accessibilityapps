@@ -10,7 +10,7 @@
 
 import unittest
 from utils.harvest.paragraph import *
-from utils.harvest.pdf_extractor import _get_font_style_delimeter, _get_font_style, _get_attributes, extract_paragraphs_and_fonts_and_sizes, _get_exported_html_value
+from utils.harvest.pdf_extractor import _get_font_style_delimeter, _get_font_style, _get_attributes, _convert_cid_str, extract_paragraphs_and_fonts_and_sizes, _get_exported_html_value
 
 class PdfExtractionTests(unittest.TestCase):
     '''Tests pdf extraction functions.'''
@@ -83,6 +83,12 @@ class PdfExtractionTests(unittest.TestCase):
             'font-family' : 'Georgia',
             'font-size' : '36px'
         })
+
+    def test_convert_cid_str(self):
+        '''Tests removing (cid:xxx) values from text and converting them to their character equivalent.'''
+        cid_text = 'These are some words(cid:46) (How (cid:99)ould they be like that?)'
+        no_cid_text = 'These are some words. (How could they be like that?)'
+        self.assertEqual(_convert_cid_str(cid_text), no_cid_text)
 
     def test_paragraph_comparison(self):
         '''Tests checking equality between Paragraph objects.'''
