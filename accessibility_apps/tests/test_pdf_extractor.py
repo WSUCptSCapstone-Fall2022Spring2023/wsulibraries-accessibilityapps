@@ -64,7 +64,7 @@ class PdfExtractionTests(unittest.TestCase):
         '''Tests getting the style of a font.'''
         self.assertEqual(_get_font_style('Arial-BoldMT'), FontStyle.BOLD)
         self.assertEqual(_get_font_style('Georgia'), FontStyle.STANDARD)
-        self.assertEqual(_get_font_style('TimesNewRomanPS-ItalicMT'), FontStyle.STANDARD)
+        self.assertEqual(_get_font_style('TimesNewRomanPS-ItalicMT'), FontStyle.ITALIC)
 
     def test_get_attributes(self):
         '''Tests getting the html attributes from an attribute string.'''
@@ -84,9 +84,21 @@ class PdfExtractionTests(unittest.TestCase):
             'font-size' : '36px'
         })
 
+    def test_paragraph_comparison(self):
+        '''Tests checking equality between Paragraph objects.'''
+        p_1 = Paragraph([('This is information.', FontStyle.STANDARD)], '12px', 'Helvetica')
+        p_2 = Paragraph([('Information continued.', FontStyle.STANDARD)], '15px', 'Georgia')
+        p_3 = Paragraph([('This is information.', FontStyle.STANDARD)], '12px', 'Helvetica')
+        p_4 = Paragraph([('This is information.', FontStyle.STANDARD)], '13px', 'Helvetica')
+
+        self.assertEqual(p_1, p_3)
+        self.assertNotEqual(p_1, p_2)
+        self.assertNotEqual(p_3, p_4)
+    
     def test_extract_paragraphs_and_fonts_and_sizes(self):
         '''Tests extracting paragraphs from the html.'''
-        self.assertEqual(extract_paragraphs_and_fonts_and_sizes('../data/input/pdf_extractor_test.pdf'), self.test_paragraphs)
+        for paragraph_1, paragraph_2 in zip(extract_paragraphs_and_fonts_and_sizes('../data/input/pdf_extractor_test.pdf'), self.test_paragraphs):
+            self.assertEqual(paragraph_1, paragraph_2)
 
     def test_export_html(self):
         '''Tests the data of exporting an html.'''
