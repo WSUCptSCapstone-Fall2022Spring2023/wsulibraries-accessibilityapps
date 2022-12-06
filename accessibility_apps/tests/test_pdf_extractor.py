@@ -5,7 +5,12 @@
 # Description: Tests the pdf extractor.
 # ==================================================
 
+#! Run This test from the parent directory or module (accessibility_apps) to avoid relative import errors.
 # python -m unittest -v tests.test_pdf_extractor
+
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 import unittest
 from utils.harvest.paragraph import *

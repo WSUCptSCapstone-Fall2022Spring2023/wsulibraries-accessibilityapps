@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-#! Run This test from the parent directory or module to avoid relative import errors. 
-# python -m unittest -v sample.tests.test_tag_tree
+#! Run This test from the parent directory or module (accessibility_apps) to avoid relative import errors. 
+# python -m unittest -v tests.test_tag_tree
 
 """ Test the Tag Tree Data Structure (unit tests)
 """
