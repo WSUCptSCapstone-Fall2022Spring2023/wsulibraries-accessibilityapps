@@ -8,7 +8,6 @@
 # python -m unittest -v sample.tests.test_pdf_extractor
 
 import unittest
-from ..utils.paragraph import Paragraph
 from ..utils.paragraph import *
 from ..utils.pdf_extractor import _get_font_style_delimeter, _get_font_style, _get_attributes, extract_paragraphs_and_fonts_and_sizes, _get_exported_html_value
 
