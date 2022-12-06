@@ -70,13 +70,14 @@ def _get_attributes(attribute_str: str) -> 'dict[str, str]':
     # the attributes will be formatted like 'font-family: TimesNewRoman; font-size:10px'
     # split up the attributes into each name:value pair
     for attribute in attribute_str.split(';'):
-        # split the attribute into the name and value
-        (name, value) = attribute.split(':')
-        # remove the leading and trailing whitespace
-        name = name.strip()
-        value = value.strip()
-        # add the attribute to the dictionary
-        attribute_dict[name] = value
+        if attribute != '':
+            # split the attribute into the name and value
+            (name, value) = attribute.split(':')
+            # remove the leading and trailing whitespace
+            name = name.strip()
+            value = value.strip()
+            # add the attribute to the dictionary
+            attribute_dict[name] = value
     return attribute_dict
 
 def extract_paragraphs_and_fonts_and_sizes(pdf_file_path: str) -> list[Paragraph]:

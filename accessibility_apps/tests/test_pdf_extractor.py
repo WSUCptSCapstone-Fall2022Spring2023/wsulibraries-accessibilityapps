@@ -8,10 +8,6 @@
 #! Run This test from the parent directory or module (accessibility_apps) to avoid relative import errors.
 # python -m unittest -v tests.test_pdf_extractor
 
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
 import unittest
 from utils.harvest.paragraph import *
 from utils.harvest.pdf_extractor import _get_font_style_delimeter, _get_font_style, _get_attributes, extract_paragraphs_and_fonts_and_sizes, _get_exported_html_value
@@ -90,7 +86,7 @@ class PdfExtractionTests(unittest.TestCase):
 
     def test_extract_paragraphs_and_fonts_and_sizes(self):
         '''Tests extracting paragraphs from the html.'''
-        self.assertEqual(extract_paragraphs_and_fonts_and_sizes('/../../../tests/pdf_extractor_test.pdf'), self.test_paragraphs)
+        self.assertEqual(extract_paragraphs_and_fonts_and_sizes('../data/input/pdf_extractor_test.pdf'), self.test_paragraphs)
 
     def test_export_html(self):
         '''Tests the data of exporting an html.'''
