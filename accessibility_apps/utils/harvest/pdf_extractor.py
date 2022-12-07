@@ -7,6 +7,7 @@
 
 # imports
 from utils.harvest.paragraph import *
+import re
 from io import StringIO
 from bs4 import BeautifulSoup
 from pdfminer.layout import LAParams
@@ -70,14 +71,37 @@ def _get_attributes(attribute_str: str) -> 'dict[str, str]':
     # the attributes will be formatted like 'font-family: TimesNewRoman; font-size:10px'
     # split up the attributes into each name:value pair
     for attribute in attribute_str.split(';'):
-        # split the attribute into the name and value
-        (name, value) = attribute.split(':')
-        # remove the leading and trailing whitespace
-        name = name.strip()
-        value = value.strip()
-        # add the attribute to the dictionary
-        attribute_dict[name] = value
+        if attribute != '':
+            # split the attribute into the name and value
+            (name, value) = attribute.split(':')
+            # remove the leading and trailing whitespace
+            name = name.strip()
+            value = value.strip()
+            # add the attribute to the dictionary
+            attribute_dict[name] = value
     return attribute_dict
+
+def _get_cid_character(cid: str) -> str:
+    '''Returns the character corresponding to the cid value
+    
+    Args:
+        cid (str): The cid value.
+    '''
+
+    # cid will be the format (cid:<a number>) and we want to get that number and turn it into a character
+    return chr(int(cid[len('(cid:'):-len(')')]))
+
+def _convert_cid_str(text: str) -> str:
+    '''Returns a string with all (cid:xxx) parts converted to the unicode character they correspond to.
+    
+    Args:
+        text (str): The text being converted.
+    '''
+
+    for cid in set(re.findall(r'\(cid\:\d+\)', text)):
+        text = text.replace(cid, _get_cid_character(cid))
+
+    return text
 
 def extract_paragraphs_and_fonts_and_sizes(pdf_file_path: str) -> list[Paragraph]:
     '''Returns a list of `Paragraph` objects extracted from the input pdf.
@@ -89,7 +113,7 @@ def extract_paragraphs_and_fonts_and_sizes(pdf_file_path: str) -> list[Paragraph
     # read the pdf
     pdf_content = StringIO()
     with open(pdf_file_path, 'rb') as fin:
-        extract_text_to_fp(fin, pdf_content, laparams=LAParams(),output_type='html', codec=None)
+        extract_text_to_fp(fin, pdf_content, laparams=LAParams(), output_type='html', codec=None)
 
     # parse the html file
     parsed_html = BeautifulSoup(pdf_content.getvalue(), 'html.parser')
@@ -107,9 +131,12 @@ def extract_paragraphs_and_fonts_and_sizes(pdf_file_path: str) -> list[Paragraph
         # to store a list of tuples of (text, font style)
         span_text_sections_and_font_style = []
         for span in div.findAll('span'):
+            # get rid of the (cid:xxx) strings in the span text
+            span_text = _convert_cid_str(span.get_text())
+
             # get the text from the span without indentation or line 
             # breaks or double spaces or trailing/leading whitespace
-            span_text = span.get_text().replace('\n', '').replace(
+            span_text = span_text.replace('\n', '').replace(
                 '\t', '').replace('  ', ' ').strip()
 
             # skip over empty spans
