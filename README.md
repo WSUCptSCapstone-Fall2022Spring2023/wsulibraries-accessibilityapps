@@ -34,7 +34,9 @@ into these more accessible versions.
 
 ## Installation
 
-To use this application, clone the repo and run main.py (or terminal_application.py)
+1. Clone Repo or download and extract through ZIP.
+2. Run src code directly with *python accessibility_apps/terminal.application.py*
+2. Run with no dependency perquisites with  *bin/terminal_application.exe*
 
 ### Prerequisites
 
@@ -47,13 +49,14 @@ No Add ons.
 
 ### Installation Steps
 
-* Clone repo
-* Pip install -r requirements
+1. Clone repo
+2. Pip install -r requirements
+3. python accessibility_apps/terminal.application.py
 
 
 ## Functionality
 
-* Run terminal_application.py to run CLI
+* Run terminal_application.py to run CLI or Executable in Bin
 * (Terminal Option) Open a PDF for accessibility processing
 * (Terminal Option) Run accessibility pipeline
 * (Terminal Option) Export and download transformed document
@@ -62,27 +65,31 @@ No Add ons.
 ## Known Problems
 
 Many pipeline accessibility transformations are not operational at this time.
-Importer and Exporter functionality is still WIP.
+Importer and Exporter functionality is still WIP. Need to provide path between these three modular components.
 
 ## Contributing
-
-TODO: Leave the steps below if you want others to contribute to your project.
 
 1. Fork it!
 2. Create your feature branch: `git checkout -b my-new-feature`
 3. Commit your changes: `git commit -am 'Add some feature'`
 4. Push to the branch: `git push origin my-new-feature`
-5. Submit a pull request :D
+5. Submit a pull request :smile:
 
 ## Additional Documentation
 
-https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Project%20Description.pdf
+* [Project Description](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Project%20Description.pdf)
 
-https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Requirements%20and%20Specifications.pdf
+* [Requirements and Specifications](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Requirements%20and%20Specifications.pdf)
 
-https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Solution%20Approach.pdf
+* [Solution Approach](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Solution%20Approach.pdf)
 
-https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Requirements%20and%20Specifications.pdf
+* [Testing and Acceptance](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Testing%20and%20Acceptance.pdf)
+
+* [Sprint 1 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Sprint1Report.md)
+
+* [Sprint 2 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Sprint2Report.md)
+
+* [Team Inventory](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Team%20Inventory.pdf)
 
 ## License
 
