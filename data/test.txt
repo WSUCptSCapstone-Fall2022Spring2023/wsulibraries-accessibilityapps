@@ -1,7 +1,0 @@
-﻿This is a PDF
-
-This is information.
-
-Information continued.
-
-This is the end of the pdf.
