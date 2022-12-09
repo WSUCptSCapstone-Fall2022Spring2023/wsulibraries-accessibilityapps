@@ -3,9 +3,11 @@
 """ This file contains main() which is where our application begins.
 """
 # * Modules
+from colorama import just_fix_windows_console
 from termcolor import colored
 from utils.accessible_document import AccessibleDocument
 from utils.harvest.document_harvester import INPUT_DIRECTORY, OUTPUT_DIRECTORY
+
 
 # ? VSCode Extensions Used:
 # ?     - Better Comments
@@ -136,6 +138,7 @@ class TerminalApplication():
 def main():
     """ This is where our application starts.
     """
+    just_fix_windows_console()
     app = TerminalApplication()
     while(app.IsRunning()):
         app.Interact()

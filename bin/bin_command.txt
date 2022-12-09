@@ -1,0 +1,1 @@
+pyinstaller --noconfirm --onedir --console --hidden-import "bs4" --hidden-import "pdfminer" --hidden-import "pdfminer.layout" --hidden-import "pdfminer.high_level" --hidden-import "PyPDF2" --add-data "C:/dev/Cpts 421/accessibility_apps/utils;utils/" --add-data "C:/dev/Cpts 421/accessibility_apps/__init__.py;."  "C:/dev/Cpts 421/accessibility_apps/terminal_application.py"
