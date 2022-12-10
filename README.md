@@ -77,15 +77,12 @@ Importer and Exporter functionality is still WIP. Need to provide path between t
 
 ## Additional Documentation
 
-* [Prototype Project Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Prototype%20Project%20Report.pdf)
-
 * [Project Description](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Project%20Description.pdf)
 
+* [Prototype Project Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Prototype%20Project%20Report.pdf)
+
 * [Requirements and Specifications](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Requirements%20and%20Specifications.pdf)
-
 * [Solution Approach](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Solution%20Approach.pdf)
-
-* [Testing and Acceptance](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Testing%20and%20Acceptance.pdf)
 
 * [Sprint 1 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Sprint1Report.md)
 
@@ -94,6 +91,9 @@ Importer and Exporter functionality is still WIP. Need to provide path between t
 * [Sprint 3 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Sprint3Report.md)
 
 * [Team Inventory](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Team%20Inventory.pdf)
+
+* [Testing and Acceptance](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Testing%20and%20Acceptance.pdf)
+
 
 ## License
 
