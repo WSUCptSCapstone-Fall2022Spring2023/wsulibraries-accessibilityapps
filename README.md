@@ -77,6 +77,8 @@ Importer and Exporter functionality is still WIP. Need to provide path between t
 
 ## Additional Documentation
 
+* [Prototype Project Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Prototype%20Project%20Report.pdf)
+
 * [Project Description](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Project%20Description.pdf)
 
 * [Requirements and Specifications](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Requirements%20and%20Specifications.pdf)
