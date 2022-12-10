@@ -89,6 +89,8 @@ Importer and Exporter functionality is still WIP. Need to provide path between t
 
 * [Sprint 2 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Sprint2Report.md)
 
+* [Sprint 3 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Sprint3Report.md)
+
 * [Team Inventory](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Team%20Inventory.pdf)
 
 ## License
