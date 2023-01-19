@@ -1,1 +1,1 @@
-pip install pdfminer.six bs4 pypdf2 termcolor fpdf
+pip install pdfminer.six bs4 pypdf2 termcolor fpdf colorama

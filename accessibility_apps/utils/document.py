@@ -22,6 +22,27 @@ class Document:
             file_path (string): The path name of the PDF that will be processed.
         """
         self.open_document(file_path)
+
+        # setup metadata values
+        self.author = ""
+        self.title = ""
+        self.subject = ""
+        self.creator = "WSU Library Accessibilty App"
+        self.keywords = []
+
+    def set_metadata(self, author, title, subject, keywords):
+        """ Sets the Document metadata values as specified.
+        
+        Args:
+            author (string): The author of the document.
+            title (string): The title of the document.
+            subject (string): A small description of what the document is about.
+            keywords (list): A list of important words in the document.
+        """
+        self.author = author
+        self.title = title
+        self.subject = subject
+        self.keywords = keywords
     
     # Last Edit By: Trent Bultsma
     # * Edit Details: Use the pdf_extractor to extract and export data.
