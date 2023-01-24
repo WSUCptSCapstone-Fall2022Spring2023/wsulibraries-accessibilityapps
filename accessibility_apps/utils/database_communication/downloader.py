@@ -15,35 +15,36 @@ OAI_STANDARD_PREFIX = ".//{http://www.openarchives.org/OAI/2.0/}"
 class DocumentDownloader():
     """Provides a stream of documents from the WSU research exchange repository."""
 
-    def __init__(self):
-        """Initializes the stream of documents."""
+    def __init__(self, download_path:str):
+        """Initializes the stream of documents.
+        
+        Args:
+            download_path (str): the path of the folder to download new documents to.
+        """
+        self.download_path = download_path
         self.resumption_token = None
-        self.identifiers = self._get_identifier_batch(initial=True)
+        self.identifiers = self._get_identifier_batch()
 
-    def _get_identifier_batch(self, initial=False) -> list[str]:
-        """Gets the next batch of identifiers."""
+    def _get_identifier_batch(self) -> list[str]:
+        """Returns the next batch of identifiers."""
 
         # setup the request paramaters
-        requestParams = {
+        request_params = {
             "verb":"ListIdentifiers",
             "metadataPrefix":"esploro",
             "set":"OA_Yes"
         }
-        if not initial:
 
-            # a subsequent batch of identifiers requires a resumption 
-            # token so return an empty list if there is none because 
-            # there will be no identifiers anyway as a result
-            if self.resumption_token is None:
-                return []
-
-            requestParams = {
+        # when there is a resumption token set, go off of that 
+        # instead of pulling from the start of the repository
+        if self.resumption_token is not None:
+            request_params = {
                 "verb":"ListIdentifiers",
                 "resumptionToken":self.resumption_token
             }
 
         # get the data from the repository
-        response = requests.get(url=REPOSITORY_URL, params=requestParams)
+        response = requests.get(url=REPOSITORY_URL, params=request_params)
         data = ElementTree.fromstring(response.content)
 
         # update the resumption token for getting the next batch
@@ -59,8 +60,8 @@ class DocumentDownloader():
 
         return identifiers
 
-    def get_next_document(self):
-        """Gets the next document from the repository."""
+    def _get_next_identifier(self) -> str:
+        """Gets the identifier for the next document from the repository."""
 
         # refill the identifier list if it is empty
         if len(self.identifiers) == 0:
@@ -70,11 +71,64 @@ class DocumentDownloader():
         if len(self.identifiers) == 0:
             return None
 
-        # TODO download the document with the given identifier
-        # but for now just return the identifier
         return self.identifiers.pop()
 
+    def get_next_document(self):
+        """Returns a Document object for the next document in the repository."""
+        
+        # get the next document identifier and setup the request to grab using it
+        document_identifier = self._get_next_identifier()
+        request_params = {
+            "verb":"GetRecord",
+            "identifier":document_identifier,
+            "metadataPrefix":"esploro"
+        }
+        if document_identifier is None:
+            return None
+
+        # get the data from the repository
+        response = requests.get(url=REPOSITORY_URL, params=request_params)
+        data = ElementTree.fromstring(response.content)
+
+        # download the document
+        try:
+            # TODO why is this not finding it correctly???
+            download_url = data.find(OAI_STANDARD_PREFIX + "file.download.url").text
+            file_name = data.find(OAI_STANDARD_PREFIX + "file.name").text
+        except:
+            # cannot create a document if the download url is not found
+            return None
+        document_data = requests.get(download_url, allow_redirects=True)
+        document_download_path = self.download_path + "/" + file_name
+        open(document_download_path, "wb").write(document_data.content)
+
+        # get document metadata
+
+        # get the title of the document
+        title = ""
+        try:
+            title = data.find(OAI_STANDARD_PREFIX + "title").text
+        except:
+            pass
+
+        # get the author(s) of the document
+        authors_list = []
+        for author in data.findall(OAI_STANDARD_PREFIX + "creatorname"):
+            authors_list.append(author.text)
+        authors = ",".join(authors_list)
+
+        # get the description of the document
+        description = ""
+        try:
+            description = data.find(OAI_STANDARD_PREFIX + "description.abstract").text
+        except:
+            pass
+
+        # TODO use the path to create a Document object and then populate the metadata
+        return document_download_path
+
 if __name__ == "__main__":
-    downloader = DocumentDownloader()
-    for _ in range(15):
+    # TODO put correct path here instead of absolute one from my computer
+    downloader = DocumentDownloader(r"C:\Users\trent\OneDrive\School Work\WSU\Spring 2023\423\wsulibraries-accessibilityapps\data\input")
+    for _ in range(3):
         print(downloader.get_next_document())

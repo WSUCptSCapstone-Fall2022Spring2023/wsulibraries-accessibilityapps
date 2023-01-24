@@ -44,6 +44,9 @@ class Document:
         self.subject = subject
         self.keywords = keywords
     
+    # TODO resturcture open document so it is only called once (there should only be one path per doc and no changing the path)
+    # TODO create a delete function to delete the pdf at the file path
+
     # Last Edit By: Trent Bultsma
     # * Edit Details: Use the pdf_extractor to extract and export data.
     def open_document(self, file_path:str=None):
@@ -92,6 +95,8 @@ class Document:
 
         # export the document
         export_to_html(self.paragraphs, file_path)
+
+        # TODO integrate the pdf converter here and also save the metadata to that pdf
 
     # Last Edit By: Trent Bultsma
     # * Edit Details: Use the pdf_extractor to extract and export data.
