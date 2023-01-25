@@ -8,9 +8,11 @@
 
 import requests
 from xml.etree import ElementTree
+from utils.document import Document
 
 REPOSITORY_URL = "https://na01.alma.exlibrisgroup.com/view/oai/01ALLIANCE_WSU/request"
 OAI_STANDARD_PREFIX = ".//{http://www.openarchives.org/OAI/2.0/}"
+LIBRARY_STANDARD_PREFIX = ".//{http://www.loc.gov/MARC21/slim}"
 
 class DocumentDownloader():
     """Provides a stream of documents from the WSU research exchange repository."""
@@ -93,8 +95,8 @@ class DocumentDownloader():
         # download the document
         try:
             # TODO why is this not finding it correctly???
-            download_url = data.find(OAI_STANDARD_PREFIX + "file.download.url").text
-            file_name = data.find(OAI_STANDARD_PREFIX + "file.name").text
+            download_url = data.find(LIBRARY_STANDARD_PREFIX + "file.download.url").text
+            file_name = data.find(LIBRARY_STANDARD_PREFIX + "file.name").text
         except:
             # cannot create a document if the download url is not found
             return None
@@ -107,28 +109,23 @@ class DocumentDownloader():
         # get the title of the document
         title = ""
         try:
-            title = data.find(OAI_STANDARD_PREFIX + "title").text
+            title = data.find(LIBRARY_STANDARD_PREFIX + "title").text
         except:
             pass
 
         # get the author(s) of the document
         authors_list = []
-        for author in data.findall(OAI_STANDARD_PREFIX + "creatorname"):
+        for author in data.findall(LIBRARY_STANDARD_PREFIX + "creatorname"):
             authors_list.append(author.text)
         authors = ",".join(authors_list)
 
         # get the description of the document
         description = ""
         try:
-            description = data.find(OAI_STANDARD_PREFIX + "description.abstract").text
+            description = data.find(LIBRARY_STANDARD_PREFIX + "description.abstract").text
         except:
             pass
 
-        # TODO use the path to create a Document object and then populate the metadata
-        return document_download_path
-
-if __name__ == "__main__":
-    # TODO put correct path here instead of absolute one from my computer
-    downloader = DocumentDownloader(r"C:\Users\trent\OneDrive\School Work\WSU\Spring 2023\423\wsulibraries-accessibilityapps\data\input")
-    for _ in range(3):
-        print(downloader.get_next_document())
+        document = Document(document_download_path)
+        document.set_metadata(authors, title, description, [])
+        return document

@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
 """ This file contains main() which is where our application begins.
+It is used for testing purposes because the true application starts
+in terminal_application.py.
 """
 # * Modules
-from utils.accessible_document import AccessibleDocument
+from utils.database_communication.downloader import DocumentDownloader
 
 # ? VSCode Extensions Used:
 # ?     - Better Comments
@@ -18,13 +20,20 @@ __maintainer__ = "Trent Bultsma"
 __email__ = "trent.bultsma@wsu.edu"
 __status__ = "Development"
 
-# Last Edit By: Reagan Kelley
-# * Edit Details: Initial implementation
+# Last Edit By: Trent Bultsma
+# * Edit Details: Downlading testing
 def main():
     """ This is where our application starts.
     """
-    doc1 = AccessibleDocument("example.pdf") # retrieved from .../data/input/example.pdf
-    doc1.generate_tags()
+    downloader = DocumentDownloader("./data/input")
+    for _ in range(10):
+        document = downloader.get_next_document()
+        print(document.author)
+        print(document.title)
+        print(document.creator)
+        print(document.subject)
+        print(document.keywords)
+        print("--------\n")
 
 if __name__ == "__main__":
     main()
