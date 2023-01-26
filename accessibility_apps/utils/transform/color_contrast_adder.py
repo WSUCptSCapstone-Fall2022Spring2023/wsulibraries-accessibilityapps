@@ -11,7 +11,7 @@ from utils.document import Document
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Skeleton Code -- Not Done
-def check_color_contrast(doc = Document()):
+def check_color_contrast(doc = Document("./../../data/input/example.pdf")):
     """ Given a document and its metadata, checks all text and background
         contrast and fixes it when it is not in-line with W3C standards.
 

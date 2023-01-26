@@ -15,13 +15,13 @@ class Document:
     """
     # Last Edit By: Trent Bultsma
     # * Edit Details: Use the pdf_extractor to extract and export data.
-    def __init__(self, file_path=None):
+    def __init__(self, file_path:str):
         """Create instance of Document class object.
 
         Args:
             file_path (string): The path name of the PDF that will be processed.
         """
-        self.open_document(file_path)
+        self._open_document(file_path)
 
         # setup metadata values
         self.author = ""
@@ -49,16 +49,12 @@ class Document:
 
     # Last Edit By: Trent Bultsma
     # * Edit Details: Use the pdf_extractor to extract and export data.
-    def open_document(self, file_path:str=None):
-        """ Opens a PDF for editing. If a file is already opened, 
-            this will close it and start writing to this one instead.
+    def _open_document(self, file_path:str):
+        """ Opens a PDF for editing. It should only be called in the constructor.
 
         Args:
             file_path (string): The path name of the PDF that will be processed.
         """
-        # default value for if opening the file fails
-        self.file_path = None
-        self.paragraphs = []
 
         # make sure the file is a pdf
         if file_path is not None and file_path.lower().endswith(".pdf"):
@@ -67,7 +63,9 @@ class Document:
                 self.paragraphs = extract_paragraphs_and_fonts_and_sizes(file_path)
                 self.file_path = file_path
             except:
-                pass    
+                pass
+        else:
+            raise ValueError("Invalid file path, must be a pdf file")
 
     def is_open(self):
         """ Returns true if there is a file open for editing.

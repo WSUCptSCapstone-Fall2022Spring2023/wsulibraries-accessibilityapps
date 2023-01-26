@@ -33,7 +33,7 @@ class TerminalApplication():
     def __init__(self):
         """ Create new instance of TerminalApplication object.
         """
-        self.doc = AccessibleDocument()
+        self.doc = None
         self.val = 0
         self.exit_number = 2
     
@@ -87,14 +87,14 @@ class TerminalApplication():
         print("---------------------------------------------")
         print("WSU Libraries: Document Transformer")
         print("Current File: ", end='')
-        print(colored("{}".format("Nothing Open" if not self.doc.is_open() else self.doc.get_filename()), 'magenta'))
+        print(colored("{}".format("Nothing Open" if self.doc is None else self.doc.get_filename()), 'magenta'))
         print("---------------------------------------------")
         option_number = 1
         
         print("\t{}. Open new file".format(option_number))
         option_number += 1
 
-        if(self.doc.is_open()):
+        if(self.doc is not None and self.doc.is_open()):
             print("\t{}. Run Accessibility Pipeline".format(option_number))
             option_number += 1
             print("\t{}. Export File".format(option_number))
@@ -109,8 +109,9 @@ class TerminalApplication():
         """ Opens a new document to edit.
         """
         filename = INPUT_DIRECTORY + "/" + input("Name of Document (local path): \n{}\\".format(INPUT_DIRECTORY))
-        self.doc.open_document(filename)
-        if(not self.doc.is_open()):
+        try:
+            self.doc = AccessibleDocument(filename)
+        except:
             print(colored("No file opened: Invalid Path", "red"))
 
     # Last Edit By: Trent Bultsma
@@ -131,8 +132,6 @@ class TerminalApplication():
         self.doc.check_color_contrast()
         self.__export_document()
 
-
-
 # Last Edit By: Reagan Kelley
 # * Edit Details: Initial implementation
 def main():
@@ -142,7 +141,6 @@ def main():
     app = TerminalApplication()
     while(app.IsRunning()):
         app.Interact()
-    
 
 if __name__ == "__main__":
     main()
