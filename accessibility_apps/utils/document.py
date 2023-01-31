@@ -5,6 +5,7 @@
 
 # * Modules
 import os
+from PyPDF2 import PdfReader, PdfWriter
 from utils.harvest.pdf_extractor import export_to_html
 from utils.harvest.pdf_extractor import extract_paragraphs_and_fonts_and_sizes
 
@@ -46,6 +47,7 @@ class Document:
         self.title = title
         self.subject = subject
         self.keywords = keywords
+        # TODO add created date
     
     # Last Edit By: Trent Bultsma
     # * Edit Details: Use the pdf_extractor to extract and export data.
@@ -92,6 +94,7 @@ class Document:
         export_to_html(self.paragraphs, file_path)
 
         # TODO integrate the pdf converter here and also save the metadata to that pdf
+        # self._apply_metadata("<exported pdf name goes here>")
 
     # Last Edit By: Trent Bultsma
     # * Edit Details: Use the pdf_extractor to extract and export data.
@@ -109,3 +112,34 @@ class Document:
         """Deletes the open document."""
         os.remove(self.file_path)
         self.deleted = True
+
+    def _apply_metadata(self, export_file_path:str):
+        """Applies the document metadata to the inputted pdf file path.
+        
+            Args:
+            export_file_path (str): the path of the pdf file to write the metadata to.
+        """
+        # make sure the file is a pdf
+        if not export_file_path.lower().endswith(".pdf"):
+            raise ValueError("Must be a pdf file")
+        
+        # setup the reader and writer
+        reader = PdfReader(export_file_path)
+        writer = PdfWriter()
+        for page in reader.pages:
+            writer.add_page(page)
+
+        # add the metadata to the writer
+        writer.add_metadata(
+            {
+                "/Author" : self.author,
+                "/Title" : self.title,
+                "/Subject" : self.subject,
+                "/Creator" : self.creator,
+                "/Keywords" : ", ".join(self.keywords)
+            }
+        )
+
+        # overwrite the file now with metadata
+        with open(export_file_path, "wb") as file:
+            writer.write(file)

@@ -73,6 +73,7 @@ class TerminalApplication():
             if(self.val == 2 and self.exit_number != 2):
                 self.__run_accessibility_pipeline()
             if(self.val == 3 and self.exit_number != 3):
+                # TODO get rid of this menu option
                 self.__export_document()
         print("")
 
