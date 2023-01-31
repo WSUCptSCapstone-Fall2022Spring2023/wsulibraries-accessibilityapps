@@ -12,7 +12,7 @@ from utils.transform.TagTree import TagTree
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Started implementing tag trees
-def generate_tags(doc = Document("./../../data/input/example.pdf")):
+def generate_tags(doc:Document):
     """Post-condition: Document will be a PDF tagged document.
 
     Args:

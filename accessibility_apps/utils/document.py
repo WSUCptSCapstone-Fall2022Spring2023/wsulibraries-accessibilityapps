@@ -30,6 +30,9 @@ class Document:
         self.creator = "WSU Library Accessibilty App"
         self.keywords = []
 
+        # for checking when the file is deleted
+        self.deleted = False
+
     def set_metadata(self, author, title, subject, keywords):
         """ Sets the Document metadata values as specified.
         
@@ -44,9 +47,6 @@ class Document:
         self.subject = subject
         self.keywords = keywords
     
-    # TODO resturcture open document so it is only called once (there should only be one path per doc and no changing the path)
-    # TODO create a delete function to delete the pdf at the file path
-
     # Last Edit By: Trent Bultsma
     # * Edit Details: Use the pdf_extractor to extract and export data.
     def _open_document(self, file_path:str):
@@ -58,12 +58,9 @@ class Document:
 
         # make sure the file is a pdf
         if file_path is not None and file_path.lower().endswith(".pdf"):
-            try:
-                # extract the data
-                self.paragraphs = extract_paragraphs_and_fonts_and_sizes(file_path)
-                self.file_path = file_path
-            except:
-                pass
+            # extract the data
+            self.paragraphs = extract_paragraphs_and_fonts_and_sizes(file_path)
+            self.file_path = file_path
         else:
             raise ValueError("Invalid file path, must be a pdf file")
 
@@ -73,7 +70,7 @@ class Document:
         Returns:
             Bool: If a file is opened.
         """
-        return self.file_path != None
+        return not self.deleted and self.file_path != None
 
     # Last Edit By: Trent Bultsma
     # * Edit Details: Use the pdf_extractor to extract and export data.
@@ -107,3 +104,8 @@ class Document:
         if self.file_path is None:
             return None
         return os.path.basename(self.file_path)
+
+    def delete(self):
+        """Deletes the open document."""
+        os.remove(self.file_path)
+        self.deleted = True
