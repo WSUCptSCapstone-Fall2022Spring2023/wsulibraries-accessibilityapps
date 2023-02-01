@@ -1,26 +1,30 @@
-const puppeteer = require('puppeteer');
-const fs = require('fs');
-const os = require('node:os');
-const path = require('path');
+const puppeteer = require('puppeteer');
+const fs = require('fs');
+const os = require('node:os');
+const path = require('path');
 
-(async () => {
-    const browser = await puppeteer.launch({ignoreDefaultArgs: ['--disable-extensions'], args: ['--no-sandbox', '--disable-setuid-sandbox'],});
+(async () => {
 
-    const page = await browser.newPage();
+    var htmlName = process.argv[2];
+    var nameSplit = htmlName.split(".");
+    var outputName = nameSplit[0]+ '.pdf';
 
-    const web_url = path.join(__dirname, '..','..','..','data','output','example.html');
-    const html = fs.readFileSync(web_url, 'utf-8');
-    await page.setContent(html, {waitUntil: 'domcontentloaded'});
+    const browser = await puppeteer.launch({ignoreDefaultArgs: ['--disable-extensions'], args: ['--no-sandbox', '--disable-setuid-sandbox'],});
 
-    await page.emulateMediaType('screen');
+    const page = await browser.newPage();
 
-    const pdf = await page.pdf({
-        path : path.join(__dirname, '..','..','..','data', 'output', 'exampleOutput.pdf'),
-        margin: { top: '100px', right: '50px', bottom: '100px', left:'50px'},
-        printBackground: true,
-        format: 'A4',
+    const web_url = path.join(__dirname, '..','..','..','data','output',htmlName);
+    const html = fs.readFileSync(web_url, 'utf-8');
+    await page.setContent(html, {waitUntil: 'domcontentloaded'});
+
+    await page.emulateMediaType('screen');
+    const pdf = await page.pdf({
+        path:path.join(__dirname, '..','..','..','data', 'output', outputName),
+        margin: { top:'100px', right:'50px', bottom:'100px', left:'50px'},
+        printBackground:true,
+        format:'A4',
     });
 
-    await browser.close();
+    await browser.close();
 
 })();
