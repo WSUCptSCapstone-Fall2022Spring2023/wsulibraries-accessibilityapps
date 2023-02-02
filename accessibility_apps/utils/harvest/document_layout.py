@@ -3,6 +3,7 @@ import numpy as np
 from pathlib import Path
 import os
 import layoutparser as lp
+from PIL import Image
 
 pdf_dir : Path = Path(os.path.realpath(os.path.dirname(__file__))).parent.parent.parent.absolute()
 pdf_dir = pdf_dir.joinpath("data").joinpath("input")
@@ -17,7 +18,7 @@ def document_layout(pdf_name : str):
     img = np.asarray(pdf2image.convert_from_path(pdf_file)[0])
     
     #print(type(img))
-    #pdf2image.convert_from_path(pdf_file)[0].save('test.jpg', 'JPEG')
+    pdf2image.convert_from_path(pdf_file)[0].save('pdf2img.jpeg', 'JPEG')
 
     model = lp.Detectron2LayoutModel('lp://PubLayNet/mask_rcnn_X_101_32x8d_FPN_3x/config',
                                  extra_config=["MODEL.ROI_HEADS.SCORE_THRESH_TEST", 0.5],
@@ -26,7 +27,11 @@ def document_layout(pdf_name : str):
     layout_result = model.detect(img)
 
     for result in layout_result:
-        print(result)
+        print(result, "\n")
+    
+    draw_im = lp.draw_box(img, layout_result,  box_width=5, box_alpha=0.2, show_element_type=True)
+    draw_im.save("layout_boxes.jpeg")
+
 
 def main():
     document_layout('example.pdf')
