@@ -94,7 +94,6 @@ class DocumentDownloader():
 
         # download the document
         try:
-            # TODO why is this not finding it correctly???
             download_url = data.find(LIBRARY_STANDARD_PREFIX + "file.download.url").text
             file_name = data.find(LIBRARY_STANDARD_PREFIX + "file.name").text
         except:

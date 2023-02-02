@@ -21,19 +21,18 @@ __email__ = "trent.bultsma@wsu.edu"
 __status__ = "Development"
 
 # Last Edit By: Trent Bultsma
-# * Edit Details: Downlading testing
+# * Edit Details: Metadata adding testing
 def main():
     """ This is where our application starts.
     """
     downloader = DocumentDownloader("./data/input")
-    for _ in range(10):
-        document = downloader.get_next_document()
-        print(document.author)
-        print(document.title)
-        print(document.creator)
-        print(document.subject)
-        print(document.keywords)
-        print("--------\n")
+    document = downloader.get_next_document()
+    document._apply_metadata(document.file_path)
+    print("Author: " + document.author)
+    print("Title: " + document.title)
+    print("Creator: " + document.creator)
+    print("Subject: " + document.subject)
+    print("Keywords: " + ", ".join(document.keywords))
 
 if __name__ == "__main__":
     main()

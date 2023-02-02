@@ -9,7 +9,7 @@ from utils.document import Document
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Skeleton Code -- Not Done
-def check_alt_text(doc = Document()):
+def check_alt_text(doc:Document):
     """ Checks each image within a document, which can be found through the
         document's metadata, and checks to see if there is alternative text provided. If not, it
         runs an algorithm to generate the appropriate text.
@@ -26,7 +26,7 @@ def check_alt_text(doc = Document()):
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Skeleton Code -- Not Done
-def create_alternative_text(doc = Document()):
+def create_alternative_text(doc:Document):
     """ Runs the machine learning algorithm (already trained), and returns the
         generated alternative text that represents the given image.
 
