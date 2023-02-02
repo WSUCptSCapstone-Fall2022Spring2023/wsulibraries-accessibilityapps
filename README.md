@@ -64,7 +64,7 @@ No Add ons.
 
 ## Known Problems
 
-Many pipeline accessibility transformations are not operational at this time.
+Some of the pipeline accessibility transformations are not operational at this time.
 Importer and Exporter functionality is still WIP. Need to provide path between these three modular components.
 
 ## Contributing
