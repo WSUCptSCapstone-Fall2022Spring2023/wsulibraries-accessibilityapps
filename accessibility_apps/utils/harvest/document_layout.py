@@ -24,6 +24,7 @@ def document_layout(pdf_name : str):
                                  extra_config=["MODEL.ROI_HEADS.SCORE_THRESH_TEST", 0.5],
                                  label_map={0: "Text", 1: "Title", 2: "List", 3:"Table", 4:"Figure"})
 
+    # model used to detect boundary boxes for layout text.
     layout_result = model.detect(img)
 
     for result in layout_result:
