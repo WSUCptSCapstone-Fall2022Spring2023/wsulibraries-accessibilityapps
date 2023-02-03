@@ -25,14 +25,13 @@ __status__ = "Development"
 def main():
     """ This is where our application starts.
     """
-    downloader = DocumentDownloader("./data/input")
-    document = downloader.get_next_document()
-    document._apply_metadata(document.file_path)
-    print("Author: " + document.author)
-    print("Title: " + document.title)
-    print("Creator: " + document.creator)
-    print("Subject: " + document.subject)
-    print("Keywords: " + ", ".join(document.keywords))
+    # metadata testing
+    # downloader = DocumentDownloader("./data/input")
+    # document = downloader.get_next_document()
+    # document._apply_metadata(document.file_path)
+
+    # for gathering data for machine learning
+    from utils.harvest import bulk_word_harvester
 
 if __name__ == "__main__":
     main()
