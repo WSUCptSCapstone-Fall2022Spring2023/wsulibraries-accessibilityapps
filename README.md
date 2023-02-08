@@ -77,6 +77,8 @@ Importer and Exporter functionality is still WIP. Need to provide path between t
 
 ## Additional Documentation
 
+* [MVP Project Report (Draft)](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/MVP%20Project%20Report%20(Draft).pdf)
+
 * [Project Description](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Project%20Description.pdf)
 
 * [Prototype Project Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Prototype%20Project%20Report.pdf)
@@ -84,11 +86,13 @@ Importer and Exporter functionality is still WIP. Need to provide path between t
 * [Requirements and Specifications](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Requirements%20and%20Specifications.pdf)
 * [Solution Approach](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Solution%20Approach.pdf)
 
-* [Sprint 1 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Sprint1Report.md)
+* [2023: Sprint 1 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Semester2Sprint1Report.md)
 
-* [Sprint 2 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Sprint2Report.md)
+* [2022: Sprint 3 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Sprint3Report.md)
 
-* [Sprint 3 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Sprint3Report.md)
+* [2022: Sprint 2 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Sprint2Report.md)
+
+* [2022: Sprint 1 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Sprint1Report.md)
 
 * [Team Inventory](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Team%20Inventory.pdf)
 
