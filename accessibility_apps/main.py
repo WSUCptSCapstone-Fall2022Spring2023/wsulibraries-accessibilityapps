@@ -26,12 +26,13 @@ def main():
     """ This is where our application starts.
     """
     # metadata testing
-    # downloader = DocumentDownloader("./data/input")
-    # document = downloader.get_next_document()
-    # document._apply_metadata(document.file_path)
-
-    # for gathering data for machine learning
-    from utils.harvest import bulk_word_harvester
+    downloader = DocumentDownloader("./data/input")
+    for _ in range(10):
+        try:
+            document = downloader.get_next_document()
+            document._apply_metadata(document.file_path)
+        except Exception as e:
+            print("error " + str(e))
 
 if __name__ == "__main__":
     main()

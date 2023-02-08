@@ -5,6 +5,8 @@
 
 # * Modules
 import os
+import re
+from yake import KeywordExtractor
 from PyPDF2 import PdfReader, PdfWriter
 from utils.harvest.pdf_extractor import export_to_html
 from utils.harvest.pdf_extractor import extract_paragraphs_and_fonts_and_sizes
@@ -161,5 +163,22 @@ class Document:
         by looking through the paragraphs of the document and determining 
         key words by looking at frequency and uniqueness of each word.
         """
-        # TODO
-        return []
+        # preprocess the text from the current document
+        document_raw_text = " ".join([paragraph.get_raw_text().lower() for paragraph in self.paragraphs])
+        document_raw_text = re.sub("(\\d|\\W|_)+", " ", document_raw_text)
+
+        # extract the key phrases from the text
+        keywords_and_scores = []
+        for phrase_len in range(1,4):
+            # check for key phrases of length 1 to 3
+            extractor = KeywordExtractor(top=5, n=phrase_len)
+            keywords_and_scores += extractor.extract_keywords(document_raw_text)
+
+        # sort the key phrases so the "most important" one will be first
+        keywords_and_scores.sort(key=lambda keyword_score_tuple: keyword_score_tuple[1])
+        # only include the top 5 key phrases
+        keywords = list(map(lambda keyword_score_tuple: keyword_score_tuple[0], keywords_and_scores))[0:5]
+        
+        # TODO: format keywords to be capitalized first letter and not have quotes around them in the document
+        print(keywords)
+        return keywords
