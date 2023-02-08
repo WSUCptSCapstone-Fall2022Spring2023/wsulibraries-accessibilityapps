@@ -150,7 +150,7 @@ class Document:
                 "/Title" : self.title,
                 "/Subject" : self.subject,
                 "/Creator" : self.creator,
-                "/Keywords" : ", ".join(self.keywords)
+                "/Keywords" : "; ".join(self.keywords)
             }
         )
 
@@ -164,8 +164,7 @@ class Document:
         key words by looking at frequency and uniqueness of each word.
         """
         # preprocess the text from the current document
-        document_raw_text = " ".join([paragraph.get_raw_text().lower() for paragraph in self.paragraphs])
-        document_raw_text = re.sub("(\\d|\\W|_)+", " ", document_raw_text)
+        document_raw_text = " . ".join([paragraph.get_raw_text().lower() for paragraph in self.paragraphs])
 
         # extract the key phrases from the text
         keywords_and_scores = []
@@ -174,11 +173,12 @@ class Document:
             extractor = KeywordExtractor(top=5, n=phrase_len)
             keywords_and_scores += extractor.extract_keywords(document_raw_text)
 
+        # remove duplicates
+        keywords_and_scores = list(set(keywords_and_scores))
         # sort the key phrases so the "most important" one will be first
         keywords_and_scores.sort(key=lambda keyword_score_tuple: keyword_score_tuple[1])
         # only include the top 5 key phrases
-        keywords = list(map(lambda keyword_score_tuple: keyword_score_tuple[0], keywords_and_scores))[0:5]
+        keywords = list(map(lambda keyword_score_tuple: keyword_score_tuple[0].title(), keywords_and_scores))[0:5]
         
-        # TODO: format keywords to be capitalized first letter and not have quotes around them in the document
-        print(keywords)
+        # TODO need to remove words that are part of tables from the paragraphs so that labels do not become key phrases
         return keywords
