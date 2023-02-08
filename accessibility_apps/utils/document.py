@@ -5,6 +5,8 @@
 
 # * Modules
 import os
+import re
+from yake import KeywordExtractor
 from PyPDF2 import PdfReader, PdfWriter
 from utils.harvest.pdf_extractor import export_to_html
 from utils.harvest.pdf_extractor import extract_paragraphs_and_fonts_and_sizes
@@ -16,13 +18,15 @@ class Document:
     """
     # Last Edit By: Trent Bultsma
     # * Edit Details: Use the pdf_extractor to extract and export data.
-    def __init__(self, file_path:str):
+    def __init__(self, file_path:str, delete_on_fail=False):
         """Create instance of Document class object.
 
         Args:
             file_path (string): The path name of the PDF that will be processed.
+            delete_on_fail (bool): Whether to delete the document at the specified path when it fails to open.
         """
-        self._open_document(file_path)
+        self.file_path = file_path
+        self.paragraphs = []
 
         # setup metadata values
         self.author = ""
@@ -33,8 +37,19 @@ class Document:
 
         # for checking when the file is deleted
         self.deleted = False
+        
+        # try to open the document
+        try:
+            self._open_document(file_path)
+        except Exception as e:
+            # if it doesn't work, delete the document if specified
+            if delete_on_fail:
+                self.delete()
+                return
+            else:
+                raise e
 
-    def set_metadata(self, author, title, subject, keywords):
+    def set_metadata(self, author, title, subject):
         """ Sets the Document metadata values as specified.
         
         Args:
@@ -46,8 +61,6 @@ class Document:
         self.author = author
         self.title = title
         self.subject = subject
-        self.keywords = keywords
-        # TODO add created date
     
     # Last Edit By: Trent Bultsma
     # * Edit Details: Use the pdf_extractor to extract and export data.
@@ -62,7 +75,8 @@ class Document:
         if file_path is not None and file_path.lower().endswith(".pdf"):
             # extract the data
             self.paragraphs = extract_paragraphs_and_fonts_and_sizes(file_path)
-            self.file_path = file_path
+            # calculate the keywords
+            self.keywords = self._calculate_keywords()
         else:
             raise ValueError("Invalid file path, must be a pdf file")
 
@@ -136,10 +150,35 @@ class Document:
                 "/Title" : self.title,
                 "/Subject" : self.subject,
                 "/Creator" : self.creator,
-                "/Keywords" : ", ".join(self.keywords)
+                "/Keywords" : "; ".join(self.keywords)
             }
         )
 
         # overwrite the file now with metadata
         with open(export_file_path, "wb") as file:
             writer.write(file)
+
+    def _calculate_keywords(self) -> str:
+        """ Returns a list of key words for the document. This is done 
+        by looking through the paragraphs of the document and determining 
+        key words by looking at frequency and uniqueness of each word.
+        """
+        # preprocess the text from the current document
+        document_raw_text = " . ".join([paragraph.get_raw_text().lower() for paragraph in self.paragraphs])
+
+        # extract the key phrases from the text
+        keywords_and_scores = []
+        for phrase_len in range(1,4):
+            # check for key phrases of length 1 to 3
+            extractor = KeywordExtractor(top=5, n=phrase_len)
+            keywords_and_scores += extractor.extract_keywords(document_raw_text)
+
+        # remove duplicates
+        keywords_and_scores = list(set(keywords_and_scores))
+        # sort the key phrases so the "most important" one will be first
+        keywords_and_scores.sort(key=lambda keyword_score_tuple: keyword_score_tuple[1])
+        # only include the top 5 key phrases
+        keywords = list(map(lambda keyword_score_tuple: keyword_score_tuple[0].title(), keywords_and_scores))[0:5]
+        
+        # TODO need to remove words that are part of tables from the paragraphs so that labels do not become key phrases
+        return keywords

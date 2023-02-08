@@ -75,8 +75,12 @@ class DocumentDownloader():
 
         return self.identifiers.pop()
 
-    def get_next_document(self):
-        """Returns a Document object for the next document in the repository."""
+    def get_next_document(self, delete_on_fail=False):
+        """Returns a Document object for the next document in the repository.
+        
+        Args:
+            delete_on_fail (bool): Whether to delete documents that failed to open.
+        """
         
         # get the next document identifier and setup the request to grab using it
         document_identifier = self._get_next_identifier()
@@ -125,6 +129,6 @@ class DocumentDownloader():
         except:
             pass
 
-        document = Document(document_download_path)
-        document.set_metadata(authors, title, description, [])
+        document = Document(document_download_path, delete_on_fail)
+        document.set_metadata(authors, title, description)
         return document
