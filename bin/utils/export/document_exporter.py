@@ -15,7 +15,7 @@ def export_document(filename):
     Args:
         filename (string): File address location where the PDF will be sent.
     """
-    print("export_document() -> pass.")
+    # print("export_document() -> pass.")
     return
     # TODO: Implement solution with Document class attributes.
     pdf = FPDF()

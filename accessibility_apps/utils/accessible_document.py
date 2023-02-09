@@ -19,13 +19,14 @@ class AccessibleDocument(Document):
         Document (Document): Parent Class
     """
 
-    def __init__(self, file_path=None):
+    def __init__(self, file_path:str, delete_on_fail=False):
         """Create a new instance of AccessibleDocument.
 
         Args:
             file_path (string): The path name of the PDF that will be processed.
+            delete_on_fail (bool): Whether to delete the document at the specified path if it fails to open.
         """
-        super().__init__(file_path)
+        super().__init__(file_path, delete_on_fail)
 
     # Last Edit By: Reagan Kelley
     # * Edit Details: Initial implementation
