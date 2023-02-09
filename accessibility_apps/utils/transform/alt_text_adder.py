@@ -20,7 +20,7 @@ def check_alt_text(doc:Document):
     # If Document doc has no file opened, then do not run this algorithm.
     if(doc.get_filename() == NULL):
         return NULL
-    print("check_alt_text() -> pass.")
+    # print("check_alt_text() -> pass.")
     # TODO: Implement this.
     return doc
 
@@ -36,6 +36,6 @@ def create_alternative_text(doc:Document):
     """
     if(doc.get_filename() == NULL):
         return NULL
-    print("create_alternative_text() -> pass.")
+    # print("create_alternative_text() -> pass.")
     # TODO: Implement this.
     return doc

@@ -20,6 +20,6 @@ def check_color_contrast(doc:Document):
     """
     if(doc.get_filename() == NULL):
         return NULL
-    print("check_color_contrast() -> pass.")
+    # print("check_color_contrast() -> pass.")
     # TODO: Implement this.
     return doc

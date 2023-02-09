@@ -8,7 +8,7 @@
 
 import requests
 from xml.etree import ElementTree
-from utils.document import Document
+from utils.accessible_document import AccessibleDocument
 
 REPOSITORY_URL = "https://na01.alma.exlibrisgroup.com/view/oai/01ALLIANCE_WSU/request"
 OAI_STANDARD_PREFIX = ".//{http://www.openarchives.org/OAI/2.0/}"
@@ -129,6 +129,6 @@ class DocumentDownloader():
         except:
             pass
 
-        document = Document(document_download_path, delete_on_fail)
+        document = AccessibleDocument(document_download_path, delete_on_fail)
         document.set_metadata(authors, title, description)
         return document

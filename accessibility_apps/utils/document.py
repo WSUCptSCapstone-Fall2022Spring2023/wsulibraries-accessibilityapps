@@ -5,7 +5,6 @@
 
 # * Modules
 import os
-import re
 from yake import KeywordExtractor
 from PyPDF2 import PdfReader, PdfWriter
 from utils.harvest.pdf_extractor import export_to_html
@@ -23,7 +22,7 @@ class Document:
 
         Args:
             file_path (string): The path name of the PDF that will be processed.
-            delete_on_fail (bool): Whether to delete the document at the specified path when it fails to open.
+            delete_on_fail (bool): Whether to delete the document at the specified path if it fails to open.
         """
         self.file_path = file_path
         self.paragraphs = []
