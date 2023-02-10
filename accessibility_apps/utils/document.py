@@ -52,6 +52,8 @@ class Document:
             Bool: If a file is opened.
         """
         return self.file_path != None
+    
+    
 
     # Last Edit By: Trent Bultsma
     # * Edit Details: Use the pdf_extractor to extract and export data.
