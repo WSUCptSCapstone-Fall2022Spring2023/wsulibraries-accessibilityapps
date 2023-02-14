@@ -5,9 +5,8 @@
 import linecache
 from fpdf import FPDF
 import subprocess
-import sys
 
-# Last Edit By: Reagan Kelley
+# Last Edit By: Marisa Loyd
 # * Edit Details: Current code is from Marisa
 
 
@@ -19,8 +18,7 @@ def export_document(filename):
         filename (string): File address location where the PDF will be sent.
     """
 <<<<<<< HEAD
-    print(filename)
-    p = subprocess.Popen(['node', 'pdf_exporter.js', 'example.html'], stdout=subprocess.PIPE)
+    p = subprocess.Popen(['node', 'pdf_exporter.js', filename], stdout=subprocess.PIPE)
     print("export_document() -> pass.")
 =======
     # print("export_document() -> pass.")
