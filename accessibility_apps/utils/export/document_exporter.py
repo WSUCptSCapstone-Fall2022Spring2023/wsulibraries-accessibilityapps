@@ -18,9 +18,13 @@ def export_document(filename):
     Args:
         filename (string): File address location where the PDF will be sent.
     """
+<<<<<<< HEAD
     print(filename)
     p = subprocess.Popen(['node', 'pdf_exporter.js', 'example.html'], stdout=subprocess.PIPE)
     print("export_document() -> pass.")
+=======
+    # print("export_document() -> pass.")
+>>>>>>> main
     return
     # TODO: Implement solution with Document class attributes.
 
