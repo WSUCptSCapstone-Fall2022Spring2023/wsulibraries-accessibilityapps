@@ -15,4 +15,5 @@ def export_document(filename):
         filename (string): File address location where the PDF will be sent.
     """
     p = subprocess.Popen(['node', os.path.dirname(os.path.abspath(__file__)) + '/pdf_exporter.js', filename], stdout=subprocess.PIPE)
+    p.wait()
     # TODO: Implement solution with Document class attributes.
