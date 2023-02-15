@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps#readme",
   "dependencies": {
-    "puppeteer": "^19.3.0",
+    "puppeteer": "^19.7.0",
     "request-promise": "^4.2.6"
   }
 }
