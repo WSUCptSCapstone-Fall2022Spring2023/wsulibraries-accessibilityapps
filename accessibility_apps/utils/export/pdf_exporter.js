@@ -9,7 +9,8 @@ const path = require('path');
     var nameSplit = htmlName.split(".");
     var outputName = nameSplit[0]+ '.pdf';
 
-    const browser = await puppeteer.launch({ignoreDefaultArgs: ['--disable-extensions'], args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-popup-blocking'],});
+
+    const browser = await puppeteer.launch({dumpio:false , ignoreDefaultArgs: ['--disable-extensions','--enable-popup-blocking'], args: ['headless', '--no-sandbox', '--disable-setuid-sandbox','--disable-gpu'],});
 
     const page = await browser.newPage();
 
@@ -28,8 +29,3 @@ const path = require('path');
     await browser.close();
 
 })();
-
-//add css?
-//work on formatting & font size
-//test cases & shit
-//steps to install on new comp
