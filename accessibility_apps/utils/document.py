@@ -8,6 +8,8 @@ import os
 from yake import KeywordExtractor
 from PyPDF2 import PdfReader, PdfWriter
 from utils.harvest.pdf_extractor import export_to_html
+from utils.export.document_exporter import export_document
+from utils.harvest.document_harvester import OUTPUT_DIRECTORY
 from utils.harvest.pdf_extractor import extract_paragraphs_and_fonts_and_sizes
 
 # Last Edit By: Trent Bultsma
@@ -106,8 +108,14 @@ class Document:
         # export the document
         export_to_html(self.paragraphs, file_path)
 
-        # TODO integrate the pdf converter here and also save the metadata to that pdf
-        # self._apply_metadata("<exported pdf name goes here>")
+        # convert to pdf
+        export_document(self.get_filename()[:-len("pdf")] + "html")
+
+        # remove the html document
+        os.remove(file_path)
+
+        # add metadata to the pdf
+        self._apply_metadata(OUTPUT_DIRECTORY + "/" + self.get_filename())
 
     # Last Edit By: Trent Bultsma
     # * Edit Details: Use the pdf_extractor to extract and export data.
