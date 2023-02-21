@@ -105,8 +105,6 @@ def document_layout(pdf_name : str, debug : bool = False) -> list[tuple]:
 
     if not pdf_file.exists():
         raise FileNotFoundError("Pdf File not found: {}".format(pdf_file))
-
-    print("PDF FILE:",pdf_file)
     
     res_layout_data : list[tuple] = []
 
