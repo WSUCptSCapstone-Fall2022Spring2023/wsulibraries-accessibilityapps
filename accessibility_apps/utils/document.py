@@ -5,8 +5,11 @@
 
 # * Modules
 import os
+from sys import platform
+
 from utils.harvest.pdf_extractor import export_to_html
 from utils.harvest.pdf_extractor import extract_paragraphs_and_fonts_and_sizes
+from utils.harvest.document_layout import document_layout
 
 # Last Edit By: Trent Bultsma
 # * Edit Details: Use the pdf_extractor to extract and export data.
@@ -42,8 +45,15 @@ class Document:
                 # extract the data
                 self.paragraphs = extract_paragraphs_and_fonts_and_sizes(file_path)
                 self.file_path = file_path
-            except:
-                pass    
+            except Exception as e:
+                print("Warning [document.py] - Caught Error : {}".format(e))
+
+            if platform == "linux" or platform == "linux2":
+                # get the layout of the document for tagging (it is ordered and includes tag type and data)
+                self.layout_blocks = document_layout(self.file_path, True)
+            else:
+                print("Layout Parsing Skipped: Non-Linux distributions not yet supported...")
+                self.layout_blocks = []
 
     def is_open(self):
         """ Returns true if there is a file open for editing.

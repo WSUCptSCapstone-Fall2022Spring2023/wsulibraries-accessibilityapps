@@ -4,7 +4,11 @@
 """
 
 # * Modules
-from asyncio.windows_events import NULL
+try:
+    from asyncio.windows_events import NULL
+except Exception as e:
+    print("Warning [alt_text_adder] - Caught Error : {}".format(e))
+
 from utils.document import Document
 
 # Last Edit By: Reagan Kelley
