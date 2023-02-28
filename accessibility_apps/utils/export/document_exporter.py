@@ -16,7 +16,4 @@ def export_document(filename):
     """
     p = subprocess.Popen(['node', os.path.dirname(os.path.abspath(__file__)) + '/pdf_exporter.js', filename], stdout=subprocess.PIPE)
     p.wait()
-    print("export_document() -> pass.")
     return
-
-    # TODO: Implement solution with Document class attributes.

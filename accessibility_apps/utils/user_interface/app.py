@@ -9,6 +9,7 @@
 # imports
 import os
 import tkinter as tk
+from utils.user_interface.app_controller import AccessibilityAppController
 
 GRAY = "#4D4D4D"
 LIGHT_GRAY = "#808080"
@@ -18,7 +19,7 @@ RED = "#CA1237"
 class AccessibilityApp(tk.Tk):
     """The user interface application for the accessibility application project."""
 
-    def __init__(self, controller, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
         # set window title and size
@@ -28,10 +29,6 @@ class AccessibilityApp(tk.Tk):
         # set the window icon
         icon = tk.PhotoImage(file=os.path.dirname(os.path.abspath(__file__)) + "/icon.png")
         self.iconphoto(False, icon)
-
-        # save the application controller
-        # TODO create a class for this guy and add functionality in here
-        self.app_controller = controller
 
         # setup variables for keeping track of app state
         self.auto_processing_running = False
@@ -61,6 +58,11 @@ class AccessibilityApp(tk.Tk):
         # switch to the home page
         self.switch_frame(HomePage)
 
+        # setup the application controller
+        self.app_controller = AccessibilityAppController()
+        self.update_ui_current_auto_document = self.update_current_auto_document
+        self.update_ui_current_document_count = self.update_document_count
+
     def switch_frame(self, frame_class):
         """Sets a frame to be the current one in the application window.
         
@@ -76,15 +78,14 @@ class AccessibilityApp(tk.Tk):
         Args:
             button: The button being pressed to call this function. It's label will be changed depending on the state of pause/resume."""
         if self.auto_processing_running:
-            # TODO call the controller to stop auto processing
+            self.app_controller.stop_auto_mode()
             button["text"] = "Resume"
             self.auto_processing_running = False
         else:
-            # TODO call the controller to start auto processing
+            self.app_controller.start_auto_mode()
             button["text"] = "Pause"
             self.auto_processing_running = True
 
-    # TODO pass this to the app controller class
     def update_current_auto_document(self, current_document_name:str):
         """Updates the label for the automatic document processing current document.
         
@@ -92,7 +93,6 @@ class AccessibilityApp(tk.Tk):
             current_document_name (str): The name for the new current document."""
         self.frames[AutoProcessPage].update_current_document(current_document_name)
 
-    # TODO pass this to the app controller class
     def update_document_count(self, document_count:int):
         """Updates the label for the document count of how many documents have been processed automatically.
         
@@ -159,11 +159,11 @@ class AutoProcessPage(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
 
         # create label for the current document being processed
-        self.current_document_label = tk.Label(self, text="Current Document: ", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
+        self.current_document_label = tk.Label(self, text="Current Document: None", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
         self.current_document_label.grid(row=0, column=0)
 
         # create label for the count of how many documents have been processed
-        self.document_count_label = tk.Label(self, text="Documents Processed: ", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
+        self.document_count_label = tk.Label(self, text="Documents Processed: 0", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
         self.document_count_label.grid(row=1, column=0)
 
         # create start/pause/resume button
@@ -207,7 +207,3 @@ class IndividualProcessPage(tk.Frame):
         # create a label for the home page
         label = tk.Label(self, text="Maybe put a search bar here later?", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
         label.grid(row=0, column=0)
-
-if __name__ == "__main__":
-    app = AccessibilityApp(controller=None)
-    app.mainloop()
