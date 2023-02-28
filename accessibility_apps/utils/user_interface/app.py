@@ -10,24 +10,31 @@
 import os
 import tkinter as tk
 
-CRIMSON = "#981E32"
-GRAY = "#5E6A71"
+GRAY = "#4D4D4D"
+LIGHT_GRAY = "#808080"
+CRIMSON = "#A60F2D"
+RED = "#CA1237"
 
 class AccessibilityApp(tk.Tk):
     """The user interface application for the accessibility application project."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, controller, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        # set window title
+        # set window title and size
         self.wm_title("WSU Library Accessibility Application")
-
-        # set the size of the window
         self.geometry("750x400")
 
         # set the window icon
         icon = tk.PhotoImage(file=os.path.dirname(os.path.abspath(__file__)) + "/icon.png")
         self.iconphoto(False, icon)
+
+        # save the application controller
+        # TODO create a class for this guy and add functionality in here
+        self.app_controller = controller
+
+        # setup variables for keeping track of app state
+        self.auto_processing_running = False
         
         # create a container for the frames for the application and set it to fill the window
         frame_container = tk.Frame(self)
@@ -47,7 +54,7 @@ class AccessibilityApp(tk.Tk):
         for FrameClass in (HomePage, AutoProcessPage, IndividualProcessPage):
             # setup the frame
             frame = FrameClass(frame_container, self)
-            frame.config(background=GRAY)
+            frame.config(background=LIGHT_GRAY)
             self.frames[FrameClass] = frame
             frame.grid(row=0, column=0, sticky="nsew")
         
@@ -63,11 +70,41 @@ class AccessibilityApp(tk.Tk):
         frame = self.frames[frame_class]
         frame.tkraise()
 
+    def toggle_auto_processing(self, button):
+        """Pauses or resumes the auto processing depending on if it is already going or not (it toggles).
+        
+        Args:
+            button: The button being pressed to call this function. It's label will be changed depending on the state of pause/resume."""
+        if self.auto_processing_running:
+            # TODO call the controller to stop auto processing
+            button["text"] = "Resume"
+            self.auto_processing_running = False
+        else:
+            # TODO call the controller to start auto processing
+            button["text"] = "Pause"
+            self.auto_processing_running = True
+
+    # TODO pass this to the app controller class
+    def update_current_auto_document(self, current_document_name:str):
+        """Updates the label for the automatic document processing current document.
+        
+        Args:
+            current_document_name (str): The name for the new current document."""
+        self.frames[AutoProcessPage].update_current_document(current_document_name)
+
+    # TODO pass this to the app controller class
+    def update_document_count(self, document_count:int):
+        """Updates the label for the document count of how many documents have been processed automatically.
+        
+        Args:
+            document_count (int): The new number for how many documents have been processed."""
+        self.frames[AutoProcessPage].update_document_count(document_count)
+
 class HomePage(tk.Frame):
     """A frame with the home page menu."""
 
-    def __init__(self, parent, controller):
-        """Construct a frame widget with parent `parent` and the controller for switching frames as `controller`."""
+    def __init__(self, parent, ui_controller):
+        """Construct a frame widget with parent `parent` and the controller for switching frames as `ui_controller`."""
         super().__init__(parent)
 
         # setup the grid
@@ -77,17 +114,17 @@ class HomePage(tk.Frame):
         self.grid_columnconfigure(1, weight=1)
 
         # create a label for the home page
-        label = tk.Label(self, text="Home Page", background=GRAY, fg="white", font=("Montserrat", 25))
+        label = tk.Label(self, text="WSU Accessibility App Home Page", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
         label.grid(row=0, column=0, columnspan=2)
-
-        # TODO fix button press down color
 
         # create button for switching to the automatic processing page
         switch_to_auto_page_button = tk.Button(
             self,
             text="Automatic Document Processing",
-            command=lambda: controller.switch_frame(AutoProcessPage),
+            command=lambda: ui_controller.switch_frame(AutoProcessPage),
             bg=CRIMSON,
+            activebackground=RED,
+            activeforeground="white",
             fg="white",
             font=("Montserrat", 15),
             padx=10,
@@ -97,8 +134,10 @@ class HomePage(tk.Frame):
 
         # create button for switching to the individual processing page
         switch_to_individual_page_button = tk.Button(self, text="Individual Document Processing", 
-            command=lambda: controller.switch_frame(IndividualProcessPage),
+            command=lambda: ui_controller.switch_frame(IndividualProcessPage),
             bg=CRIMSON,
+            activebackground=RED,
+            activeforeground="white",
             fg="white",
             font=("Montserrat", 15),
             padx=10,
@@ -106,22 +145,69 @@ class HomePage(tk.Frame):
             relief=tk.FLAT)
         switch_to_individual_page_button.grid(row=1, column=1)
 
-# TODO these other frame classes
-
 class AutoProcessPage(tk.Frame):
     """A frame with a menu for automatically processing documents."""
 
-    def __init__(self, parent, controller):
-        """Construct a frame widget with parent `parent` and the controller for switching frames as `controller`."""
+    def __init__(self, parent, ui_controller):
+        """Construct a frame widget with parent `parent` and the controller for switching frames as `ui_controller`."""
         super().__init__(parent)
+
+        # configure the grid
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=2)
+        self.grid_columnconfigure(0, weight=1)
+
+        # create label for the current document being processed
+        self.current_document_label = tk.Label(self, text="Current Document: ", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
+        self.current_document_label.grid(row=0, column=0)
+
+        # create label for the count of how many documents have been processed
+        self.document_count_label = tk.Label(self, text="Documents Processed: ", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
+        self.document_count_label.grid(row=1, column=0)
+
+        # create start/pause/resume button
+        pause_resume_button = tk.Button(self, text="Start", 
+            command=lambda: ui_controller.toggle_auto_processing(pause_resume_button),
+            bg=CRIMSON,
+            activebackground=RED,
+            activeforeground="white",
+            fg="white",
+            font=("Montserrat", 15),
+            padx=10,
+            pady=10,
+            relief=tk.FLAT)
+        pause_resume_button.grid(row=2, column=0)
+
+    def update_current_document(self, current_document_name:str):
+        """Updates the label for the current document.
+        
+        Args:
+            current_document_name (str): The name for the new current document."""
+        self.current_document_label["text"] = "Current Document: " + current_document_name
+
+    def update_document_count(self, document_count:int):
+        """Updates the label for the document count.
+        
+        Args:
+            document_count (int): The new number for how many documents have been processed."""
+        self.document_count_label["text"] = "Documents Processed: " + str(document_count)
 
 class IndividualProcessPage(tk.Frame):
     """A frame with a menu for individually processing documents."""
 
-    def __init__(self, parent, controller):
-        """Construct a frame widget with parent `parent` and the controller for switching frames as `controller`."""
+    def __init__(self, parent, ui_controller):
+        """Construct a frame widget with parent `parent` and the controller for switching frames as `ui_controller`."""
         super().__init__(parent)
 
+        # setup the grid
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
+        # create a label for the home page
+        label = tk.Label(self, text="Maybe put a search bar here later?", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
+        label.grid(row=0, column=0)
+
 if __name__ == "__main__":
-    app = AccessibilityApp()
+    app = AccessibilityApp(controller=None)
     app.mainloop()
