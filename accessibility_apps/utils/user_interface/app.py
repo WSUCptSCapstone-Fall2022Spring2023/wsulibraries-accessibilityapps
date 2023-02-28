@@ -2,8 +2,8 @@
 # File: app.py
 # Author: Trent Bultsma
 # Date: 2/21/2022
-# Description: Defines an application for the 
-#   user interface of the accessibility app.
+# Description: Defines a front end application for 
+#   the user interface of the accessibility app.
 # ==================================================
 
 # imports

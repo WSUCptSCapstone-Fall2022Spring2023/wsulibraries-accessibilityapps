@@ -222,4 +222,5 @@ def main():
         app.Interact()
 
 if __name__ == "__main__":
+    # NOTE this file must be in the `accessibility_apps` directory for this to run
     main()
