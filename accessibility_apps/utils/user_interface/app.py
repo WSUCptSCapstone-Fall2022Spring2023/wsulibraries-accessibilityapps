@@ -60,8 +60,8 @@ class AccessibilityApp(tk.Tk):
 
         # setup the application controller
         self.app_controller = AccessibilityAppController()
-        self.update_ui_current_auto_document = self.update_current_auto_document
-        self.update_ui_current_document_count = self.update_document_count
+        self.app_controller.update_ui_current_auto_document = self.update_current_auto_document
+        self.app_controller.update_ui_current_document_count = self.update_document_count
 
     def switch_frame(self, frame_class):
         """Sets a frame to be the current one in the application window.

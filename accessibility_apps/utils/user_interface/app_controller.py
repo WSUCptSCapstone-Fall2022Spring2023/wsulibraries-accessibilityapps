@@ -47,12 +47,21 @@ class AccessibilityAppController():
         """Downloads documents on a loop and runs them through the accessibility pipeline until the passed threading `Event` is set."""
         while True:
             try:
-                # TODO figure out why the ui callbacks aren't working
                 self.current_document = self.downloader.get_next_document(delete_on_fail=True)
+                # updating the label in the thread after the thread has been stopped causes thread locking issues so return to get around these
+                if finish_event.is_set():
+                    self.current_document.delete()
+                    # restore the previous identifier so the document that was just deleted gets re-downloaded 
+                    # next time auto processing is resumed to avoid skipping the document when auto mode is paused
+                    self.downloader.restore_previous_identifier()
+                    return
                 self.update_ui_current_auto_document(self.current_document.title)
                 self._run_accessibility_pipeline(self.current_document)
                 self.current_document.delete()
                 self.auto_processed_docs_count += 1
+                # same thread locking problem here
+                if finish_event.is_set():
+                    return
                 self.update_ui_current_document_count(self.auto_processed_docs_count)
             except:
                 pass
@@ -70,55 +79,5 @@ class AccessibilityAppController():
         """Stops the automatic processing of documents."""
         self.auto_mode_pause_event.set()
         self.auto_document_processing_thread.join()
-
-
-
-
-
-
-    # TODO this needs to be redone completely
-    def _run_auto_mode(self):
-        """Automatically downloads and processes documents."""
-
-        # create and start the thread for processing documents
-        pause_event = Event()
-        document_processing_thread = Thread(target=self._auto_download_and_process_documents, args=[pause_event])
-        document_processing_thread.start()
-
-        # input loop
-        while True:
-            print("---------------------------------------------")
-            print("WSU Libraries: Automatic Document Processing")
-            print("---------------------------------------------")
-            print("\t1. Status")
-            print("\t2. Pause")
-
-            option = input("> ")
-            if(self._IsInt(option)):
-                val = int(option)
-                # display the status of the document processing and resume
-                if val == 1:
-                    print("One moment...")
-                    # stop the thread
-                    pause_event.set()
-                    document_processing_thread.join()
-                    # get the data from the thread
-                    doc_count_increase, recent_doc = self._auto_status
-                    self.auto_processed_docs_count += doc_count_increase
-                    # display the status
-                    print("Total documents processed: " + str(self.auto_processed_docs_count))
-                    print("Most recent document: " + recent_doc)
-                    print()
-                    # create a new thread and keep going
-                    pause_event.clear()
-                    document_processing_thread = Thread(target=self._auto_download_and_process_documents, args=[pause_event])
-                    document_processing_thread.start()
-                # stop processing documents
-                elif val == 2:
-                    print("One moment...")
-                    # stop the thread
-                    pause_event.set()
-                    document_processing_thread.join()
-                    return
-                else:
-                    print("Invalid input", "red")
+        # to update the count just in case the document 
+        self.update_ui_current_document_count(self.auto_processed_docs_count)

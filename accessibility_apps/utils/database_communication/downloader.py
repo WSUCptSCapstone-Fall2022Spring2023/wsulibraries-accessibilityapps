@@ -26,11 +26,14 @@ class DocumentDownloader():
         self.download_path = download_path
         self.resumption_token = None
         self.identifiers = self._get_identifier_batch()
+        # for keeping track of the id of the previous document 
+        # downloaded just in case it needs to be recovered
+        self.previous_document_identifier = None
 
     def _get_identifier_batch(self) -> list[str]:
         """Returns the next batch of identifiers."""
 
-        # setup the request paramaters
+        # setup the request parameters
         request_params = {
             "verb":"ListIdentifiers",
             "metadataPrefix":"esploro",
@@ -73,7 +76,9 @@ class DocumentDownloader():
         if len(self.identifiers) == 0:
             return None
 
-        return self.identifiers.pop()
+        # take note of the identifier and return it off the identifiers list
+        self.previous_document_identifier = self.identifiers.pop()
+        return self.previous_document_identifier
 
     def get_next_document(self, delete_on_fail=False):
         """Returns a Document object for the next document in the repository.
@@ -132,3 +137,14 @@ class DocumentDownloader():
         document = AccessibleDocument(document_download_path, delete_on_fail)
         document.set_metadata(authors, title, description)
         return document
+    
+    def restore_previous_identifier(self):
+        """Adds the previous document identifier back to the list of documents to process to recover that identifier."""
+        
+        # do nothing if there is no previous identifier
+        if self.previous_document_identifier is None:
+            return
+        
+        # add the identifier back to the list and clear the previous identifier
+        self.identifiers.append(self.previous_document_identifier)
+        self.previous_document_identifier = None
