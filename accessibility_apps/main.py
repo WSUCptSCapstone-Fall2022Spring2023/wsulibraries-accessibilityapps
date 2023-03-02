@@ -34,14 +34,14 @@ def main():
     """
     downloader = DocumentDownloader("./data/input")
     # metadata testing
-    for _ in range(10):
-        try:
-            document = downloader.get_next_document()
-            document._apply_metadata(document.file_path)
-        except Exception as e:
-            print("error " + str(e))
+    # for _ in range(10):
+    #     try:
+    #         document = downloader.get_next_document()
+    #         document._apply_metadata(document.file_path)
+    #     except Exception as e:
+    #         print("error " + str(e))
 
-    example_pdf = DATA_INPUT_DIR.joinpath("example.pdf")
+    example_pdf = DATA_INPUT_DIR.joinpath("example2.pdf")
     doc1 = AccessibleDocument(str(example_pdf)) # retrieved from .../data/input/example.pdf
     doc1.generate_tags()
 

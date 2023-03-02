@@ -81,6 +81,10 @@ class Document:
             # extract the data
             self.paragraphs = extract_paragraphs_and_fonts_and_sizes(file_path)
             
+            # for p in self.paragraphs:
+            #     print(p.get_raw_text(), "\n")
+            # quit()
+            
             # calculate the keywords
             self.keywords = self._calculate_keywords()
 
@@ -90,6 +94,11 @@ class Document:
             else:
                 print("Layout Parsing Skipped: Non-Linux distributions not yet supported...")
                 self.layout_blocks = []
+            
+            for type, p in self.layout_blocks:
+                print(p, "\n")
+
+
         else:
             raise ValueError("Invalid file path, must be a pdf file")
 

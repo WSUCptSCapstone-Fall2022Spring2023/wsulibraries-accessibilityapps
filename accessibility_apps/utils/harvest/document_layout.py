@@ -131,12 +131,12 @@ def document_layout(pdf_name : str, debug : bool = False) -> list[tuple]:
         # get rid of redundant boxes
         for layout_i in layout_result:
             
-            if layout_i.type != 'Text' and layout_i.type != 'Title':
+            if layout_i.type != 'Text' and layout_i.type != 'Title' and layout_i.type != "List":
                 continue
 
             for layout_j in layout_result:
                 
-                if layout_j.type != 'Text' and layout_j.type != 'Title':
+                if layout_j.type != 'Text' and layout_j.type != 'Title' and layout_i.type != "List":
                     continue
 
                 if layout_i != layout_j: 
@@ -150,8 +150,6 @@ def document_layout(pdf_name : str, debug : bool = False) -> list[tuple]:
 
         # use layout block ids to identfy read order
         layout_blocks = lp.Layout([b.set(id = idx) for idx, b in enumerate(layout_blocks)])
-        
-        
 
 
         if(debug):
@@ -163,14 +161,16 @@ def document_layout(pdf_name : str, debug : bool = False) -> list[tuple]:
 
 
         for block in layout_blocks:
-            if block.type == 'Text' or block.type == 'Title':
+            if block.type == 'Text' or block.type == 'Title' or block.type == "List":
                 # Crop image around the detected layout
                 segment_image = (block
                                 .pad(left=15, right=15, top=5, bottom=5)
                                 .crop_image(img))
                 
-                # Perform OCR
-                text = ocr_agent.detect(segment_image)
+                # Perform OCR, get rid of unneccary whitespace in texts
+                words = ocr_agent.detect(segment_image).split()
+                text = " ".join(words)
+
                 res_layout_data.append((block.type, text))
             else:
                 res_layout_data.append((block.type, "IMG DATA -- NOT ADDED"))
@@ -179,6 +179,7 @@ def document_layout(pdf_name : str, debug : bool = False) -> list[tuple]:
         for type, data in res_layout_data:
             print("Tag: {}".format(type))
             print(data, "\n")
+    return res_layout_data
             
 
 def main():
