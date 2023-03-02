@@ -81,8 +81,9 @@ class Document:
             # extract the data
             self.paragraphs = extract_paragraphs_and_fonts_and_sizes(file_path)
             
-            # for p in [int(''.join(c for c in p.font_size if c.isdigit())) for p in self.paragraphs]:
-            #     print("[{}]".format(p))
+            # for p in self.paragraphs:
+            #     print(p.get_raw_text())
+            #     print("\n")
             # quit()
             
             # calculate the keywords

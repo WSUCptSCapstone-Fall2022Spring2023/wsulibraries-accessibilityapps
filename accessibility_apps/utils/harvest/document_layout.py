@@ -3,6 +3,7 @@ import numpy as np
 from pathlib import Path
 import os
 import layoutparser as lp
+from collections import Counter
 
 from layoutparser.elements import TextBlock
 from torch import Tensor
@@ -14,6 +15,11 @@ import torch
 
 pdf_dir : Path = Path(os.path.realpath(os.path.dirname(__file__))).parent.parent.parent.absolute()
 pdf_dir = pdf_dir.joinpath("data").joinpath("input")
+
+quaddict={}
+with open(str(Path(os.path.realpath(os.path.dirname(__file__))).joinpath("quadgrams.txt"))) as f:
+    for line in f:
+        quaddict[line.split(",")[0]]= float(line.split(",")[1])
 
 class DocumentLayout:
     def __init__(self, filepath : str):
@@ -124,6 +130,7 @@ def document_layout(pdf_name : str, preprocessed_paragraphs : list[tuple[int, st
     
     ocr_agent = lp.TesseractAgent(languages='eng')
     
+    ppp_index = 0 # the current starting index in the prepocessed_parapgrahs to start looking for matches for the bath
     for index, img in enumerate(page_imgs):
         current_batch = []
         # use model to identify layout boxes in the pdf
@@ -175,6 +182,8 @@ def document_layout(pdf_name : str, preprocessed_paragraphs : list[tuple[int, st
                 current_batch.append((block.type, text))
             else:
                 current_batch.append((block.type, "IMG DATA -- NOT ADDED"))
+        
+        ppp_index = validate_layout(preprocessed_paragraphs[ppp_index:], current_batch)
         res_layout_data.append(current_batch)
 
     if debug:
@@ -183,6 +192,110 @@ def document_layout(pdf_name : str, preprocessed_paragraphs : list[tuple[int, st
             print(data, "\n")
     return res_layout_data
             
+
+    
+def validate_layout(preprocessed_paragraphs : list[tuple[int, str]], current_batch : list[tuple[str, str]]):
+    """ Uses the paragraph list created by extract_paragraphs_and_fonts_and_sizes() and
+        the layout_blocks lit from document_layout() to create a better quality list document
+        elements that is ordered according to read-order. This is used to create the document tags.
+
+    Args:
+        preprocessed_paragraphs (list[tuple[int, str]]):
+            A list of paragraphs that includes the font size and the raw text.
+            This list is "well" ordered according to the document reading order.
+            Making it useful for arranging the layout_blocks in the current_batch.
+            The font size will be added to the appropriate layout blocks for future use.
+        
+        current_batch (list[tuple[str, str]]):
+            Represents all the layout blocks the layout parser found for a given page.
+            Will be reordered or added to according to preprocessed_paragraphs.
+    """
+    # every search will either extend to the entire list or at least 5
+    search_limit = min(len(preprocessed_paragraphs), 5 if len(current_batch) < 5 else len(current_batch))
+    
+    # how many times to expand the threshold if no match is found
+    expand_limit = 3
+
+    for layout_block in current_batch:
+
+
+        #* Step 1 : Find what prepocessed_paragraph matches with the current layout_block
+        potential_matches = []
+        threshold = 0.4
+
+        for _ in range(expand_limit):
+            t_range = int(threshold * len(layout_block[1]))
+
+            for index in range(search_limit):
+                if (len(preprocessed_paragraphs[index][1]) >= len(layout_block[1]) - t_range) and\
+                (len(preprocessed_paragraphs[index][1]) <= len(layout_block[1]) + t_range):
+                    potential_matches.append[index]
+            
+            # no results found in the search limit with the provided threshold, expand search via expanding threshold
+            if len(potential_matches) == 0:
+                threshold += 0.2
+                continue
+
+
+
+    
+
+
+
+    return 0
+
+
+def is_this_a_paragraph(paragraph : str):
+    print(calc_ioc(paragraph))
+    print(quadgram_fitness(paragraph))
+    print("")
+    
+
+# credited to: https://github.com/vaibhavgarg1982/MiscPythonTools/blob/main/text_fitness.ipynb
+def prep_str(iptext):
+    iptext = iptext.lower()
+    iptext = iptext.replace(".","")
+    import string
+
+    for punc in string.punctuation:
+        iptext = iptext.replace(punc,"")
+
+    iptext = iptext.replace("’","")
+    iptext = iptext.replace(" ","")
+    iptext = iptext.replace("\n", "")
+    iptext = iptext.replace("…","")
+
+    for i in range(10):
+        iptext = iptext.replace(str(i), "")
+    
+    return iptext
+
+# https://en.wikipedia.org/wiki/Index_of_coincidence
+# credited to: https://github.com/vaibhavgarg1982/MiscPythonTools/blob/main/text_fitness.ipynb
+def calc_ioc(iptext):
+    iptext = prep_str(iptext)
+    if len(iptext) == 0 or len(iptext) == 1:
+        return 0
+    
+    cnt = Counter(iptext)
+    sum = 0
+    N = len(iptext)
+    for x in cnt:
+        sum = sum + cnt[x]*(cnt[x]-1)
+    return sum*26/(N*(N-1))
+
+# credited to: https://github.com/vaibhavgarg1982/MiscPythonTools/blob/main/text_fitness.ipynb
+def quadgram_fitness(iptext):
+    a = prep_str(iptext)
+
+    if len(a) == 0 or len(a) == 1:
+        return 0
+    quadtext = [a[idx:idx+4] for idx in range(len(a)-3)]
+    
+    sum = 0
+    for quad in quadtext:
+        sum += (quaddict.get(quad.upper(),0))
+    return abs(sum)/len(quadtext)
 
 def main():
     document_layout('example.pdf', True)
