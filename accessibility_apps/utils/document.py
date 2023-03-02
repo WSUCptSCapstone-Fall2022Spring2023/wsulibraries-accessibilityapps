@@ -81,8 +81,8 @@ class Document:
             # extract the data
             self.paragraphs = extract_paragraphs_and_fonts_and_sizes(file_path)
             
-            # for p in self.paragraphs:
-            #     print(p.get_raw_text(), "\n")
+            # for p in [int(''.join(c for c in p.font_size if c.isdigit())) for p in self.paragraphs]:
+            #     print("[{}]".format(p))
             # quit()
             
             # calculate the keywords
@@ -90,17 +90,23 @@ class Document:
 
             # get the layout of the document for tagging (it is ordered and includes tag type and data)
             if platform == "linux" or platform == "linux2":
-                self.layout_blocks = document_layout(self.file_path, True)
+                # using self.paragraphs to validate and optimize layout results. Creates a list of (p.font_size as int, p.raw_text)
+                preprocessed_paragraphs = [(int(''.join(c for c in p.font_size if c.isdigit())), p.get_raw_text()) for p in self.paragraphs]
+                self.layout_blocks = document_layout(self.file_path, preprocessed_paragraphs, False)
             else:
                 print("Layout Parsing Skipped: Non-Linux distributions not yet supported...")
                 self.layout_blocks = []
             
-            for type, p in self.layout_blocks:
-                print(p, "\n")
+            print("Pages Processed: {}".format(len(self.layout_blocks)))
+
+            for batch in self.layout_blocks:
+                for _, p in batch:
+                    print(p, "\n")
 
 
         else:
             raise ValueError("Invalid file path, must be a pdf file")
+        
 
     def is_open(self):
         """ Returns true if there is a file open for editing.

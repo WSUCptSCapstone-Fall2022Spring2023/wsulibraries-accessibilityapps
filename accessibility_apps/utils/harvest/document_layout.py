@@ -87,7 +87,7 @@ def refine(block_1 : TextBlock, block_2 : TextBlock) -> None:
     
 
 
-def document_layout(pdf_name : str, debug : bool = False) -> list[tuple]:
+def document_layout(pdf_name : str, preprocessed_paragraphs : list[tuple[int, str]] = [], debug : bool = False) -> list[tuple]:
     """Parses a pdf in search of document element order for the purpose of tagging
 
     Args:
@@ -109,7 +109,7 @@ def document_layout(pdf_name : str, debug : bool = False) -> list[tuple]:
     res_layout_data : list[tuple] = []
 
     # convert the pdf into a set of images
-    imgs = [np.asarray(page_img) for page_img in pdf2image.convert_from_path(pdf_file)]
+    page_imgs = [np.asarray(page_img) for page_img in pdf2image.convert_from_path(pdf_file)]
 
     #imgs = np.asarray(pdf2image.convert_from_path(pdf_file)[0])
 
@@ -124,7 +124,8 @@ def document_layout(pdf_name : str, debug : bool = False) -> list[tuple]:
     
     ocr_agent = lp.TesseractAgent(languages='eng')
     
-    for index, img in enumerate(imgs):
+    for index, img in enumerate(page_imgs):
+        current_batch = []
         # use model to identify layout boxes in the pdf
         layout_result = model.detect(img)
         
@@ -171,10 +172,11 @@ def document_layout(pdf_name : str, debug : bool = False) -> list[tuple]:
                 words = ocr_agent.detect(segment_image).split()
                 text = " ".join(words)
 
-                res_layout_data.append((block.type, text))
+                current_batch.append((block.type, text))
             else:
-                res_layout_data.append((block.type, "IMG DATA -- NOT ADDED"))
-    
+                current_batch.append((block.type, "IMG DATA -- NOT ADDED"))
+        res_layout_data.append(current_batch)
+
     if debug:
         for type, data in res_layout_data:
             print("Tag: {}".format(type))
