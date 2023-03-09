@@ -126,9 +126,9 @@ def document_layout(pdf_name : str, preprocessed_paragraphs : list[tuple[int, st
     model = lp.Detectron2LayoutModel('lp://PubLayNet/mask_rcnn_X_101_32x8d_FPN_3x/config',
                                  extra_config=["MODEL.ROI_HEADS.SCORE_THRESH_TEST", 0.5],
                                  label_map={0: "Text", 1: "Title", 2: "List", 3:"Table", 4:"Figure"})
-
     
     ocr_agent = lp.TesseractAgent(languages='eng')
+    print("Done Loading Models...")
     
     ppp_index = 0 # the current starting index in the prepocessed_parapgrahs to start looking for matches for the bath
     for index, img in enumerate(page_imgs):
@@ -186,10 +186,6 @@ def document_layout(pdf_name : str, preprocessed_paragraphs : list[tuple[int, st
         ppp_index = validate_layout(preprocessed_paragraphs[ppp_index:], current_batch)
         res_layout_data.append(current_batch)
 
-    if debug:
-        for type, data in res_layout_data:
-            print("Tag: {}".format(type))
-            print(data, "\n")
     return res_layout_data
             
 

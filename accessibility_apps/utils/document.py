@@ -31,6 +31,7 @@ class Document:
         """
         self.file_path = file_path
         self.paragraphs = []
+        self.page_count = 0
 
         # setup metadata values
         self.author = ""
@@ -80,11 +81,14 @@ class Document:
             
             # extract the data
             self.paragraphs = extract_paragraphs_and_fonts_and_sizes(file_path)
+            self.page_count = len(self.paragraphs)
             
-            # for p in self.paragraphs:
-            #     print(p.get_raw_text())
-            #     print("\n")
-            # quit()
+            for batch in self.paragraphs:
+                for p in batch:
+                    print(p.get_raw_text())
+                    print("\n")
+                print("---------------------------------------------")
+            quit()
             
             # calculate the keywords
             self.keywords = self._calculate_keywords()
@@ -93,7 +97,7 @@ class Document:
             if platform == "linux" or platform == "linux2":
                 # using self.paragraphs to validate and optimize layout results. Creates a list of (p.font_size as int, p.raw_text)
                 preprocessed_paragraphs = [(int(''.join(c for c in p.font_size if c.isdigit())), p.get_raw_text()) for p in self.paragraphs]
-                self.layout_blocks = document_layout(self.file_path, preprocessed_paragraphs, False)
+                self.layout_blocks = document_layout(self.file_path, preprocessed_paragraphs, True)
             else:
                 print("Layout Parsing Skipped: Non-Linux distributions not yet supported...")
                 self.layout_blocks = []
@@ -102,7 +106,7 @@ class Document:
 
             for batch in self.layout_blocks:
                 for _, p in batch:
-                    print(p, "\n")
+                    print(_, "\n{}".format(p), "\n")
 
 
         else:
