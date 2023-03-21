@@ -9,6 +9,7 @@
 # imports
 import os
 import tkinter as tk
+from tkinter import ttk
 from utils.user_interface.app_controller import AccessibilityAppController
 
 GRAY = "#4D4D4D"
@@ -23,6 +24,7 @@ RED = "#CA1237"
 # - set input/output folder
 # - *input from local folder with metadata as csv file and pdfs
 # - *list of document ids input from a csv file
+# - error displaying
 
 class AccessibilityApp(tk.Tk):
     """The user interface application for the accessibility application project."""
@@ -33,6 +35,7 @@ class AccessibilityApp(tk.Tk):
         # set window title and size
         self.wm_title("WSU Library Accessibility Application")
         self.geometry("750x400")
+        self.resizable(False, False)
 
         # set the window icon
         icon = tk.PhotoImage(file=os.path.dirname(os.path.abspath(__file__)) + "/icon.png")
@@ -196,8 +199,9 @@ class AutoProcessPage(tk.Frame):
         self.grid_rowconfigure(3, weight=2)
         self.grid_columnconfigure(0, weight=1)
 
-        page_description_label = tk.Label(self, text="Automatically process documents from the repository in " +
-            "order and export them to a folder. This can be used to go through the entire repository without user interaction like leaving it on overnight.", 
+        # create label for description of the purpose of the page
+        page_description_label = tk.Label(self, text="Automatically process documents from the repository in order and export them to a folder. " +
+            "This can be used to go through the entire repository without user interaction like leaving it on overnight.", 
             background=LIGHT_GRAY, fg="white", font=("Montserrat", 17), wraplength=700)
         page_description_label.grid(row=0, column=0)
 
@@ -244,12 +248,51 @@ class LocalFolderInputPage(tk.Frame):
         super().__init__(parent)
 
         # setup the grid
-        self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=2)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=1)
 
-        # create a label for the home page
-        label = tk.Label(self, text="Put a folder input box here", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
-        label.grid(row=0, column=0)
+        # create label for description of the purpose of the page
+        label = tk.Label(self, text="Process documents automatically from a local input folder containing a bunch of pdfs and a csv file to contain metadata.", 
+            background=LIGHT_GRAY, fg="white", font=("Montserrat", 17), wraplength=700)
+        label.grid(row=0, column=0, columnspan=2)
+
+        # create button for selecting the folder
+        folder_select_button = tk.Button(self, text="Select Folder", 
+            command=lambda: None, # TODO
+            bg=CRIMSON,
+            activebackground=RED,
+            activeforeground="white",
+            fg="white",
+            font=("Montserrat", 15),
+            padx=10,
+            pady=10,
+            relief=tk.FLAT)
+        folder_select_button.grid(row=1, column=0)
+
+        # create label for the name of the folder
+        folder_name_label = tk.Label(self, text="None", background=LIGHT_GRAY, fg="white", font=("Montserrat", 15), wraplength=350)
+        folder_name_label.grid(row=1, column=1)
+
+        # create button to run the processing
+        # TODO error box if there is no csv found
+        run_processing_button = tk.Button(self, text="Start", 
+            command=lambda: None, # TODO
+            bg=CRIMSON,
+            activebackground=RED,
+            activeforeground="white",
+            fg="white",
+            font=("Montserrat", 15),
+            padx=10,
+            pady=10,
+            relief=tk.FLAT)
+        run_processing_button.grid(row=2, column=0)
+
+        # create progress bar
+        progress_bar = ttk.Progressbar(orient=tk.HORIZONTAL, length=200, master=self)
+        progress_bar.grid(row=2, column=1)
 
 class SingleDocumentSearchPage(tk.Frame):
     """A frame with a menu for processing a single document searched by document id."""
@@ -263,8 +306,14 @@ class SingleDocumentSearchPage(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
 
         # create a label for the home page
-        label = tk.Label(self, text="Maybe put a search bar here later?", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
+        label = tk.Label(self, text="Maybe put a search bar here later?", background=LIGHT_GRAY, fg="white", font=("Montserrat", 17))
         label.grid(row=0, column=0)
+
+        # TODO
+        # label saying document id TL
+        # search bar next to label TR
+        # button under that says go BL
+        # tag that says processing... then done BR
 
 class MultiDocumentSearchPage(tk.Frame):
     """A frame with a menu for processing documents given a list of document ids."""
@@ -281,6 +330,8 @@ class MultiDocumentSearchPage(tk.Frame):
         label = tk.Label(self, text="Put a file input box here for csv id search list", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
         label.grid(row=0, column=0)
 
+        # TODO
+
 class SetInputOutputFoldersPage(tk.Frame):
     """A frame with a menu for setting the default input and output folder."""
 
@@ -295,3 +346,5 @@ class SetInputOutputFoldersPage(tk.Frame):
         # create a label for the home page
         label = tk.Label(self, text="Put some text input boxes here", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
         label.grid(row=0, column=0)
+
+        # TODO
