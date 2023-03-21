@@ -402,11 +402,60 @@ class SetInputOutputFoldersPage(tk.Frame):
         super().__init__(parent)
 
         # setup the grid
-        self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=1)
+        self.grid_rowconfigure(3, weight=1)
 
         # create label for description of the purpose of the page
-        label = tk.Label(self, text="Put some text input boxes here", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
-        label.grid(row=0, column=0)
+        page_description_label = tk.Label(self, text="Set the folder for all output files and the default folder for input when none is specified.", background=LIGHT_GRAY, fg="white", font=("Montserrat", 17), wraplength=700)
+        page_description_label.grid(row=0, column=0, columnspan=2)
 
-        # TODO
+        # create button for selecting the input folder
+        input_folder_select_button = tk.Button(self, text="Select Input Folder", 
+            command=lambda: None, # TODO
+            bg=CRIMSON,
+            activebackground=RED,
+            activeforeground="white",
+            fg="white",
+            font=("Montserrat", 15),
+            padx=10,
+            pady=10,
+            relief=tk.FLAT)
+        input_folder_select_button.grid(row=1, column=0)
+
+        # create label to display selected input folder
+        folder_name_label = tk.Label(self, text="None", background=LIGHT_GRAY, fg="white", font=("Montserrat", 15), wraplength=350)
+        folder_name_label.grid(row=1, column=1)
+
+        # create button for selecting the output folder
+        input_folder_select_button = tk.Button(self, text="Select Output Folder", 
+            command=lambda: None, # TODO
+            bg=CRIMSON,
+            activebackground=RED,
+            activeforeground="white",
+            fg="white",
+            font=("Montserrat", 15),
+            padx=10,
+            pady=10,
+            relief=tk.FLAT)
+        input_folder_select_button.grid(row=2, column=0)
+        
+        # create label to display selected output folder
+        folder_name_label = tk.Label(self, text="None", background=LIGHT_GRAY, fg="white", font=("Montserrat", 15), wraplength=350)
+        folder_name_label.grid(row=2, column=1)
+
+        # create button to set the values
+        input_folder_select_button = tk.Button(self, text="Set Values", 
+            command=lambda: None, # TODO
+            bg=CRIMSON,
+            activebackground=RED,
+            activeforeground="white",
+            fg="white",
+            font=("Montserrat", 15),
+            padx=10,
+            pady=10,
+            relief=tk.FLAT)
+        input_folder_select_button.grid(row=3, column=0, columnspan=2)
