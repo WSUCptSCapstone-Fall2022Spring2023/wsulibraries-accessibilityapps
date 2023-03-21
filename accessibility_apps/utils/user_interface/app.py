@@ -16,6 +16,13 @@ LIGHT_GRAY = "#808080"
 CRIMSON = "#A60F2D"
 RED = "#CA1237"
 
+# TODO
+# - search by document id
+# - search by research unit
+# - filter by document set
+# - *input from local folder with metadata as csv file and pdfs
+# - *list of document ids input from a csv file
+
 class AccessibilityApp(tk.Tk):
     """The user interface application for the accessibility application project."""
 
@@ -145,6 +152,7 @@ class HomePage(tk.Frame):
             relief=tk.FLAT)
         switch_to_individual_page_button.grid(row=1, column=1)
 
+# TODO add resumption tag? (low priority)
 class AutoProcessPage(tk.Frame):
     """A frame with a menu for automatically processing documents."""
 
@@ -153,18 +161,24 @@ class AutoProcessPage(tk.Frame):
         super().__init__(parent)
 
         # configure the grid
-        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=2)
         self.grid_rowconfigure(1, weight=1)
-        self.grid_rowconfigure(2, weight=2)
+        self.grid_rowconfigure(2, weight=1)
+        self.grid_rowconfigure(3, weight=2)
         self.grid_columnconfigure(0, weight=1)
 
+        page_description_label = tk.Label(self, text="Automatically process documents from the repository in " +
+            "order and export them to a folder. This can be used to go through the entire repository overnight.", 
+            background=LIGHT_GRAY, fg="white", font=("Montserrat", 18), wraplength=700)
+        page_description_label.grid(row=0, column=0)
+
         # create label for the current document being processed
-        self.current_document_label = tk.Label(self, text="Current Document: None", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
-        self.current_document_label.grid(row=0, column=0)
+        self.current_document_label = tk.Label(self, text="Current Document: None", background=LIGHT_GRAY, fg="white", font=("Montserrat", 15), wraplength=700)
+        self.current_document_label.grid(row=1, column=0)
 
         # create label for the count of how many documents have been processed
-        self.document_count_label = tk.Label(self, text="Documents Processed: 0", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
-        self.document_count_label.grid(row=1, column=0)
+        self.document_count_label = tk.Label(self, text="Documents Processed: 0", background=LIGHT_GRAY, fg="white", font=("Montserrat", 15), wraplength=700)
+        self.document_count_label.grid(row=2, column=0)
 
         # create start/pause/resume button
         pause_resume_button = tk.Button(self, text="Start", 
@@ -177,7 +191,7 @@ class AutoProcessPage(tk.Frame):
             padx=10,
             pady=10,
             relief=tk.FLAT)
-        pause_resume_button.grid(row=2, column=0)
+        pause_resume_button.grid(row=3, column=0)
 
     def update_current_document(self, current_document_name:str):
         """Updates the label for the current document.
