@@ -26,6 +26,8 @@ RED = "#CA1237"
 # - *list of document ids input from a csv file
 # - error displaying
 
+# TODO create function to generate a button instead of copy/pasting the big block of code for that
+
 class AccessibilityApp(tk.Tk):
     """The user interface application for the accessibility application project."""
 
@@ -291,7 +293,8 @@ class LocalFolderInputPage(tk.Frame):
         run_processing_button.grid(row=2, column=0)
 
         # create progress bar
-        progress_bar = ttk.Progressbar(orient=tk.HORIZONTAL, length=200, master=self)
+        # TODO needs to be updated as progress is made
+        progress_bar = ttk.Progressbar(self, orient=tk.HORIZONTAL, length=200)
         progress_bar.grid(row=2, column=1)
 
 class SingleDocumentSearchPage(tk.Frame):
@@ -302,18 +305,41 @@ class SingleDocumentSearchPage(tk.Frame):
         super().__init__(parent)
 
         # setup the grid
-        self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=1)
 
         # create a label for the home page
-        label = tk.Label(self, text="Maybe put a search bar here later?", background=LIGHT_GRAY, fg="white", font=("Montserrat", 17))
-        label.grid(row=0, column=0)
+        label = tk.Label(self, text="Process a single document given its document id.", background=LIGHT_GRAY, fg="white", font=("Montserrat", 17), wraplength=700)
+        label.grid(row=0, column=0, columnspan=2)
 
-        # TODO
-        # label saying document id TL
-        # search bar next to label TR
-        # button under that says go BL
-        # tag that says processing... then done BR
+        # create label for document id search bar title
+        document_id_title = tk.Label(self, text="Document ID:", background=LIGHT_GRAY, fg="white", font=("Montserrat", 15))
+        document_id_title.grid(row=1, column=0)
+
+        # create document id search bar
+        search_bar = tk.Entry(self, font=("Montserrat", 15))
+        search_bar.grid(row=1, column=1)
+
+        # create start button
+        start_button = tk.Button(self, text="Start", 
+            command=lambda: None, # TODO
+            bg=CRIMSON,
+            activebackground=RED,
+            activeforeground="white",
+            fg="white",
+            font=("Montserrat", 15),
+            padx=10,
+            pady=10,
+            relief=tk.FLAT)
+        start_button.grid(row=2, column=0)
+
+        # create progress label
+        # TODO this needs to be updated to say "Processing..." and then "Done"
+        progress_label = tk.Label(self, text="Waiting", background=LIGHT_GRAY, fg="white", font=("Montserrat", 15))
+        progress_label.grid(row=2, column=1)
 
 class MultiDocumentSearchPage(tk.Frame):
     """A frame with a menu for processing documents given a list of document ids."""
