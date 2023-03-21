@@ -20,6 +20,7 @@ RED = "#CA1237"
 # - search by document id
 # - search by research unit
 # - filter by document set
+# - set input/output folder
 # - *input from local folder with metadata as csv file and pdfs
 # - *list of document ids input from a csv file
 
@@ -51,11 +52,12 @@ class AccessibilityApp(tk.Tk):
         # setup the menu bar
         menu_bar = tk.Menu(self)
         menu_bar.add_command(label="Home", command=lambda: self.switch_frame(HomePage))
+        menu_bar.add_command(label="Set input/output", command=lambda: self.switch_frame(SetInputOutputFoldersPage))
         self.config(menu=menu_bar)
 
         # create a dictionary of frames for navigation
         self.frames = {}
-        for FrameClass in (HomePage, AutoProcessPage, IndividualProcessPage):
+        for FrameClass in (HomePage, AutoProcessPage, LocalFolderInputPage, SingleDocumentSearchPage, MultiDocumentSearchPage, SetInputOutputFoldersPage):
             # setup the frame
             frame = FrameClass(frame_container, self)
             frame.config(background=LIGHT_GRAY)
@@ -115,8 +117,9 @@ class HomePage(tk.Frame):
         super().__init__(parent)
 
         # setup the grid
-        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=2)
         self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
@@ -139,9 +142,9 @@ class HomePage(tk.Frame):
             relief=tk.FLAT)
         switch_to_auto_page_button.grid(row=1, column=0)
 
-        # create button for switching to the individual processing page
-        switch_to_individual_page_button = tk.Button(self, text="Individual Document Processing", 
-            command=lambda: ui_controller.switch_frame(IndividualProcessPage),
+        # create button for switching to the local folder input page
+        switch_to_individual_page_button = tk.Button(self, text="Local Folder Input", 
+            command=lambda: ui_controller.switch_frame(LocalFolderInputPage),
             bg=CRIMSON,
             activebackground=RED,
             activeforeground="white",
@@ -151,6 +154,32 @@ class HomePage(tk.Frame):
             pady=10,
             relief=tk.FLAT)
         switch_to_individual_page_button.grid(row=1, column=1)
+
+        # create button for switching to the single document search page
+        switch_to_individual_page_button = tk.Button(self, text="Single Document ID Search", 
+            command=lambda: ui_controller.switch_frame(SingleDocumentSearchPage),
+            bg=CRIMSON,
+            activebackground=RED,
+            activeforeground="white",
+            fg="white",
+            font=("Montserrat", 15),
+            padx=10,
+            pady=10,
+            relief=tk.FLAT)
+        switch_to_individual_page_button.grid(row=2, column=0)
+
+        # create button for switching to the multi document search page
+        switch_to_individual_page_button = tk.Button(self, text="Multi Document ID Search", 
+            command=lambda: ui_controller.switch_frame(MultiDocumentSearchPage),
+            bg=CRIMSON,
+            activebackground=RED,
+            activeforeground="white",
+            fg="white",
+            font=("Montserrat", 15),
+            padx=10,
+            pady=10,
+            relief=tk.FLAT)
+        switch_to_individual_page_button.grid(row=2, column=1)
 
 # TODO add resumption tag? (low priority)
 class AutoProcessPage(tk.Frame):
@@ -168,8 +197,8 @@ class AutoProcessPage(tk.Frame):
         self.grid_columnconfigure(0, weight=1)
 
         page_description_label = tk.Label(self, text="Automatically process documents from the repository in " +
-            "order and export them to a folder. This can be used to go through the entire repository overnight.", 
-            background=LIGHT_GRAY, fg="white", font=("Montserrat", 18), wraplength=700)
+            "order and export them to a folder. This can be used to go through the entire repository without user interaction like leaving it on overnight.", 
+            background=LIGHT_GRAY, fg="white", font=("Montserrat", 17), wraplength=700)
         page_description_label.grid(row=0, column=0)
 
         # create label for the current document being processed
@@ -207,8 +236,23 @@ class AutoProcessPage(tk.Frame):
             document_count (int): The new number for how many documents have been processed."""
         self.document_count_label["text"] = "Documents Processed: " + str(document_count)
 
-class IndividualProcessPage(tk.Frame):
-    """A frame with a menu for individually processing documents."""
+class LocalFolderInputPage(tk.Frame):
+    """A frame with a menu for processing all documents inside a local input folder."""
+
+    def __init__(self, parent, ui_controller):
+        """Construct a frame widget with parent `parent` and the controller for switching frames as `ui_controller`."""
+        super().__init__(parent)
+
+        # setup the grid
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
+        # create a label for the home page
+        label = tk.Label(self, text="Put a folder input box here", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
+        label.grid(row=0, column=0)
+
+class SingleDocumentSearchPage(tk.Frame):
+    """A frame with a menu for processing a single document searched by document id."""
 
     def __init__(self, parent, ui_controller):
         """Construct a frame widget with parent `parent` and the controller for switching frames as `ui_controller`."""
@@ -220,4 +264,34 @@ class IndividualProcessPage(tk.Frame):
 
         # create a label for the home page
         label = tk.Label(self, text="Maybe put a search bar here later?", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
+        label.grid(row=0, column=0)
+
+class MultiDocumentSearchPage(tk.Frame):
+    """A frame with a menu for processing documents given a list of document ids."""
+
+    def __init__(self, parent, ui_controller):
+        """Construct a frame widget with parent `parent` and the controller for switching frames as `ui_controller`."""
+        super().__init__(parent)
+
+        # setup the grid
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
+        # create a label for the home page
+        label = tk.Label(self, text="Put a file input box here for csv id search list", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
+        label.grid(row=0, column=0)
+
+class SetInputOutputFoldersPage(tk.Frame):
+    """A frame with a menu for setting the default input and output folder."""
+
+    def __init__(self, parent, ui_controller):
+        """Construct a frame widget with parent `parent` and the controller for switching frames as `ui_controller`."""
+        super().__init__(parent)
+
+        # setup the grid
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
+        # create a label for the home page
+        label = tk.Label(self, text="Put some text input boxes here", background=LIGHT_GRAY, fg="white", font=("Montserrat", 25))
         label.grid(row=0, column=0)
