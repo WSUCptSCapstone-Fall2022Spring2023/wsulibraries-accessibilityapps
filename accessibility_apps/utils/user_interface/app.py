@@ -26,7 +26,28 @@ RED = "#CA1237"
 # - *list of document ids input from a csv file
 # - error displaying
 
-# TODO create function to generate a button instead of copy/pasting the big block of code for that
+def create_button(parent:object, text:str, command):
+    """Instantiates a WSU custom stylized button with only the parent, text, and command needing to be specified.
+    
+    Args:
+        parent (object): The parent widget of the button.
+        text (str): The text label of the button.
+        command (function): The function to run upon clicking the button.
+    """
+    button = tk.Button(
+        parent,
+        text=text,
+        command=command,
+        bg=CRIMSON,
+        activebackground=RED,
+        activeforeground="white",
+        fg="white",
+        font=("Montserrat", 15),
+        padx=10,
+        pady=10,
+        relief=tk.FLAT)
+    
+    return button
 
 class AccessibilityApp(tk.Tk):
     """The user interface application for the accessibility application project."""
@@ -133,57 +154,19 @@ class HomePage(tk.Frame):
         label.grid(row=0, column=0, columnspan=2)
 
         # create button for switching to the automatic processing page
-        switch_to_auto_page_button = tk.Button(
-            self,
-            text="Automatic Document Processing",
-            command=lambda: ui_controller.switch_frame(AutoProcessPage),
-            bg=CRIMSON,
-            activebackground=RED,
-            activeforeground="white",
-            fg="white",
-            font=("Montserrat", 15),
-            padx=10,
-            pady=10,
-            relief=tk.FLAT)
+        switch_to_auto_page_button = create_button(self, "Automatic Document Processing", lambda: ui_controller.switch_frame(AutoProcessPage))
         switch_to_auto_page_button.grid(row=1, column=0)
 
         # create button for switching to the local folder input page
-        switch_to_individual_page_button = tk.Button(self, text="Local Folder Input", 
-            command=lambda: ui_controller.switch_frame(LocalFolderInputPage),
-            bg=CRIMSON,
-            activebackground=RED,
-            activeforeground="white",
-            fg="white",
-            font=("Montserrat", 15),
-            padx=10,
-            pady=10,
-            relief=tk.FLAT)
+        switch_to_individual_page_button = create_button(self, "Local Folder Input", lambda: ui_controller.switch_frame(LocalFolderInputPage))
         switch_to_individual_page_button.grid(row=1, column=1)
 
         # create button for switching to the single document search page
-        switch_to_individual_page_button = tk.Button(self, text="Single Document ID Search", 
-            command=lambda: ui_controller.switch_frame(SingleDocumentSearchPage),
-            bg=CRIMSON,
-            activebackground=RED,
-            activeforeground="white",
-            fg="white",
-            font=("Montserrat", 15),
-            padx=10,
-            pady=10,
-            relief=tk.FLAT)
+        switch_to_individual_page_button = create_button(self, "Single Document ID Search", lambda: ui_controller.switch_frame(SingleDocumentSearchPage))
         switch_to_individual_page_button.grid(row=2, column=0)
 
         # create button for switching to the multi document search page
-        switch_to_individual_page_button = tk.Button(self, text="Multi Document ID Search", 
-            command=lambda: ui_controller.switch_frame(MultiDocumentSearchPage),
-            bg=CRIMSON,
-            activebackground=RED,
-            activeforeground="white",
-            fg="white",
-            font=("Montserrat", 15),
-            padx=10,
-            pady=10,
-            relief=tk.FLAT)
+        switch_to_individual_page_button = create_button(self, "Multi Document ID Search", lambda: ui_controller.switch_frame(MultiDocumentSearchPage))
         switch_to_individual_page_button.grid(row=2, column=1)
 
 # TODO add resumption tag? (low priority)
@@ -216,16 +199,7 @@ class AutoProcessPage(tk.Frame):
         self.document_count_label.grid(row=2, column=0)
 
         # create start/pause/resume button
-        pause_resume_button = tk.Button(self, text="Start", 
-            command=lambda: ui_controller.toggle_auto_processing(pause_resume_button),
-            bg=CRIMSON,
-            activebackground=RED,
-            activeforeground="white",
-            fg="white",
-            font=("Montserrat", 15),
-            padx=10,
-            pady=10,
-            relief=tk.FLAT)
+        pause_resume_button = create_button(self, "Start", lambda: ui_controller.toggle_auto_processing(pause_resume_button))
         pause_resume_button.grid(row=3, column=0)
 
     def update_current_document(self, current_document_name:str):
@@ -262,16 +236,7 @@ class LocalFolderInputPage(tk.Frame):
         page_description_label.grid(row=0, column=0, columnspan=2)
 
         # create button for selecting the folder
-        folder_select_button = tk.Button(self, text="Select Folder", 
-            command=lambda: None, # TODO
-            bg=CRIMSON,
-            activebackground=RED,
-            activeforeground="white",
-            fg="white",
-            font=("Montserrat", 15),
-            padx=10,
-            pady=10,
-            relief=tk.FLAT)
+        folder_select_button = create_button(self, "Select Folder", lambda: None) # TODO
         folder_select_button.grid(row=1, column=0)
 
         # create label for the name of the folder
@@ -280,16 +245,7 @@ class LocalFolderInputPage(tk.Frame):
 
         # create button to run the processing
         # TODO error box if there is no csv found
-        run_processing_button = tk.Button(self, text="Start", 
-            command=lambda: None, # TODO
-            bg=CRIMSON,
-            activebackground=RED,
-            activeforeground="white",
-            fg="white",
-            font=("Montserrat", 15),
-            padx=10,
-            pady=10,
-            relief=tk.FLAT)
+        run_processing_button = create_button(self, "Start", lambda: None) # TODO
         run_processing_button.grid(row=2, column=0)
 
         # create progress bar
@@ -324,16 +280,7 @@ class SingleDocumentSearchPage(tk.Frame):
         search_bar.grid(row=1, column=1)
 
         # create start button
-        start_button = tk.Button(self, text="Start", 
-            command=lambda: None, # TODO
-            bg=CRIMSON,
-            activebackground=RED,
-            activeforeground="white",
-            fg="white",
-            font=("Montserrat", 15),
-            padx=10,
-            pady=10,
-            relief=tk.FLAT)
+        start_button = create_button(self, "Start", lambda: None) # TODO
         start_button.grid(row=2, column=0)
 
         # create progress label
@@ -360,16 +307,7 @@ class MultiDocumentSearchPage(tk.Frame):
         page_description_label.grid(row=0, column=0, columnspan=2)
 
         # create csv select button
-        start_button = tk.Button(self, text="Select ID List", 
-            command=lambda: None, # TODO
-            bg=CRIMSON,
-            activebackground=RED,
-            activeforeground="white",
-            fg="white",
-            font=("Montserrat", 15),
-            padx=10,
-            pady=10,
-            relief=tk.FLAT)
+        start_button = create_button(self, "Select ID List", lambda: None) # TODO
         start_button.grid(row=1, column=0)
 
         # create selected csv label
@@ -377,16 +315,7 @@ class MultiDocumentSearchPage(tk.Frame):
         folder_name_label.grid(row=1, column=1)
 
         # create start button
-        start_button = tk.Button(self, text="Start", 
-            command=lambda: None, # TODO
-            bg=CRIMSON,
-            activebackground=RED,
-            activeforeground="white",
-            fg="white",
-            font=("Montserrat", 15),
-            padx=10,
-            pady=10,
-            relief=tk.FLAT)
+        start_button = create_button(self, "Start", lambda: None) # TODO
         start_button.grid(row=2, column=0)
 
         # create progress bar
@@ -414,16 +343,7 @@ class SetInputOutputFoldersPage(tk.Frame):
         page_description_label.grid(row=0, column=0, columnspan=2)
 
         # create button for selecting the input folder
-        input_folder_select_button = tk.Button(self, text="Select Input Folder", 
-            command=lambda: None, # TODO
-            bg=CRIMSON,
-            activebackground=RED,
-            activeforeground="white",
-            fg="white",
-            font=("Montserrat", 15),
-            padx=10,
-            pady=10,
-            relief=tk.FLAT)
+        input_folder_select_button = create_button(self, "Select Input Folder", lambda: None) # TODO
         input_folder_select_button.grid(row=1, column=0)
 
         # create label to display selected input folder
@@ -431,16 +351,7 @@ class SetInputOutputFoldersPage(tk.Frame):
         folder_name_label.grid(row=1, column=1)
 
         # create button for selecting the output folder
-        input_folder_select_button = tk.Button(self, text="Select Output Folder", 
-            command=lambda: None, # TODO
-            bg=CRIMSON,
-            activebackground=RED,
-            activeforeground="white",
-            fg="white",
-            font=("Montserrat", 15),
-            padx=10,
-            pady=10,
-            relief=tk.FLAT)
+        input_folder_select_button = create_button(self, "Select Output Folder", lambda: None) # TODO
         input_folder_select_button.grid(row=2, column=0)
         
         # create label to display selected output folder
@@ -448,14 +359,5 @@ class SetInputOutputFoldersPage(tk.Frame):
         folder_name_label.grid(row=2, column=1)
 
         # create button to set the values
-        input_folder_select_button = tk.Button(self, text="Set Values", 
-            command=lambda: None, # TODO
-            bg=CRIMSON,
-            activebackground=RED,
-            activeforeground="white",
-            fg="white",
-            font=("Montserrat", 15),
-            padx=10,
-            pady=10,
-            relief=tk.FLAT)
+        input_folder_select_button = create_button(self, "Set Values", lambda: None) # TODO
         input_folder_select_button.grid(row=3, column=0, columnspan=2)
