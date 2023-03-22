@@ -26,7 +26,7 @@ class DocumentLayout:
         self.pdf_dir = Path(filepath)
 
 # credited to: https://towardsdatascience.com/analyzing-document-layout-with-layoutparser-ed24d85f1d44
-def set_coordinate(data: TextBlock) -> Tensor:
+def get_coordinate(data: TextBlock) -> Tensor:
     """ Returns a coordinate matrix given a text block.
 
     Args:
@@ -41,6 +41,9 @@ def set_coordinate(data: TextBlock) -> Tensor:
     y2 = data.block.y_2
 
     return torch.tensor([[x1, y1, x2, y2]], dtype=torch.float)
+
+def get_xy(data: TextBlock):
+    return [(data.block.x_1, data.block.y_1), (data.block.x_2, data.block.y_2)]
 
 # credited to: https://towardsdatascience.com/analyzing-document-layout-with-layoutparser-ed24d85f1d44
 def compute_iou(box_1 : Tensor, box_2 : Tensor) -> Tensor:
@@ -79,8 +82,8 @@ def refine(block_1 : TextBlock, block_2 : TextBlock) -> None:
         block_1 (TextBlock): Textbox that may or may not be enclosed by the other.
         block_2 (TextBlock): Textbox that may or may not be enclosed by the other.
     """
-    bb1 = set_coordinate(block_1)
-    bb2 = set_coordinate(block_2)
+    bb1 = get_coordinate(block_1)
+    bb2 = get_coordinate(block_2)
 
     iou = compute_iou(bb1, bb2)
 
@@ -93,7 +96,7 @@ def refine(block_1 : TextBlock, block_2 : TextBlock) -> None:
     
 
 
-def document_layout(pdf_name : str, preprocessed_paragraphs : list[tuple[int, str]] = [], debug : bool = False) -> list[tuple]:
+def document_layout(pdf_name : str, preprocessed_paragraphs : list[list[tuple[int, str]]] = [], debug : bool = False) -> list[tuple]:
     """Parses a pdf in search of document element order for the purpose of tagging
 
     Args:
@@ -128,10 +131,11 @@ def document_layout(pdf_name : str, preprocessed_paragraphs : list[tuple[int, st
                                  label_map={0: "Text", 1: "Title", 2: "List", 3:"Table", 4:"Figure"})
     
     ocr_agent = lp.TesseractAgent(languages='eng')
-    print("Done Loading Models...")
     
-    ppp_index = 0 # the current starting index in the prepocessed_parapgrahs to start looking for matches for the bath
-    for index, img in enumerate(page_imgs):
+    if(debug):
+        print("Done Loading Models...")
+    
+    for page_index, img in enumerate(page_imgs):
         current_batch = []
         # use model to identify layout boxes in the pdf
         layout_result = model.detect(img)
@@ -152,21 +156,18 @@ def document_layout(pdf_name : str, preprocessed_paragraphs : list[tuple[int, st
 
         layout_blocks = lp.Layout([b for b in layout_result if b.type != 'None'])
         
-        # sort boundary boxes by y-coordinates
-        # ! Need better method for this
-        layout_blocks.sort(key = lambda b:b.coordinates[1], inplace=True)
+        layout_blocks = order_layout(layout_blocks)
 
         # use layout block ids to identfy read order
         layout_blocks = lp.Layout([b.set(id = idx) for idx, b in enumerate(layout_blocks)])
 
-
         if(debug):
-            print("---------\nPage {}\n---------".format(index))
+            print("---------\nPage {}\n---------".format(page_index))
             for result in layout_blocks:
                 print(result, "\n")
             draw_im = lp.draw_box(img, layout_blocks,  box_width=5, box_alpha=0.2, show_element_type=True, show_element_id=True)
-            draw_im.save("page[{}]_layout_boxes.jpeg".format(index))
-
+            draw_im.save("page[{}]_layout_boxes.jpeg".format(page_index))
+        quit()
 
         for block in layout_blocks:
             if block.type == 'Text' or block.type == 'Title' or block.type == "List":
@@ -183,11 +184,103 @@ def document_layout(pdf_name : str, preprocessed_paragraphs : list[tuple[int, st
             else:
                 current_batch.append((block.type, "IMG DATA -- NOT ADDED"))
         
-        ppp_index = validate_layout(preprocessed_paragraphs[ppp_index:], current_batch)
+        if(page_index == 3):
+            validate_layout(preprocessed_paragraphs[page_index], current_batch)
         res_layout_data.append(current_batch)
 
     return res_layout_data
             
+def order_layout(layout_blocks : list[TextBlock]):
+    # sort boundary boxes by y-coordinates
+    layout_blocks.sort(key = lambda b:b.coordinates[1], inplace=True)
+    sorted_layout = []
+
+    def set_first_block(l_blocks : list[layout_blocks]):
+        y_max = get_xy(l_blocks[0])[1][1]
+        first_block_index = 0
+        min_x = get_xy(l_blocks[0])[0][0]
+        end_index = 1
+
+        while(end_index < len(l_blocks)):
+            this_block_coords = get_xy(l_blocks[end_index])
+            if this_block_coords[0][1] > y_max:
+                break
+            
+            if this_block_coords[0][0] < min_x:
+                first_block_index = end_index
+                min_x = this_block_coords[0][0]
+            end_index += 1
+
+        temp = layout_blocks[0]
+        layout_blocks[0] = layout_blocks[first_block_index]
+        layout_blocks[first_block_index] = temp
+    
+    def check_right(block : TextBlock, l_blocks : list[TextBlock]):
+        block_coords = get_xy(block)
+
+        lb_index = 0
+        while lb_index < len(l_blocks):
+            if get_xy(l_blocks[lb_index])[0][1] > block_coords[1][1]:
+                break
+            if get_xy(l_blocks[lb_index])[0][0] > block_coords[1][0]:
+                return lb_index
+        return -1
+    
+    def find_columns(left_block : TextBlock, l_blocks : list[TextBlock], relative_segment_index : int):
+        """ For a given left_block finds all obvious blocks to its right that would insinuate a column. Done recursively if there is many columns.
+
+        Args:
+            left_block (TextBlock): The current block to check the right of it for more blocks
+            l_blocks (list[TextBlock]): The remaining unordered layout blocks
+            relative_segment_index (int): The given left blocks segment index in the res array.
+        """
+        nonlocal sorted_layout
+        right_block_index = check_right(left_block, l_blocks)
+
+        if right_block_index >= 0:
+            right_block = layout_blocks.pop(right_block_index)
+            sorted_layout.insert(relative_segment_index + 1, [right_block])
+            find_columns(right_block, l_blocks, relative_segment_index + 1)
+
+
+    def find_child(parent : TextBlock, l_blocks : list[TextBlock]):
+        block_coords = get_xy(parent)
+
+        lb_index = 0
+        while lb_index < len(l_blocks):
+            if get_xy(l_blocks[lb_index])[0][0] >= block_coords[0][0]:
+                if get_xy(l_blocks[lb_index])[0][0] <= block_coords[1][0]:
+                    return lb_index
+            elif get_xy(l_blocks[lb_index])[1][1] >= block_coords[0][0]:
+                return lb_index
+            lb_index += 1
+        return -1
+    
+    def is_column_break(column_block : TextBlock, child_block : TextBlock):
+        return get_xy(child_block)[1][0] >= get_xy(column_block)[0][0]
+
+
+    set_first_block(layout_blocks)
+
+    current_block = layout_blocks.pop(0)    # Index 0 should be the first element to read
+    sorted_layout.append([current_block])   # Add new segment (section) to the res array
+    segment_index = 0                       # The current segment to be appending new blocks to
+    ssi = 0                                 # segment-sub-index, the last block to be read in this segment
+    column_break_index = -1                 # this index marks a segment found that cuts off any columns above it.
+
+    find_columns(current_block, layout_blocks, segment_index)
+
+    possible_child_index = find_child(current_block, layout_blocks)
+
+    if is_column_break(sorted_layout[segment_index + 1][0], layout_blocks[possible_child_index]):
+        sorted_layout.append([layout_blocks.pop(possible_child_index)])
+    else:
+        current_block = layout_blocks[possible_child_index]
+        sorted_layout[segment_index].append(current_block)
+        ssi += 1
+    
+    # return flattened block segments
+    return [block for segment in sorted_layout for block in segment]
 
     
 def validate_layout(preprocessed_paragraphs : list[tuple[int, str]], current_batch : list[tuple[str, str]]):
@@ -220,23 +313,27 @@ def validate_layout(preprocessed_paragraphs : list[tuple[int, str]], current_bat
         threshold = 0.4
 
         for _ in range(expand_limit):
+
+            # the range for which the character count of the two paragraphs should be similar by to warrant a match check
             t_range = int(threshold * len(layout_block[1]))
 
             for index in range(search_limit):
                 if (len(preprocessed_paragraphs[index][1]) >= len(layout_block[1]) - t_range) and\
                 (len(preprocessed_paragraphs[index][1]) <= len(layout_block[1]) + t_range):
-                    potential_matches.append[index]
+                    potential_matches.append(index)
             
             # no results found in the search limit with the provided threshold, expand search via expanding threshold
             if len(potential_matches) == 0:
                 threshold += 0.2
                 continue
-
-
-
-    
-
-
+            else:
+                print("Potential Match:", potential_matches)
+                print(layout_block[1], "\n-----------------------------")
+                for index in potential_matches:
+                    print(preprocessed_paragraphs[index][1], "\n")
+                quit()
+        print("No Match Found")
+        quit()
 
     return 0
 

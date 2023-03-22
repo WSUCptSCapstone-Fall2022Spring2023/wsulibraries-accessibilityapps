@@ -80,23 +80,22 @@ class Document:
         if file_path is not None and file_path.lower().endswith(".pdf"):
             
             # extract the data
-            self.paragraphs = extract_paragraphs_and_fonts_and_sizes(file_path)
+            #self.paragraphs = extract_paragraphs_and_fonts_and_sizes(file_path)
+            self.paragraphs = []
             self.page_count = len(self.paragraphs)
             
-            for batch in self.paragraphs:
-                for p in batch:
-                    print(p.get_raw_text())
-                    print("\n")
-                print("---------------------------------------------")
-            quit()
+            # for batch in self.paragraphs:
+            #     for p in batch:
+            #         print(p.get_raw_text())
+            #         print("\n")
+            #     print("---------------------------------------------")
+            # quit()
             
-            # calculate the keywords
-            self.keywords = self._calculate_keywords()
 
             # get the layout of the document for tagging (it is ordered and includes tag type and data)
             if platform == "linux" or platform == "linux2":
                 # using self.paragraphs to validate and optimize layout results. Creates a list of (p.font_size as int, p.raw_text)
-                preprocessed_paragraphs = [(int(''.join(c for c in p.font_size if c.isdigit())), p.get_raw_text()) for p in self.paragraphs]
+                preprocessed_paragraphs = [[(int(''.join(c for c in p.font_size if c.isdigit())), p.get_raw_text()) for p in batch] for batch in self.paragraphs]
                 self.layout_blocks = document_layout(self.file_path, preprocessed_paragraphs, True)
             else:
                 print("Layout Parsing Skipped: Non-Linux distributions not yet supported...")
@@ -108,6 +107,8 @@ class Document:
                 for _, p in batch:
                     print(_, "\n{}".format(p), "\n")
 
+            # calculate the keywords
+            self.keywords = self._calculate_keywords()
 
         else:
             raise ValueError("Invalid file path, must be a pdf file")
