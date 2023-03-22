@@ -224,9 +224,10 @@ def order_layout(layout_blocks : list[TextBlock]):
                 break
             if get_xy(l_blocks[lb_index])[0][0] > block_coords[1][0]:
                 return lb_index
+            lb_index += 1
         return -1
     
-    def find_columns(left_block : TextBlock, l_blocks : list[TextBlock], relative_segment_index : int):
+    def find_columns(left_block : TextBlock, l_blocks : list[TextBlock], relative_segment_index : int, segments : list[TextBlock]):
         """ For a given left_block finds all obvious blocks to its right that would insinuate a column. Done recursively if there is many columns.
 
         Args:
@@ -234,20 +235,24 @@ def order_layout(layout_blocks : list[TextBlock]):
             l_blocks (list[TextBlock]): The remaining unordered layout blocks
             relative_segment_index (int): The given left blocks segment index in the res array.
         """
-        nonlocal sorted_layout
         right_block_index = check_right(left_block, l_blocks)
 
         if right_block_index >= 0:
             right_block = layout_blocks.pop(right_block_index)
-            sorted_layout.insert(relative_segment_index + 1, [right_block])
-            find_columns(right_block, l_blocks, relative_segment_index + 1)
+            segments.insert(relative_segment_index + 1, [right_block])
+            find_columns(right_block, l_blocks, relative_segment_index + 1, segments)
 
 
     def find_child(parent : TextBlock, l_blocks : list[TextBlock]):
+        nonlocal column_break_y
         block_coords = get_xy(parent)
-
         lb_index = 0
+
         while lb_index < len(l_blocks):
+            if column_break_y > 0:
+                if get_xy(l_blocks[lb_index])[0][1] >= column_break_y:
+                    break
+            # check if any blocks intersect with the parent block's range (x, x + width)
             if get_xy(l_blocks[lb_index])[0][0] >= block_coords[0][0]:
                 if get_xy(l_blocks[lb_index])[0][0] <= block_coords[1][0]:
                     return lb_index
@@ -256,8 +261,59 @@ def order_layout(layout_blocks : list[TextBlock]):
             lb_index += 1
         return -1
     
-    def is_column_break(column_block : TextBlock, child_block : TextBlock):
-        return get_xy(child_block)[1][0] >= get_xy(column_block)[0][0]
+    def is_column_break(relative_segment_index: int, child_block : TextBlock):
+        nonlocal sorted_layout
+        icb = False # Is Column Break
+        break_index = -1
+
+        for current_column in range(relative_segment_index, len(sorted_layout)):
+            if get_xy(child_block)[1][0] >= get_xy(sorted_layout[current_column][0])[0][0]:
+                icb = True
+                break_index = current_column
+            else:
+                break
+        return icb, break_index + 1
+    
+    def has_missing_blocks_to_left(relative_segment_index : int, block : TextBlock, l_blocks : list[TextBlock]):
+        nonlocal sorted_layout
+        block_coords = get_xy(block)
+
+        indexes = []
+        missed_blocks = []
+
+        lb_index = 0
+        while lb_index < len(l_blocks):
+            if get_xy(l_blocks[lb_index])[0][1] > block_coords[1][1]:
+                break
+            if get_xy(l_blocks[lb_index])[0][0] > block_coords[1][0]:
+                indexes.append(lb_index)
+            lb_index += 1
+        
+        if len(missed_blocks) > 0:
+            # grab all blocks to the left of this block that were evidently missed
+            for missed_block in reversed(indexes):
+                missed_blocks.insert(0, l_blocks.pop(missed_block))
+            missed_blocks.append(block) # add in case it is a column parent
+            
+            # get top-left block
+            set_first_block(missed_blocks)
+            first_block = missed_blocks.pop(0)
+            subsegment = [first_block]
+            find_columns(first_block, missed_blocks, 0, subsegment)
+
+            # add misssed column blocks to the ordered layout
+            for s_block in subsegment:
+                sorted_layout.insert(relative_segment_index + 1, s_block)
+                relative_segment_index += 1
+            
+            # add any blocks that were not in a column and at the top back to the remaining blocks and sort to keep y-ordered constraint.
+            for not_column_block in missed_blocks:
+                l_blocks.insert(0, not_column_block)
+            layout_blocks.sort(key = lambda b:b.coordinates[1], inplace=True)
+
+            return True
+
+        return False
 
 
     set_first_block(layout_blocks)
@@ -265,20 +321,59 @@ def order_layout(layout_blocks : list[TextBlock]):
     current_block = layout_blocks.pop(0)    # Index 0 should be the first element to read
     sorted_layout.append([current_block])   # Add new segment (section) to the res array
     segment_index = 0                       # The current segment to be appending new blocks to
-    ssi = 0                                 # segment-sub-index, the last block to be read in this segment
     column_break_index = -1                 # this index marks a segment found that cuts off any columns above it.
-
-    find_columns(current_block, layout_blocks, segment_index)
-
-    possible_child_index = find_child(current_block, layout_blocks)
-
-    if is_column_break(sorted_layout[segment_index + 1][0], layout_blocks[possible_child_index]):
-        sorted_layout.append([layout_blocks.pop(possible_child_index)])
-    else:
-        current_block = layout_blocks[possible_child_index]
-        sorted_layout[segment_index].append(current_block)
-        ssi += 1
+    column_break_y = -1                     # this y-coordinate for the soonest column break
     
+    cycle_count = 1
+    while len(layout_blocks) > 0:
+        print("BLOCK ORDER CYLCE:", cycle_count)
+        cycle_count += 1
+
+        # if this is the right most segment, make sure no other columns to the right
+        if segment_index == (len(sorted_layout) - 1):
+            find_columns(current_block, layout_blocks, segment_index, sorted_layout)
+
+        possible_child_index = find_child(current_block, layout_blocks)
+        if possible_child_index == -1:
+            # if no blocks directly below the current block
+            if segment_index == (len(sorted_layout) - 1):
+                # if this is the last segment, restart the algorithm
+                set_first_block(layout_blocks)
+                current_block = layout_blocks.pop(0)    # Index 0 should be the first element to read
+                sorted_layout.append([current_block])   # Add new segment (section) to the res array
+                segment_index = 0                       # The current segment to be appending new blocks to
+                column_break_index = -1                 # this index marks a segment found that cuts off any columns above it.
+                column_break_y = -1                     # this y-coordinate for the soonest column break
+                continue
+            else:
+                segment_index += 1
+                if segment_index == column_break_index:
+                    column_break_index = -1
+                    column_break_y = -1
+                current_block = sorted_layout[segment_index][0]
+                continue
+
+        icb, possible_break_index = is_column_break(segment_index + 1, layout_blocks[possible_child_index])
+        if icb:
+            # Add new segment where column break cuts off the right most column,
+            # none of the columns above this break should look for child blocks under the break
+            column_break_index = possible_break_index
+            sorted_layout.insert(column_break_index, [layout_blocks.pop(possible_child_index)])
+            column_break_y = get_xy(sorted_layout[column_break_index][0])[0][1]
+            segment_index += 1
+            current_block = sorted_layout[segment_index][0]
+        else:
+            # If the possible child block is under the parent block but has blocks to the left of it,
+            # then we found a right column under the parent, which means we need to search to the
+            # left and add segments first.
+            if not has_missing_blocks_to_left(segment_index, layout_blocks[possible_child_index], layout_blocks):
+                # if this is next block in this column segment
+                current_block = layout_blocks.pop(possible_child_index)
+                sorted_layout[segment_index].append(current_block)
+            else:
+                segment_index += 1 # columns were added, meaning the current_block is a column break
+                current_block = sorted_layout[segment_index][0]
+        
     # return flattened block segments
     return [block for segment in sorted_layout for block in segment]
 
