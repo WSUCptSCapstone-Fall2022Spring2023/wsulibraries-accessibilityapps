@@ -100,7 +100,7 @@ class Document:
             else:
                 print("Layout Parsing Skipped: Non-Linux distributions not yet supported...")
                 self.layout_blocks = []
-            
+            quit()
             print("Pages Processed: {}".format(len(self.layout_blocks)))
 
             for batch in self.layout_blocks:

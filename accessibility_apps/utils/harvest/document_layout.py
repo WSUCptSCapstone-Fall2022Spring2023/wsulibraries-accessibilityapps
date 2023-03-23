@@ -167,7 +167,6 @@ def document_layout(pdf_name : str, preprocessed_paragraphs : list[list[tuple[in
                 print(result, "\n")
             draw_im = lp.draw_box(img, layout_blocks,  box_width=5, box_alpha=0.2, show_element_type=True, show_element_id=True)
             draw_im.save("page[{}]_layout_boxes.jpeg".format(page_index))
-        quit()
 
         for block in layout_blocks:
             if block.type == 'Text' or block.type == 'Title' or block.type == "List":
@@ -184,8 +183,8 @@ def document_layout(pdf_name : str, preprocessed_paragraphs : list[list[tuple[in
             else:
                 current_batch.append((block.type, "IMG DATA -- NOT ADDED"))
         
-        if(page_index == 3):
-            validate_layout(preprocessed_paragraphs[page_index], current_batch)
+        # if(page_index == 3):
+        #     validate_layout(preprocessed_paragraphs[page_index], current_batch)
         res_layout_data.append(current_batch)
 
     return res_layout_data
@@ -310,7 +309,6 @@ def order_layout(layout_blocks : list[TextBlock]):
             
             # add any blocks that were not in a column and at the top back to the remaining blocks and sort to keep y-ordered constraint.
             for not_column_block in missed_blocks:
-                print("NOT GOOD")
                 l_blocks.insert(0, not_column_block)
             layout_blocks.sort(key = lambda b:b.coordinates[1], inplace=True)
 
@@ -327,27 +325,21 @@ def order_layout(layout_blocks : list[TextBlock]):
     column_break_index = -1                 # this index marks a segment found that cuts off any columns above it.
     column_break_y = -1                     # this y-coordinate for the soonest column break
     
-    cycle_count = 1
+    cycle_count = 0
     while len(layout_blocks) > 0:
+        
+        cycle_count += 1
         print("BLOCK ORDER CYLCE:", cycle_count)
 
-        if (cycle_count == 9):
-            for s in sorted_layout:
-                for block in s:
-                    print (s)
-                    print("\n----------\n")
-            
-            print("WHAt is left:")
-            for lb in layout_blocks:
-                print(lb, '\n')
-
-        cycle_count += 1
 
         # if this is the right most segment, make sure no other columns to the right
         if segment_index == (len(sorted_layout) - 1):
             find_columns(current_block, layout_blocks, segment_index, sorted_layout)
 
         possible_child_index = find_child(current_block, layout_blocks)
+
+        
+
         if possible_child_index == -1:
             # if no blocks directly below the current block
             if segment_index == (len(sorted_layout) - 1):
@@ -366,8 +358,12 @@ def order_layout(layout_blocks : list[TextBlock]):
                     column_break_y = -1
                 current_block = sorted_layout[segment_index][0]
                 continue
+        
+        if column_break_index > 0:
+            icb, possible_break_index = False, -1
+        else:
+            icb, possible_break_index = is_column_break(segment_index + 1, layout_blocks[possible_child_index])
 
-        icb, possible_break_index = is_column_break(segment_index + 1, layout_blocks[possible_child_index])
         if icb:
             # Add new segment where column break cuts off the right most column,
             # none of the columns above this break should look for child blocks under the break
@@ -376,10 +372,6 @@ def order_layout(layout_blocks : list[TextBlock]):
             column_break_y = get_xy(sorted_layout[column_break_index][0])[0][1]
             segment_index += 1
             current_block = sorted_layout[segment_index][0]
-            if (cycle_count == 10):
-                print("current_block:")
-                print(current_block)
-                quit()
 
         else:
             # If the possible child block is under the parent block but has blocks to the left of it,
@@ -392,6 +384,16 @@ def order_layout(layout_blocks : list[TextBlock]):
             else:
                 segment_index += 1 # columns were added, meaning the current_block is a column break
                 current_block = sorted_layout[segment_index][0]
+
+
+
+    # print("current block:",current_block)
+    # print("===============================")    
+    
+    # for rblock in layout_blocks:
+    #     print(rblock)
+    #     print("\n--------------\n")
+    # quit()
 
     # return flattened block segments
     return [block for segment in sorted_layout for block in segment]
