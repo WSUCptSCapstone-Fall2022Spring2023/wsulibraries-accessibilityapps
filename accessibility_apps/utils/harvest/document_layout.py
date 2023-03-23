@@ -238,7 +238,7 @@ def order_layout(layout_blocks : list[TextBlock]):
         right_block_index = check_right(left_block, l_blocks)
 
         if right_block_index >= 0:
-            right_block = layout_blocks.pop(right_block_index)
+            right_block = l_blocks.pop(right_block_index)
             segments.insert(relative_segment_index + 1, [right_block])
             find_columns(right_block, l_blocks, relative_segment_index + 1, segments)
 
@@ -274,9 +274,9 @@ def order_layout(layout_blocks : list[TextBlock]):
                 break
         return icb, break_index + 1
     
-    def has_missing_blocks_to_left(relative_segment_index : int, block : TextBlock, l_blocks : list[TextBlock]):
+    def has_missing_blocks_to_left(relative_segment_index : int, right_block : TextBlock, l_blocks : list[TextBlock]):
         nonlocal sorted_layout
-        block_coords = get_xy(block)
+        block_coords = get_xy(right_block)
 
         indexes = []
         missed_blocks = []
@@ -285,29 +285,32 @@ def order_layout(layout_blocks : list[TextBlock]):
         while lb_index < len(l_blocks):
             if get_xy(l_blocks[lb_index])[0][1] > block_coords[1][1]:
                 break
-            if get_xy(l_blocks[lb_index])[0][0] > block_coords[1][0]:
+            if get_xy(l_blocks[lb_index])[1][0] < block_coords[0][0]:
                 indexes.append(lb_index)
             lb_index += 1
         
-        if len(missed_blocks) > 0:
+        if len(indexes) > 0:
             # grab all blocks to the left of this block that were evidently missed
             for missed_block in reversed(indexes):
                 missed_blocks.insert(0, l_blocks.pop(missed_block))
-            missed_blocks.append(block) # add in case it is a column parent
+            missed_blocks.append(right_block)
+            l_blocks.pop(0) # the first element is the right block, remove it as it will be added to sorted_layout later
             
             # get top-left block
             set_first_block(missed_blocks)
             first_block = missed_blocks.pop(0)
-            subsegment = [first_block]
-            find_columns(first_block, missed_blocks, 0, subsegment)
+            segment_list = [[first_block]]
+            find_columns(first_block, missed_blocks, 0, segment_list)
 
             # add misssed column blocks to the ordered layout
-            for s_block in subsegment:
-                sorted_layout.insert(relative_segment_index + 1, s_block)
-                relative_segment_index += 1
+            for segment in segment_list:
+                for s_block in segment:
+                    sorted_layout.insert(relative_segment_index + 1, [s_block])
+                    relative_segment_index += 1
             
             # add any blocks that were not in a column and at the top back to the remaining blocks and sort to keep y-ordered constraint.
             for not_column_block in missed_blocks:
+                print("NOT GOOD")
                 l_blocks.insert(0, not_column_block)
             layout_blocks.sort(key = lambda b:b.coordinates[1], inplace=True)
 
@@ -327,6 +330,17 @@ def order_layout(layout_blocks : list[TextBlock]):
     cycle_count = 1
     while len(layout_blocks) > 0:
         print("BLOCK ORDER CYLCE:", cycle_count)
+
+        if (cycle_count == 9):
+            for s in sorted_layout:
+                for block in s:
+                    print (s)
+                    print("\n----------\n")
+            
+            print("WHAt is left:")
+            for lb in layout_blocks:
+                print(lb, '\n')
+
         cycle_count += 1
 
         # if this is the right most segment, make sure no other columns to the right
@@ -362,6 +376,11 @@ def order_layout(layout_blocks : list[TextBlock]):
             column_break_y = get_xy(sorted_layout[column_break_index][0])[0][1]
             segment_index += 1
             current_block = sorted_layout[segment_index][0]
+            if (cycle_count == 10):
+                print("current_block:")
+                print(current_block)
+                quit()
+
         else:
             # If the possible child block is under the parent block but has blocks to the left of it,
             # then we found a right column under the parent, which means we need to search to the
@@ -373,7 +392,7 @@ def order_layout(layout_blocks : list[TextBlock]):
             else:
                 segment_index += 1 # columns were added, meaning the current_block is a column break
                 current_block = sorted_layout[segment_index][0]
-        
+
     # return flattened block segments
     return [block for segment in sorted_layout for block in segment]
 
