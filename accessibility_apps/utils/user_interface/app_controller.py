@@ -120,3 +120,25 @@ class AccessibilityAppController():
         
         folder_processing_thread = Thread(target=self._process_local_folder, args=[folder, metadata_csv_name, progress_update_callback, finished_callback])
         folder_processing_thread.start()
+
+    def process_document_by_id(self, id:str, finished_callback):
+        """Processes a document by searching for it given the id.
+        
+        Args:
+            id (str): The id number of the document.
+            finished_callback (function): The function to call after the document has been processed.
+        """
+        # define a function to download and process the document
+        def run_document_processing():
+            document = self.downloader.get_next_document(True, id)
+            # make sure the document id is valid
+            if document is None:
+                finished_callback("Error, document id incorrect")
+                return
+            self._run_accessibility_pipeline(document)
+            document.delete()
+            finished_callback()
+
+        # start the processing on a thread so it doesn't freeze the ui
+        document_processing_thread = Thread(target=run_document_processing)
+        document_processing_thread.start()

@@ -293,6 +293,8 @@ class SingleDocumentSearchPage(tk.Frame):
         """Construct a frame widget with parent `parent` and the controller for switching frames as `ui_controller`."""
         super().__init__(parent)
 
+        self.ui_controller = ui_controller
+
         # setup the grid
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
@@ -309,17 +311,31 @@ class SingleDocumentSearchPage(tk.Frame):
         document_id_title.grid(row=1, column=0)
 
         # create document id search bar
-        search_bar = tk.Entry(self, font=("Montserrat", 15))
-        search_bar.grid(row=1, column=1)
+        self.search_bar = tk.Entry(self, font=("Montserrat", 15))
+        self.search_bar.grid(row=1, column=1)
 
         # create start button
-        start_button = create_button(self, "Start", lambda: None) # TODO
-        start_button.grid(row=2, column=0)
+        self.start_button = create_button(self, "Start", self.run_document_processing)
+        self.start_button.grid(row=2, column=0)
 
         # create progress label
-        # TODO this needs to be updated to say "Processing..." and then "Done"
-        progress_label = tk.Label(self, text="Waiting", background=LIGHT_GRAY, fg="white", font=("Montserrat", 15))
-        progress_label.grid(row=2, column=1)
+        self.progress_label = tk.Label(self, text="Waiting", background=LIGHT_GRAY, fg="white", font=("Montserrat", 15))
+        self.progress_label.grid(row=2, column=1)
+
+    def run_document_processing(self):
+        """Runs the document search and processing using the id from the search bar."""
+        self.progress_label["text"] = "Processing..."
+        self.start_button["state"] = tk.DISABLED
+        self.ui_controller.app_controller.process_document_by_id(self.search_bar.get(), self.processing_done_callback)
+        
+    def processing_done_callback(self, progress_text:str="Done"):
+        """Signifies that the document processing has finished and updates the ui accordingly.
+        
+        Args:
+            progress_text (str): The text to display on the progress label.
+        """
+        self.progress_label["text"] = progress_text
+        self.start_button["state"] = tk.NORMAL
 
 class MultiDocumentSearchPage(tk.Frame):
     """A frame with a menu for processing documents given a list of document ids."""

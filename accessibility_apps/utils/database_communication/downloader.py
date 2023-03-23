@@ -13,6 +13,7 @@ from utils.accessible_document import AccessibleDocument
 REPOSITORY_URL = "https://na01.alma.exlibrisgroup.com/view/oai/01ALLIANCE_WSU/request"
 OAI_STANDARD_PREFIX = ".//{http://www.openarchives.org/OAI/2.0/}"
 LIBRARY_STANDARD_PREFIX = ".//{http://www.loc.gov/MARC21/slim}"
+DOCUMENT_IDENTIFIER_PREFIX = "oai:alma.01ALLIANCE_WSU:"
 
 class DocumentDownloader():
     """Provides a stream of documents from the WSU research exchange repository."""
@@ -80,15 +81,19 @@ class DocumentDownloader():
         self.previous_document_identifier = self.identifiers.pop()
         return self.previous_document_identifier
 
-    def get_next_document(self, delete_on_fail=False):
+    def get_next_document(self, delete_on_fail:bool=False, document_identifier_number:str=None):
         """Returns a Document object for the next document in the repository.
         
         Args:
             delete_on_fail (bool): Whether to delete documents that failed to open.
+            document_identifier_number (str): The identifier number of the document to get. Leave as `None` for the next one from the repo.
         """
-        
+
         # get the next document identifier and setup the request to grab using it
-        document_identifier = self._get_next_identifier()
+        if document_identifier_number is None:
+            document_identifier = self._get_next_identifier()
+        else:
+            document_identifier = DOCUMENT_IDENTIFIER_PREFIX + document_identifier_number
         request_params = {
             "verb":"GetRecord",
             "identifier":document_identifier,
