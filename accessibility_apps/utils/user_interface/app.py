@@ -10,6 +10,8 @@
 import os
 import tkinter as tk
 from tkinter import ttk
+from tkinter import filedialog
+from tkinter import messagebox
 from utils.user_interface.app_controller import AccessibilityAppController
 
 GRAY = "#4D4D4D"
@@ -223,6 +225,8 @@ class LocalFolderInputPage(tk.Frame):
         """Construct a frame widget with parent `parent` and the controller for switching frames as `ui_controller`."""
         super().__init__(parent)
 
+        self.ui_controller = ui_controller
+
         # setup the grid
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=2)
@@ -236,22 +240,51 @@ class LocalFolderInputPage(tk.Frame):
         page_description_label.grid(row=0, column=0, columnspan=2)
 
         # create button for selecting the folder
-        folder_select_button = create_button(self, "Select Folder", lambda: None) # TODO
+        folder_select_button = create_button(self, "Select Folder", self._set_folder)
         folder_select_button.grid(row=1, column=0)
 
         # create label for the name of the folder
-        folder_name_label = tk.Label(self, text="None", background=LIGHT_GRAY, fg="white", font=("Montserrat", 15), wraplength=350)
-        folder_name_label.grid(row=1, column=1)
+        self.folder_name_label = tk.Label(self, text="None", background=LIGHT_GRAY, fg="white", font=("Montserrat", 15), wraplength=350)
+        self.folder_name_label.grid(row=1, column=1)
+        self.folder = None
 
         # create button to run the processing
-        # TODO error box if there is no csv found
-        run_processing_button = create_button(self, "Start", lambda: None) # TODO
-        run_processing_button.grid(row=2, column=0)
+        self.run_processing_button = create_button(self, "Start", self._process_folder)
+        self.run_processing_button.grid(row=2, column=0)
 
         # create progress bar
-        # TODO needs to be updated as progress is made
         self.progress_bar = ttk.Progressbar(self, orient=tk.HORIZONTAL, length=200)
         self.progress_bar.grid(row=2, column=1)
+
+    def _set_folder(self):
+        """Opens a file dialog to select the folder and sets it for the page."""
+        self.folder = filedialog.askdirectory()
+        self.folder_name_label["text"] = self.folder
+
+    def _process_folder(self):
+        """Processes through the documents in the folder."""
+        
+        # reset the progress bar
+        self.progress_bar["value"] = 0
+
+        # check errors
+        if self.folder is None:
+            messagebox.showerror("Error", "Must select a folder")
+        else:
+            try:
+                # disable the button so it cannot be clicked again until the job is done
+                self.run_processing_button["state"] = tk.DISABLED
+                # run the job
+                self.ui_controller.app_controller.process_local_folder(self.folder, lambda progress: self.progress_bar.step(progress), self._enable_run_button)
+            except Exception as e:
+                # re-enable the run button since it didn't finish smoothly
+                self._enable_run_button()
+                # show the error
+                messagebox.showerror("Error", str(e))
+
+    def _enable_run_button(self):
+        """Enables the run button so it can be pressed again."""
+        self.run_processing_button["state"] = tk.NORMAL
 
 class SingleDocumentSearchPage(tk.Frame):
     """A frame with a menu for processing a single document searched by document id."""

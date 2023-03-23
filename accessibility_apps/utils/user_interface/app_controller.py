@@ -7,6 +7,7 @@
 #   to control the functional workings of the app.
 # ==================================================
 
+import os
 from threading import Event, Thread
 from utils.accessible_document import AccessibleDocument
 from utils.database_communication.downloader import DocumentDownloader
@@ -68,6 +69,22 @@ class AccessibilityAppController():
 
             if finish_event.is_set():
                 return
+            
+    def _process_local_folder(self, folder:str, metadata_csv_name:str, progress_update_callback, finished_callback):
+        """Automatically processes documents in a specified folder with metadata given in a csv file.
+        
+        Args:
+            folder (str): The folder to process documents from.
+            progress_update_callback (function): The function to call to update the progress for the processing.
+            finished_callback (function): The function to call to update the ui signifying that the job is done.
+        """
+        # TODO
+        # read the csv to get the metadata and names of files
+
+        # loop through the files from the csv and process each one of them
+
+        # broadcast that the folder processing finished
+        finished_callback()
 
     def start_auto_mode(self):
         """Starts the automatic processing of documents."""
@@ -81,3 +98,25 @@ class AccessibilityAppController():
         self.auto_document_processing_thread.join()
         # to update the count just in case the document 
         self.update_ui_current_document_count(self.auto_processed_docs_count)
+
+    def process_local_folder(self, folder:str, progress_update_callback, finished_callback):
+        """Automatically processes documents in a specified folder with metadata given in a csv file.
+        
+        Args:
+            folder (str): The folder to process documents from.
+            progress_update_callback (function): The function to call to update the progress for the processing.
+            finished_callback (function): The function to call to update the ui signifying that the job is done.
+        """
+        # locate the metadata csv
+        file_list = os.listdir(folder)
+        csv_file_count = 0
+        metadata_csv_name = None
+        for file_name in file_list:
+            if file_name.lower().endswith(".csv"):
+                csv_file_count += 1
+                metadata_csv_name = folder + "/" + file_name
+        if csv_file_count != 1:
+            raise Exception("There are " + str(csv_file_count) + " csv files in the folder. There should be exactly 1 and it should contain metadata information for the pdf files.")
+        
+        folder_processing_thread = Thread(target=self._process_local_folder, args=[folder, metadata_csv_name, progress_update_callback, finished_callback])
+        folder_processing_thread.start()
