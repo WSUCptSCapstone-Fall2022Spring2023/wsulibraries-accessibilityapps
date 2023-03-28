@@ -44,11 +44,3 @@ def read_metadata_csv(metadata_csv_file_name:str) -> dict:
         file_name_metadata[row["FILE_FILEURL"]] = row
 
     return file_name_metadata
-
-# testing (TODO put this in a unittest)
-if __name__ == "__main__":
-    csv_name = r"C:\Users\trent\OneDrive\School Work\WSU\Spring 2023\423\wsulibraries-accessibilityapps\data\input\upload_sample.csv"
-    result = read_metadata_csv(csv_name)
-    for file_name, content in result.items():
-        print(file_name, content)
-        print()
