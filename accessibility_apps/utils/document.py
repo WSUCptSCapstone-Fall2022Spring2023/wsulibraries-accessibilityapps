@@ -5,6 +5,7 @@
 
 # * Modules
 import os
+import csv
 from yake import KeywordExtractor
 from PyPDF2 import PdfReader, PdfWriter
 from utils.harvest.pdf_extractor import export_to_html
@@ -35,6 +36,9 @@ class Document:
         self.subject = ""
         self.creator = "WSU Library Accessibilty App"
         self.keywords = []
+
+        # initialize the document id
+        self.id = None
 
         # for checking when the file is deleted
         self.deleted = False
@@ -98,8 +102,6 @@ class Document:
             Args:
             file_path (string): The path name of the html doc to be exported.
         """
-        # TODO use the paragraph objects to write a better exporting function that actually goes to a pdf
-        # (this is just a temporary exporting function before we get that working)
 
         # use the file path of the input file but change the extension to .html instead of .pdf if file path not specified
         if file_path is None:
@@ -116,6 +118,19 @@ class Document:
 
         # add metadata to the pdf
         self._apply_metadata(OUTPUT_DIRECTORY + "/" + self.get_filename())
+
+        # add document information to the export csv
+        export_csv_exists = "export_data.csv" in os.listdir(OUTPUT_DIRECTORY)
+        with open(OUTPUT_DIRECTORY + "/export_data.csv", "a", newline="") as export_csv:
+            writer = csv.writer(export_csv)
+
+            # write the header if the file was just created
+            if not export_csv_exists:
+                writer.writerow(["Document ID", "File Name", "Document Title"])
+
+            # write data
+            formatted_document_id = "" if self.id is None else self.id
+            writer.writerow([formatted_document_id, self.get_filename(), self.title])
 
     # Last Edit By: Trent Bultsma
     # * Edit Details: Use the pdf_extractor to extract and export data.

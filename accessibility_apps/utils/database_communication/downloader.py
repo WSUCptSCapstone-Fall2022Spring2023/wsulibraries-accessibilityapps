@@ -141,6 +141,7 @@ class DocumentDownloader():
 
         document = AccessibleDocument(document_download_path, delete_on_fail)
         document.set_metadata(authors, title, description)
+        document.id = document_identifier[len(DOCUMENT_IDENTIFIER_PREFIX):]
         return document
     
     def restore_previous_identifier(self):
