@@ -47,5 +47,5 @@ class MetadataCsvTests(unittest.TestCase):
 
         # compare with the expected output
         test_file_metadata = overall_metadata_result[test_file_path]
-        for field, value in test_file_metadata.items():
+        for field, value in expected_test_file_metadata.items():
             self.assertEqual(value, test_file_metadata[field])
