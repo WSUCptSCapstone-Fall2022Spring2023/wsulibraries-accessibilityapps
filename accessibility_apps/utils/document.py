@@ -61,7 +61,6 @@ class Document:
             author (string): The author of the document.
             title (string): The title of the document.
             subject (string): A small description of what the document is about.
-            keywords (list): A list of important words in the document.
         """
         self.author = author
         self.title = title
