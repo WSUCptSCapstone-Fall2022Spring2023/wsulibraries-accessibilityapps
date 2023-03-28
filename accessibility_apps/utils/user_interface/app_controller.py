@@ -10,6 +10,7 @@
 import os
 from threading import Event, Thread
 from utils.accessible_document import AccessibleDocument
+from utils.harvest.metadata_csv_reader import read_metadata_csv
 from utils.database_communication.downloader import DocumentDownloader
 from utils.harvest.document_harvester import INPUT_DIRECTORY, OUTPUT_DIRECTORY
 
@@ -78,10 +79,22 @@ class AccessibilityAppController():
             progress_update_callback (function): The function to call to update the progress for the processing.
             finished_callback (function): The function to call to update the ui signifying that the job is done.
         """
-        # TODO
         # read the csv to get the metadata and names of files
+        all_files_metadata = read_metadata_csv(metadata_csv_name)
 
         # loop through the files from the csv and process each one of them
+        for file_name, metadata in all_files_metadata:
+            document = AccessibleDocument(folder + "/" + file_name, True)
+
+            # set the metadata for the file
+            author = "" # TODO
+            title = metadata["FILE_DISPLAY_NAME"]
+            subject = "" # TODO
+            document.set_metadata(author, title, subject)
+
+            # process the document
+            self._run_accessibility_pipeline(document)
+            document.delete()
 
         # broadcast that the folder processing finished
         finished_callback()

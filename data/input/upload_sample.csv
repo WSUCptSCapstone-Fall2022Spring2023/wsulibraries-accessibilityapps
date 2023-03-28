@@ -1,0 +1,43 @@
+,GROUP_ID,ASSET_TITLE,ASSET_SUBTITLE,ASSET_DOI,ASSET_PMID,ASSET_PUBLISHDATE,ASSET_AVAILDATE,ASSET_ACCEPTDATE,ASSET_COPYRIGHTDATE,ASSET_CREATEDATE,ASSET_OPENINGDATE,ASSET_PERFORMANCEDATE,ASSET_RESTYPE,ASSET_RESSUBTYPE,ASSET_KEYWORDS,ASSET_PEEREVIEW,ASSET_LANG,ASSET_ABSTRACT,ASSET_COPYRIGHT,ASSET_AFFILIATION,ASSET_GRANTNOTE,ASSET_ORIGASSET_ID,ASSET_FORMAT,ASSET_OPENACCESS,ASSET_DATEEPUB,ASSET_PORTAL_VISIBILITY,ASSET_IDENTIFIER_ADDITIONAL01,ASSET_PROFILE_VISIBILITY,OCREATOR_ORGANIZATION,OCONT_ORGANIZATION,FILE_FILEURL,FILE_DISPLAY_NAME
+ASSET,1,"Grant County 4H Update, October 2022",,,,202210,20230301,,,,,,publication.newsletterArticle,,4-H club,NO,eng,,http://rightsstatements.org/vocab/InC/1.0/,01ALLIANCE_WSU___41_01_01,,,pdf,YES,202210,TRUE,,FALSE,,,,
+CREATOR,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+OCREATOR,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,Washington State University Extension,,,
+CONT,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CONT,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+OCONT,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FILE,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,https://s3.us-east-1.amazonaws.com/na-st01.ext.exlibrisgroup.com/01ALLIANCE_WSU/upload/esploro/talea-test/4h_2022_10.pdf,"Grant County 4H Update, October 2022"
+ASSET,2,"Grant County 4H Update, November 2022",,,,202211,20230301,,,,,,publication.newsletterArticle,,4-H club,NO,eng,,http://rightsstatements.org/vocab/InC/1.0/,01ALLIANCE_WSU___41_01_01,,,pdf,YES,202211,TRUE,,FALSE,,,,
+CREATOR,2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+OCREATOR,2,,,,,,,,,,,,,,,,,,,,,,,,,,,,Washington State University Extension,,,
+CONT,2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CONT,2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+OCONT,2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FILE,2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,https://s3.us-east-1.amazonaws.com/na-st01.ext.exlibrisgroup.com/01ALLIANCE_WSU/upload/esploro/talea-test/4h_2022_11.pdf,"Grant County 4H Update, November 2022"
+ASSET,3,"4H Monthly Update, December 2022",,,,202212,20230301,,,,,,publication.newsletterArticle,,4-H club,NO,eng,,http://rightsstatements.org/vocab/InC/1.0/,01ALLIANCE_WSU___41_01_01,,,pdf,YES,202212,TRUE,,FALSE,,,,
+CREATOR,3,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+OCREATOR,3,,,,,,,,,,,,,,,,,,,,,,,,,,,,Washington State University Extension,,,
+CONT,3,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CONT,3,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+OCONT,3,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FILE,3,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,https://s3.us-east-1.amazonaws.com/na-st01.ext.exlibrisgroup.com/01ALLIANCE_WSU/upload/esploro/talea-test/4h_2022_12.pdf,"4H Monthly Update, December 2022"
+ASSET,4,"CAHNRS Business Center Newsletter, December 2022",,,,202212,20230301,,,,,,publication.newsletterArticle,,,NO,eng,,http://rightsstatements.org/vocab/InC/1.0/,01ALLIANCE_WSU___AU00003_02_02,,,pdf,YES,202212,TRUE,,FALSE,,,,
+CREATOR,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+OCREATOR,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Washington State University College of Agricultural, Human, and Natural Resource Sciences",,,
+CONT,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CONT,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+OCONT,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FILE,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,https://s3.us-east-1.amazonaws.com/na-st01.ext.exlibrisgroup.com/01ALLIANCE_WSU/upload/esploro/talea-test/cahnrs_2022_12.pdf,"CAHNRS Business Center Newsletter, December 2022"
+ASSET,5,"CAHNRS Business Center Newsletter, January 2023",,,,202301,20230301,,,,,,publication.newsletterArticle,,,NO,eng,,http://rightsstatements.org/vocab/InC/1.0/,01ALLIANCE_WSU___AU00003_02_02,,,pdf,YES,202301,TRUE,,FALSE,,,,
+CREATOR,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+OCREATOR,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,"Washington State University College of Agricultural, Human, and Natural Resource Sciences",,,
+CONT,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CONT,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+OCONT,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FILE,5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,https://s3.us-east-1.amazonaws.com/na-st01.ext.exlibrisgroup.com/01ALLIANCE_WSU/upload/esploro/talea-test/cahnrs_2023_01.pdf,"CAHNRS Business Center Newsletter, January 2023"
+ASSET,6,"Wavelength, 2022",,,,2022,20230301,,,,,,publication.newsletterArticle,,,NO,eng,,http://rightsstatements.org/vocab/InC/1.0/,01ALLIANCE_WSU___AU00066_01,,,pdf,YES,2022,TRUE,,FALSE,,,,
+CREATOR,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+OCREATOR,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,Washington State University Department of Speech and Hearing Sciences,,,
+CONT,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CONT,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+OCONT,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+FILE,6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,https://s3.us-east-1.amazonaws.com/na-st01.ext.exlibrisgroup.com/01ALLIANCE_WSU/upload/esploro/talea-test/wavelength_2022.pdf,"Wavelength, 2022"
