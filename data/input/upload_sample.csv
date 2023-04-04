@@ -2,8 +2,8 @@
 ASSET,1,"Grant County 4H Update, October 2022",,,,202210,20230301,,,,,,publication.newsletterArticle,,4-H club,NO,eng,,http://rightsstatements.org/vocab/InC/1.0/,01ALLIANCE_WSU___41_01_01,,,pdf,YES,202210,TRUE,,FALSE,,,,
 CREATOR,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 OCREATOR,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,Washington State University Extension,,,
-CONT,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-CONT,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+CONT,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,4H Organization,,,
+CONT,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,Creator 3,,,
 OCONT,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 FILE,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,https://s3.us-east-1.amazonaws.com/na-st01.ext.exlibrisgroup.com/01ALLIANCE_WSU/upload/esploro/talea-test/4h_2022_10.pdf,"Grant County 4H Update, October 2022"
 ASSET,2,"Grant County 4H Update, November 2022",,,,202211,20230301,,,,,,publication.newsletterArticle,,4-H club,NO,eng,,http://rightsstatements.org/vocab/InC/1.0/,01ALLIANCE_WSU___41_01_01,,,pdf,YES,202211,TRUE,,FALSE,,,,

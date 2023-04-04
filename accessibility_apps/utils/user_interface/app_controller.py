@@ -87,9 +87,33 @@ class AccessibilityAppController():
             document = AccessibleDocument(folder + "/" + file_name, True)
 
             # set the metadata for the file
-            author = "" # TODO
-            title = metadata["FILE_DISPLAY_NAME"]
-            subject = "" # TODO
+
+            # get the author(s)
+            orgainzation = metadata.get("OCREATOR_ORGANIZATION")
+            first_names = metadata.get("CREATOR_FAMNAME")
+            last_names = metadata.get("CREATOR_GIVNAME")
+            author = ""
+            if orgainzation is not None:
+                author = ", ".join(orgainzation)
+            if first_names is not None and last_names is not None and len(first_names) == len(last_names):
+                names = ", ".join([first_name + " " + last_name for (first_name, last_name) in zip(first_names, last_names)])
+                if author == "":
+                    author = names
+                else:
+                    author += ", " + names
+
+            # get the title
+            title = metadata.get("ASSET_TITLE")
+            # either set it to be an empty string or the first element from the 
+            # metadata list since there should only be one title so grab the first one
+            title = "" if title is None else title[0]
+
+            # get the subject 
+            subject = metadata.get("ASSET_ABSTRACT")
+            # either set it to be an empty string or the first element from the 
+            # metadata list since there should only be one subject so grab the first one
+            subject = "" if subject is None else subject[0]
+
             document.set_metadata(author, title, subject)
 
             # process the document

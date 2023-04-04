@@ -13,7 +13,8 @@ def read_metadata_csv(metadata_csv_file_name:str) -> dict:
     Args:
         metadata_csv_file_name (str): the name of the csv file containing metadata.
     """
-    # files are formatted with many rows of a certain group id which can be collapsed into one row
+    # files are formatted with many rows of a certain group id which can
+    #  be collapsed into one row with a list of elements for each field
     collapsed_rows = {}
 
     with open(metadata_csv_file_name, "r", newline="") as metadata_file:
@@ -25,22 +26,23 @@ def read_metadata_csv(metadata_csv_file_name:str) -> dict:
             if row["GROUP_ID"] not in collapsed_rows.keys():
                 collapsed_rows[row["GROUP_ID"]] = dict()
             
+            # set the specific collapsed row to be the newly initialized dictionary
+            # we just made, which is stored in the overall rows datastructure
             collapsed_row = collapsed_rows[row["GROUP_ID"]]
             # update the collapsed row with everything from this row
             # (skip the left 2 columns because they are row labels that don't need collapsing)
             for field, value in list(row.items())[2:]:
-                # make sure we don't overwrite anything in the collapsing process
-                # (theoretically this should never happen, but if it does that would be an issue)
-                if field in collapsed_row.keys() and collapsed_row[field] != "":
-                    # the existing value is being overwritten by something else (not good)
-                    if value != "":
-                        raise Exception("Error in collapsing a row. Trying to overwrite value " + str(collapsed_row[field]) + " with value " + str(value))
-                else:
-                    collapsed_row[field] = value
+                # initialize the list for the field if it pops up for the first time
+                if field not in collapsed_row.keys():
+                    collapsed_row[field] = []
+                # add the value to the list as long as it is not an empty element
+                if value != "":
+                    collapsed_row[field].append(value)
     
     # map the metadata to the file name instead of group id
     file_name_metadata = dict()
     for row in collapsed_rows.values():
-        file_name_metadata[row["FILE_FILEURL"]] = row
+        # we can use index 0 in this case becase there will only ever be one file url
+        file_name_metadata[row["FILE_FILEURL"][0]] = row
 
     return file_name_metadata
