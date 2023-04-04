@@ -277,7 +277,7 @@ class LocalFolderInputPage(tk.Frame):
                 # run the job
                 self.ui_controller.app_controller.process_local_folder(self.folder, lambda progress: self.progress_bar.step(progress), self._processing_finished)
             except Exception as e:
-                # re-enable the run button since it didn't finish smoothly
+                # reset the stuff when processing is done even though it failed
                 self._processing_finished()
                 # show the error
                 messagebox.showerror("Error", str(e))
@@ -341,11 +341,15 @@ class SingleDocumentSearchPage(tk.Frame):
         self.start_button["state"] = tk.NORMAL
 
 class MultiDocumentSearchPage(tk.Frame):
-    """A frame with a menu for processing documents given a list of document ids."""
+    """A frame with a menu for processing documents given a list of document ids. The 
+    document ids should be in a csv file with just a column of ids and no header or anything."""
 
     def __init__(self, parent, ui_controller):
         """Construct a frame widget with parent `parent` and the controller for switching frames as `ui_controller`."""
         super().__init__(parent)
+
+        self.ui_controller = ui_controller
+        self.csv_input_file = None
 
         # setup the grid
         self.grid_columnconfigure(0, weight=1)
@@ -359,22 +363,54 @@ class MultiDocumentSearchPage(tk.Frame):
         page_description_label.grid(row=0, column=0, columnspan=2)
 
         # create csv select button
-        start_button = create_button(self, "Select ID List", lambda: None) # TODO
+        start_button = create_button(self, "Select ID List", self._select_csv_input)
         start_button.grid(row=1, column=0)
 
         # create selected csv label
-        folder_name_label = tk.Label(self, text="None", background=LIGHT_GRAY, fg="white", font=("Montserrat", 15), wraplength=350)
-        folder_name_label.grid(row=1, column=1)
+        self.file_name_label = tk.Label(self, text="None", background=LIGHT_GRAY, fg="white", font=("Montserrat", 15), wraplength=350)
+        self.file_name_label.grid(row=1, column=1)
 
         # create start button
-        start_button = create_button(self, "Start", lambda: None) # TODO
-        start_button.grid(row=2, column=0)
+        self.start_button = create_button(self, "Start", self._process_documents)
+        self.start_button.grid(row=2, column=0)
 
         # create progress bar
-        # TODO needs to be updated as progress is made
         self.progress_bar = ttk.Progressbar(self, orient=tk.HORIZONTAL, length=200)
         self.progress_bar.grid(row=2, column=1)
 
+    def _select_csv_input(self):
+        """Sets the csv file for document input"""
+        self.csv_input_file = filedialog.askopenfilename(defaultextension=".csv", filetypes=[("CSV Files","*.csv")])
+        self.file_name_label["text"] = self.csv_input_file
+        
+    def _process_documents(self):
+        """Process the documents in the selected csv file."""
+        # reset the progress bar
+        self.progress_bar["value"] = 0
+
+        # check errors
+        if self.csv_input_file is None:
+            messagebox.showerror("Error", "Must select a file")
+        else:
+            try:
+                # disable the button so it cannot be clicked again until the job is done
+                self.start_button["state"] = tk.DISABLED
+                # run the job
+                self.ui_controller.app_controller.process_document_id_list(self.csv_input_file, lambda progress: self.progress_bar.step(progress), self._processing_finished)
+            except Exception as e:
+                # reset the stuff when processing is done even though it failed
+                self._processing_finished()
+                # show the error
+                messagebox.showerror("Error", str(e))
+
+    def _processing_finished(self):
+        """Cleans up and resets some stuff after processing is done."""
+        # enables the run button so it can be pressed again
+        self.start_button["state"] = tk.NORMAL
+        # reset the progress bar
+        self.progress_bar["value"] = 0
+
+# TODO
 class SetInputOutputFoldersPage(tk.Frame):
     """A frame with a menu for setting the default input and output folder."""
 

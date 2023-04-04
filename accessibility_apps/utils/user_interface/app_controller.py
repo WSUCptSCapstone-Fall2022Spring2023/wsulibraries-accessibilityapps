@@ -128,6 +128,32 @@ class AccessibilityAppController():
         # broadcast that the folder processing finished
         finished_callback()
 
+    def _process_document_id_list(self, id_list, progress_update_callback, finished_callback):
+        """Processes documents within the id list.
+        
+        Args:
+            id_list (list): A list of ids to process their corresponding documents.
+            progress_update_callback (function): The function to call to update the progress for the processing.
+            finished_callback (function): The function to call upon finishing the processing.
+        """
+        # setup variables for tracking progress
+        num_documents = len(id_list)
+        processed_documents = 0
+
+        # for incrementing the number of documents processed
+        def single_document_processing_finished(_ = None):
+            nonlocal processed_documents
+            processed_documents += 1
+            progress_update_callback(100/num_documents)
+
+            # end the processing once all the documents are done 
+            if num_documents == processed_documents:
+                finished_callback()
+
+        # call all the threads to start processing
+        for id in id_list:
+            self.process_document_by_id(id, single_document_processing_finished)
+
     def start_auto_mode(self):
         """Starts the automatic processing of documents."""
         self.auto_mode_pause_event = Event()
@@ -172,15 +198,36 @@ class AccessibilityAppController():
         """
         # define a function to download and process the document
         def run_document_processing():
-            document = self.downloader.get_next_document(True, id)
-            # make sure the document id is valid
-            if document is None:
-                finished_callback("Error, document id incorrect")
-                return
-            self._run_accessibility_pipeline(document)
-            document.delete()
+            # don't crash when a non-pdf is processed, just pass over it
+            try:
+                document = self.downloader.get_next_document(True, id)
+                # make sure the document id is valid
+                if document is None:
+                    finished_callback("Error, document id incorrect")
+                    return
+                self._run_accessibility_pipeline(document)
+                document.delete()
+            except:
+                pass
             finished_callback()
 
         # start the processing on a thread so it doesn't freeze the ui
         document_processing_thread = Thread(target=run_document_processing)
         document_processing_thread.start()
+
+    def process_document_id_list(self, id_list_file_name: str, progress_update_callback, finished_callback):
+        """Processes through a list of documents by there.
+        
+        Args:
+            id_list_file_name (str): The name of a file containing the ids of documents to process.
+            progress_update_callback (function): The function to call to update the progress for the processing.
+            finished_callback (function): The function to call upon finishing the processing.
+        """
+        # get the list of ids from the file
+        id_list = []
+        with open(id_list_file_name, "r") as id_list_file:
+            id_list = id_list_file.readlines()
+
+        # start the thread to process the documents
+        folder_processing_thread = Thread(target=self._process_document_id_list, args=[id_list, progress_update_callback, finished_callback])
+        folder_processing_thread.start()
