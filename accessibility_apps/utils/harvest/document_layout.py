@@ -13,8 +13,10 @@ from PIL import Image
 import torchvision.ops.boxes as bops
 import torch
 
-pdf_dir : Path = Path(os.path.realpath(os.path.dirname(__file__))).parent.parent.parent.absolute()
-pdf_dir = pdf_dir.joinpath("data").joinpath("input")
+base_dir : Path = Path(os.path.realpath(os.path.dirname(__file__))).parent.parent.parent.absolute()
+pdf_dir = base_dir.joinpath("data").joinpath("input")
+output_dir : Path = base_dir.joinpath("data").joinpath("output")
+
 
 quaddict={}
 with open(str(Path(os.path.realpath(os.path.dirname(__file__))).joinpath("quadgrams.txt"))) as f:
@@ -112,6 +114,10 @@ def document_layout(pdf_name : str, preprocessed_paragraphs : list[list[tuple[in
     # if pdf_name is an absolute path then this will make pdf_file -> pdf_name
     pdf_file : Path = pdf_dir.joinpath(pdf_name)
 
+    debug_out_dir = output_dir.joinpath(pdf_name.split('.')[0].split('/')[-1]) # create folder in output that is the name of the pdf.
+    if not debug_out_dir.exists():
+        debug_out_dir.mkdir(parents=True, exist_ok=True)
+
     if not pdf_file.exists():
         raise FileNotFoundError("Pdf File not found: {}".format(pdf_file))
     
@@ -136,6 +142,11 @@ def document_layout(pdf_name : str, preprocessed_paragraphs : list[list[tuple[in
         print("Done Loading Models...")
     
     for page_index, img in enumerate(page_imgs):
+
+        if (page_index != 3):
+            print("Skipping....")
+            continue
+            
         current_batch = []
         # use model to identify layout boxes in the pdf
         layout_result = model.detect(img)
@@ -143,13 +154,13 @@ def document_layout(pdf_name : str, preprocessed_paragraphs : list[list[tuple[in
         # get rid of redundant boxes
         for layout_i in layout_result:
             
-            if layout_i.type != 'Text' and layout_i.type != 'Title' and layout_i.type != "List":
-                continue
+            # if layout_i.type != 'Text' and layout_i.type != 'Title' and layout_i.type != "List":
+            #     continue
 
             for layout_j in layout_result:
                 
-                if layout_j.type != 'Text' and layout_j.type != 'Title' and layout_i.type != "List":
-                    continue
+                # if layout_j.type != 'Text' and layout_j.type != 'Title' and layout_i.type != "List":
+                #     continue
 
                 if layout_i != layout_j: 
                     refine(layout_i, layout_j)
@@ -166,7 +177,8 @@ def document_layout(pdf_name : str, preprocessed_paragraphs : list[list[tuple[in
             for result in layout_blocks:
                 print(result, "\n")
             draw_im = lp.draw_box(img, layout_blocks,  box_width=5, box_alpha=0.2, show_element_type=True, show_element_id=True)
-            draw_im.save("page[{}]_layout_boxes.jpeg".format(page_index))
+            draw_im.save(debug_out_dir.joinpath("page[{}]_layout_boxes.jpeg".format(page_index)))
+        quit()
 
         for block in layout_blocks:
             if block.type == 'Text' or block.type == 'Title' or block.type == "List":
@@ -190,42 +202,128 @@ def document_layout(pdf_name : str, preprocessed_paragraphs : list[list[tuple[in
     return res_layout_data
             
 def order_layout(layout_blocks : list[TextBlock]):
+    """ Uses the x-y values of the layout_blocks to predict the read-order of the blocks according to english.
+
+    Args:
+        layout_blocks (list[TextBlock]): A batch of layout blocks detected for a page.
+
+    Returns:
+        list[TextBlock]: The layout blocks re-ordered according to read-order.
+    """
+
     # sort boundary boxes by y-coordinates
     layout_blocks.sort(key = lambda b:b.coordinates[1], inplace=True)
     sorted_layout = []
 
+    # * ========================================================================================
+    # *
+    # *                      -- HELPER FUNCTIONS FOR ORDER_LAYOUT  --
+    # *
+    # * ========================================================================================
     def set_first_block(l_blocks : list[layout_blocks]):
+        """ Determines which block in the list that should be first. Swaps it with the first block. (inplace)
+
+        Args:
+            l_blocks (list[layout_blocks]): Layout blocks after a page break.
+        """
         y_max = get_xy(l_blocks[0])[1][1]
         first_block_index = 0
-        min_x = get_xy(l_blocks[0])[0][0]
-        end_index = 1
 
-        while(end_index < len(l_blocks)):
-            this_block_coords = get_xy(l_blocks[end_index])
-            if this_block_coords[0][1] > y_max:
+        potential_first_block_indexes = [0]
+
+        # find all blocks where the block starts at least before the topmost block ends
+        for current_block_index in range(1, len(l_blocks)):
+            if get_xy(l_blocks[current_block_index])[0][1] > y_max:
                 break
-            
-            if this_block_coords[0][0] < min_x:
-                first_block_index = end_index
-                min_x = this_block_coords[0][0]
-            end_index += 1
+            potential_first_block_indexes.append(current_block_index)
+        
+        left_most_x2 = get_xy(l_blocks[potential_first_block_indexes[0]])[1][0]
+        lm_block_x1 = get_xy(l_blocks[potential_first_block_indexes[0]])[0][0]
+        
+        # finds x2 limit for the possible blocks (gets all blocks that would be in the left-most column)
+        for index in potential_first_block_indexes[1:]:
+            if get_xy(l_blocks[index])[1][0] < lm_block_x1:
+                left_most_x2 = get_xy(l_blocks[index])[1][0]
+                lm_block_x1 = get_xy(l_blocks[index])[0][0]
 
+        # get rid of right column blocks that do not belong in the left-most column
+        for lb_index in reversed(potential_first_block_indexes):
+            if get_xy(l_blocks[potential_first_block_indexes[lb_index]])[0][0] > left_most_x2:
+                potential_first_block_indexes.pop(lb_index)
+        
+        if len(potential_first_block_indexes) == 1:
+            first_block_index = potential_first_block_indexes[0]
+        else:
+            # find the top most block in the left-most column
+            smallest_y1 = get_xy(l_blocks[potential_first_block_indexes[0]])[0][1]
+            smallest_y1_index = potential_first_block_indexes[0]
+            for lb_index in potential_first_block_indexes:
+                current_y = get_xy(l_blocks[lb_index])[0][1]
+                if current_y < smallest_y1:
+                    smallest_y1 = current_y
+                    smallest_y1_index = lb_index
+            first_block_index = smallest_y1_index
+
+        # swap the two blocks in the order
         temp = layout_blocks[0]
         layout_blocks[0] = layout_blocks[first_block_index]
         layout_blocks[first_block_index] = temp
     
-    def check_right(block : TextBlock, l_blocks : list[TextBlock]):
-        block_coords = get_xy(block)
+    def check_right(current_block : TextBlock, l_blocks : list[TextBlock]):
+        """ Returns the index of the first block in l_blocks that is to the right of this block. Indicating a column exists.
 
-        lb_index = 0
-        while lb_index < len(l_blocks):
-            if get_xy(l_blocks[lb_index])[0][1] > block_coords[1][1]:
+        Args:
+            current_block (TextBlock): The block to check the right of.
+            l_blocks (list[TextBlock]): The list of remaining blocks that aren't in the order_layout yet.   
+
+        Returns:
+            int: The index of the block that is to the right of this current block, -1 if no block found.
+        """
+        block_coords = get_xy(current_block)
+
+        lb_indexes = []
+
+        current_lb_index = 0
+        while current_lb_index < len(l_blocks):
+            if get_xy(l_blocks[current_lb_index])[0][1] > block_coords[1][1]:
                 break
-            if get_xy(l_blocks[lb_index])[0][0] > block_coords[1][0]:
-                return lb_index
-            lb_index += 1
-        return -1
-    
+            if get_xy(l_blocks[current_lb_index])[0][0] > block_coords[1][0]:
+                lb_indexes.append(current_lb_index)
+            current_lb_index += 1
+        
+        if len(lb_indexes) == 0:
+            return -1
+        elif len(lb_indexes) == 1:
+            return lb_indexes[0]
+
+        left_most_x2 = get_xy(l_blocks[lb_indexes[0]])[1][0]
+        lm_block_x1 = get_xy(l_blocks[lb_indexes[0]])[0][0]
+        
+        # finds x2 limit of the immediate right column
+        for index in range(1, len(lb_indexes)):
+            if get_xy(l_blocks[lb_indexes[index]])[1][0] < lm_block_x1:
+                left_most_x2 = get_xy(l_blocks[lb_indexes[index]])[1][0]
+                lm_block_x1 = get_xy(l_blocks[lb_indexes[index]])[0][0]
+        
+        # get rid of right column blocks that do not belong to the immedidate right column
+        for lb_index in reversed(range(len(lb_indexes))):
+            if get_xy(l_blocks[lb_indexes[index]])[0][0] > left_most_x2:
+                lb_indexes.pop(lb_index)
+        
+        if len(lb_indexes) == 1:
+            return lb_indexes[0]
+        
+        # find the top most block in the immediate right column
+        smallest_y1 = get_xy(l_blocks[lb_indexes[0]])[0][1]
+        smallest_y1_index = 0
+        for lb_index in range(1, len(lb_indexes)):
+            current_y = get_xy(l_blocks[lb_indexes[lb_index]])[0][1]
+            if current_y < smallest_y1:
+                smallest_y1 = current_y
+                smallest_y1_index = lb_index
+        
+        return smallest_y1_index
+
     def find_columns(left_block : TextBlock, l_blocks : list[TextBlock], relative_segment_index : int, segments : list[TextBlock]):
         """ For a given left_block finds all obvious blocks to its right that would insinuate a column. Done recursively if there is many columns.
 
@@ -243,6 +341,15 @@ def order_layout(layout_blocks : list[TextBlock]):
 
 
     def find_child(parent : TextBlock, l_blocks : list[TextBlock]):
+        """ Finds the first block in l_blocks directly below the parent.
+
+        Args:
+            parent (TextBlock): The current block in the read-order.
+            l_blocks (list[TextBlock]): The list of remaining blocks that aren't in the order_layout yet.  
+
+        Returns:
+            int: Returns the index of the block that was found to be directly below the parent. -1 returns if no block found.
+        """
         nonlocal column_break_y
         block_coords = get_xy(parent)
         lb_index = 0
@@ -261,6 +368,17 @@ def order_layout(layout_blocks : list[TextBlock]):
         return -1
     
     def is_column_break(relative_segment_index: int, child_block : TextBlock):
+        """ Checks if the child block found is a column break, cutting off all the blocks above it.
+
+        Args:
+            relative_segment_index (int): The index of a segment in the read order, or a column..
+            child_block (TextBlock): The potential column break block.
+
+        Returns:
+            bool, int: The boolean is true when the child block is a column break.
+            When true, also returns the break index, where this block should go in the read-order.
+            Returns False, -1 otherwise.
+        """
         nonlocal sorted_layout
         icb = False # Is Column Break
         break_index = -1
@@ -274,6 +392,19 @@ def order_layout(layout_blocks : list[TextBlock]):
         return icb, break_index + 1
     
     def has_missing_blocks_to_left(relative_segment_index : int, right_block : TextBlock, l_blocks : list[TextBlock]):
+        """ Returns true if the right_block has unidentified blocks to the left of it. This means that a left column was missed.
+
+        Args:
+            relative_segment_index (int): Where in the current sorted_layout these missing columns would go.
+            right_block (TextBlock): The current block that may have blocks to the left of it.
+            l_blocks (list[TextBlock]): The list of remaining blocks that aren't in the order_layout yet.  
+
+        Returns:
+            bool: True if missing blocks/columns were found. False otherwise.
+            If missing blocks were found, the block that would be first in the
+            read-order of those found blocks, will be inserted to the layout order.
+            The rest will remain in the l_block list.
+        """
         nonlocal sorted_layout
         block_coords = get_xy(right_block)
 
@@ -317,6 +448,11 @@ def order_layout(layout_blocks : list[TextBlock]):
         return False
 
 
+    # * ========================================================================================
+    # *
+    # *                          -- ORDER_LAYOUT IMPLMENTATION  --
+    # *
+    # * ========================================================================================
     set_first_block(layout_blocks)
 
     current_block = layout_blocks.pop(0)    # Index 0 should be the first element to read
@@ -335,6 +471,7 @@ def order_layout(layout_blocks : list[TextBlock]):
         # if this is the right most segment, make sure no other columns to the right
         if segment_index == (len(sorted_layout) - 1):
             find_columns(current_block, layout_blocks, segment_index, sorted_layout)
+
 
         possible_child_index = find_child(current_block, layout_blocks)
 
@@ -393,10 +530,10 @@ def order_layout(layout_blocks : list[TextBlock]):
     # for rblock in layout_blocks:
     #     print(rblock)
     #     print("\n--------------\n")
-    # quit()
 
     # return flattened block segments
-    return [block for segment in sorted_layout for block in segment]
+
+    return [block for segment in sorted_layout for block in segment] 
 
     
 def validate_layout(preprocessed_paragraphs : list[tuple[int, str]], current_batch : list[tuple[str, str]]):
