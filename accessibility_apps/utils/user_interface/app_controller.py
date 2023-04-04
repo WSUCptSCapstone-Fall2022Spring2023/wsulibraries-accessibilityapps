@@ -82,8 +82,11 @@ class AccessibilityAppController():
         # read the csv to get the metadata and names of files
         all_files_metadata = read_metadata_csv(metadata_csv_name)
 
+        # get the number of documents needing to be processed
+        num_of_documents = len(all_files_metadata.keys())
+
         # loop through the files from the csv and process each one of them
-        for file_name, metadata in all_files_metadata:
+        for file_name, metadata in all_files_metadata.items():
             document = AccessibleDocument(folder + "/" + file_name, True)
 
             # set the metadata for the file
@@ -118,7 +121,9 @@ class AccessibilityAppController():
 
             # process the document
             self._run_accessibility_pipeline(document)
-            document.delete()
+
+            # update the progress bar each time a document is completed
+            progress_update_callback(100/num_of_documents)
 
         # broadcast that the folder processing finished
         finished_callback()

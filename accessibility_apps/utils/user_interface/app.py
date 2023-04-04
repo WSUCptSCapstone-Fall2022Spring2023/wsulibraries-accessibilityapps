@@ -275,16 +275,19 @@ class LocalFolderInputPage(tk.Frame):
                 # disable the button so it cannot be clicked again until the job is done
                 self.run_processing_button["state"] = tk.DISABLED
                 # run the job
-                self.ui_controller.app_controller.process_local_folder(self.folder, lambda progress: self.progress_bar.step(progress), self._enable_run_button)
+                self.ui_controller.app_controller.process_local_folder(self.folder, lambda progress: self.progress_bar.step(progress), self._processing_finished)
             except Exception as e:
                 # re-enable the run button since it didn't finish smoothly
-                self._enable_run_button()
+                self._processing_finished()
                 # show the error
                 messagebox.showerror("Error", str(e))
 
-    def _enable_run_button(self):
-        """Enables the run button so it can be pressed again."""
+    def _processing_finished(self):
+        """Cleans up and resets some stuff after processing is done."""
+        # enables the run button so it can be pressed again
         self.run_processing_button["state"] = tk.NORMAL
+        # reset the progress bar
+        self.progress_bar["value"] = 0
 
 class SingleDocumentSearchPage(tk.Frame):
     """A frame with a menu for processing a single document searched by document id."""
