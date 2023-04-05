@@ -142,11 +142,7 @@ def document_layout(pdf_name : str, preprocessed_paragraphs : list[list[tuple[in
         print("Done Loading Models...")
     
     for page_index, img in enumerate(page_imgs):
-
-        if (page_index != 3):
-            print("Skipping....")
-            continue
-            
+        
         current_batch = []
         # use model to identify layout boxes in the pdf
         layout_result = model.detect(img)
@@ -178,8 +174,7 @@ def document_layout(pdf_name : str, preprocessed_paragraphs : list[list[tuple[in
                 print(result, "\n")
             draw_im = lp.draw_box(img, layout_blocks,  box_width=5, box_alpha=0.2, show_element_type=True, show_element_id=True)
             draw_im.save(debug_out_dir.joinpath("page[{}]_layout_boxes.jpeg".format(page_index)))
-        quit()
-
+        
         for block in layout_blocks:
             if block.type == 'Text' or block.type == 'Title' or block.type == "List":
                 # Crop image around the detected layout
@@ -198,7 +193,7 @@ def document_layout(pdf_name : str, preprocessed_paragraphs : list[list[tuple[in
         # if(page_index == 3):
         #     validate_layout(preprocessed_paragraphs[page_index], current_batch)
         res_layout_data.append(current_batch)
-
+    quit()
     return res_layout_data
             
 def order_layout(layout_blocks : list[TextBlock]):
@@ -307,7 +302,7 @@ def order_layout(layout_blocks : list[TextBlock]):
         
         # get rid of right column blocks that do not belong to the immedidate right column
         for lb_index in reversed(range(len(lb_indexes))):
-            if get_xy(l_blocks[lb_indexes[index]])[0][0] > left_most_x2:
+            if get_xy(l_blocks[lb_indexes[lb_index]])[0][0] > left_most_x2:
                 lb_indexes.pop(lb_index)
         
         if len(lb_indexes) == 1:
@@ -362,7 +357,7 @@ def order_layout(layout_blocks : list[TextBlock]):
             if get_xy(l_blocks[lb_index])[0][0] >= block_coords[0][0]:
                 if get_xy(l_blocks[lb_index])[0][0] <= block_coords[1][0]:
                     return lb_index
-            elif get_xy(l_blocks[lb_index])[1][1] >= block_coords[0][0]:
+            elif get_xy(l_blocks[lb_index])[1][0] >= block_coords[0][0]:
                 return lb_index
             lb_index += 1
         return -1
@@ -447,6 +442,18 @@ def order_layout(layout_blocks : list[TextBlock]):
 
         return False
 
+    def has_umbrella_column(relative_segment_index : int, left_child_block : TextBlock, l_blocks : list[TextBlock]):
+        nonlocal sorted_layout
+        
+        right_block_index = check_right(left_child_block, l_blocks)
+
+        if right_block_index == -1:
+            return False, -1
+        
+        # if right block is tucked under the parent block
+        if get_xy(l_blocks[right_block_index])[0][0] < get_xy(sorted_layout[relative_segment_index][-1])[1][0]:
+            return True, right_block_index
+        return False, -1
 
     # * ========================================================================================
     # *
@@ -465,8 +472,9 @@ def order_layout(layout_blocks : list[TextBlock]):
     while len(layout_blocks) > 0:
         
         cycle_count += 1
-        print("BLOCK ORDER CYLCE:", cycle_count)
-
+        print("Cycle count:", cycle_count)
+        # if cycle_count == 3:
+        #     print("Hi")
 
         # if this is the right most segment, make sure no other columns to the right
         if segment_index == (len(sorted_layout) - 1):
@@ -474,7 +482,6 @@ def order_layout(layout_blocks : list[TextBlock]):
 
 
         possible_child_index = find_child(current_block, layout_blocks)
-
         
 
         if possible_child_index == -1:
@@ -509,19 +516,34 @@ def order_layout(layout_blocks : list[TextBlock]):
             column_break_y = get_xy(sorted_layout[column_break_index][0])[0][1]
             segment_index += 1
             current_block = sorted_layout[segment_index][0]
+            continue
 
-        else:
-            # If the possible child block is under the parent block but has blocks to the left of it,
-            # then we found a right column under the parent, which means we need to search to the
-            # left and add segments first.
-            if not has_missing_blocks_to_left(segment_index, layout_blocks[possible_child_index], layout_blocks):
-                # if this is next block in this column segment
-                current_block = layout_blocks.pop(possible_child_index)
-                sorted_layout[segment_index].append(current_block)
-            else:
-                segment_index += 1 # columns were added, meaning the current_block is a column break
-                current_block = sorted_layout[segment_index][0]
+        # If the possible child block is under the parent block but has blocks to the left of it,
+        # then we found a right column under the parent, which means we need to search to the
+        # left and add segments first.
+        if has_missing_blocks_to_left(segment_index, layout_blocks[possible_child_index], layout_blocks):
+            segment_index += 1 # columns were added, meaning the current_block is a column break
+            current_block = sorted_layout[segment_index][0]
+            continue
+        
+        # check for umbrella columns (where it is an undetected column right column under the parent)
+        child_block = layout_blocks.pop(possible_child_index)
+        
+        
+        
+        huc, possible_umbrella_index = has_umbrella_column(segment_index, child_block, layout_blocks)
+        
+        # if has an umbrella column cut off the child block as a new column segment, and make the right block the segment after the child block.
+        if huc:
+            sorted_layout.insert(segment_index + 1, [child_block])
+            segment_index += 1
+            sorted_layout.insert(segment_index + 1, [layout_blocks.pop(possible_umbrella_index)])
+            current_block = child_block
+            continue
 
+        # if this is next block in this column segment
+        sorted_layout[segment_index].append(child_block)
+        current_block = child_block
 
 
     # print("current block:",current_block)
@@ -530,6 +552,7 @@ def order_layout(layout_blocks : list[TextBlock]):
     # for rblock in layout_blocks:
     #     print(rblock)
     #     print("\n--------------\n")
+    # quit()
 
     # return flattened block segments
 
