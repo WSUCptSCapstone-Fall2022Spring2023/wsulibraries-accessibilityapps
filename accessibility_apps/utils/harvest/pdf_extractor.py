@@ -6,6 +6,11 @@
 # ==================================================
 
 # imports
+import sys
+import os
+path = os.path.abspath('../')
+if path not in sys.path:
+    sys.path.append(path)
 from utils.harvest.paragraph import *
 import re
 from io import StringIO
@@ -155,6 +160,8 @@ def extract_paragraphs_and_fonts_and_sizes(pdf_file_path: str) -> list[Paragraph
             # update the average font size
             font_size = span_attributes[FONT_SIZE_STR]
             font_size_distribution.append((font_size, len(span_text)))
+            if(font_size<12):
+                font_size = 12
         
         # skip empty spans
         if len(span_text_sections_and_font_style) == 0:
