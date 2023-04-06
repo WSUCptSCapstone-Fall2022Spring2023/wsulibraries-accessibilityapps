@@ -41,7 +41,7 @@ def main():
     #     except Exception as e:
     #         print("error " + str(e))
 
-    example_pdf = DATA_INPUT_DIR.joinpath("example3.pdf")
+    example_pdf = DATA_INPUT_DIR.joinpath("example.pdf")
     doc1 = AccessibleDocument(str(example_pdf)) # retrieved from .../data/input/example.pdf
     doc1.generate_tags()
 

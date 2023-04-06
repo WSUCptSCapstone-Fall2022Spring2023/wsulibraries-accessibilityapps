@@ -13,6 +13,10 @@ from PIL import Image
 import torchvision.ops.boxes as bops
 import torch
 
+import warnings
+
+warnings.filterwarnings("ignore", category=DeprecationWarning) 
+
 base_dir : Path = Path(os.path.realpath(os.path.dirname(__file__))).parent.parent.parent.absolute()
 pdf_dir = base_dir.joinpath("data").joinpath("input")
 output_dir : Path = base_dir.joinpath("data").joinpath("output")
@@ -192,8 +196,7 @@ def document_layout(pdf_name : str, preprocessed_paragraphs : list[list[tuple[in
         
         # if(page_index == 3):
         #     validate_layout(preprocessed_paragraphs[page_index], current_batch)
-        res_layout_data.append(current_batch)
-    quit()
+        res_layout_data.extend(current_batch)
     return res_layout_data
             
 def order_layout(layout_blocks : list[TextBlock]):
@@ -443,6 +446,16 @@ def order_layout(layout_blocks : list[TextBlock]):
         return False
 
     def has_umbrella_column(relative_segment_index : int, left_child_block : TextBlock, l_blocks : list[TextBlock]):
+        """ Determines if this child block is really the start of a new column and its parent is a top column break (umbrella)
+
+        Args:
+            relative_segment_index (int): Where in the current sorted_layout the parent block is.
+            left_child_block (TextBlock): The new child block to add to the sorted_layout
+            l_blocks (list[TextBlock]): The list of remaining blocks that aren't in the order_layout yet. 
+
+        Returns:
+            bool, int: True if this block is under an umbrella block, and what index in the l_blocks the right column block is.
+        """
         nonlocal sorted_layout
         
         right_block_index = check_right(left_child_block, l_blocks)
@@ -472,7 +485,7 @@ def order_layout(layout_blocks : list[TextBlock]):
     while len(layout_blocks) > 0:
         
         cycle_count += 1
-        print("Cycle count:", cycle_count)
+        #print("Cycle count:", cycle_count)
         # if cycle_count == 3:
         #     print("Hi")
 

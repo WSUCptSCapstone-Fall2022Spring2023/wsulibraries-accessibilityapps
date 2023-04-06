@@ -8,6 +8,7 @@ import os
 from sys import platform
 from yake import KeywordExtractor
 from PyPDF2 import PdfReader, PdfWriter
+from typing import List
 
 from utils.harvest.pdf_extractor import export_to_html
 from utils.export.document_exporter import export_document
@@ -80,32 +81,19 @@ class Document:
         if file_path is not None and file_path.lower().endswith(".pdf"):
             
             # extract the data
-            #self.paragraphs = extract_paragraphs_and_fonts_and_sizes(file_path)
-            self.paragraphs = []
+            self.batch_paragraphs = extract_paragraphs_and_fonts_and_sizes(file_path)
             self.page_count = len(self.paragraphs)
             
-            # for batch in self.paragraphs:
-            #     for p in batch:
-            #         print(p.get_raw_text())
-            #         print("\n")
-            #     print("---------------------------------------------")
-            # quit()
-            
+            self.paragraphs = [paragraph for batch in self.batch_paragraphs for paragraph in batch] 
 
-            # get the layout of the document for tagging (it is ordered and includes tag type and data)
             if platform == "linux" or platform == "linux2":
+                
                 # using self.paragraphs to validate and optimize layout results. Creates a list of (p.font_size as int, p.raw_text)
-                preprocessed_paragraphs = [[(int(''.join(c for c in p.font_size if c.isdigit())), p.get_raw_text()) for p in batch] for batch in self.paragraphs]
-                self.layout_blocks = document_layout(self.file_path, preprocessed_paragraphs, True)
+                preprocessed_paragraphs = [[(int(''.join(c for c in p.font_size if c.isdigit())), p.get_raw_text()) for p in batch] for batch in self.batch_paragraphs]
+                self.layout_blocks : List[str, str] = document_layout(self.file_path, preprocessed_paragraphs, debug=False)
             else:
                 print("Layout Parsing Skipped: Non-Linux distributions not yet supported...")
                 self.layout_blocks = []
-            quit()
-            print("Pages Processed: {}".format(len(self.layout_blocks)))
-
-            for batch in self.layout_blocks:
-                for _, p in batch:
-                    print(_, "\n{}".format(p), "\n")
 
             # calculate the keywords
             self.keywords = self._calculate_keywords()
