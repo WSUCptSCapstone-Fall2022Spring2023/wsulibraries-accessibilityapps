@@ -16,8 +16,13 @@ from utils.harvest.pdf_extractor import export_to_html
 from utils.export.document_exporter import export_document
 from utils.harvest.document_harvester import OUTPUT_DIRECTORY
 from utils.harvest.pdf_extractor import extract_paragraphs_and_fonts_and_sizes
-from utils.harvest.document_layout import document_layout
 
+try:
+    from utils.harvest.document_layout import document_layout
+    skip_layout_parser = False
+except ImportError as e:
+    print("Warning [document_layout] - Caught Error : {}".format(e))
+    skip_layout_parser = True
 
 # find or create directory to save objects through pickle
 save_dir = Path(os.path.realpath(os.path.dirname(__file__))).parent.parent.absolute().joinpath('data')
