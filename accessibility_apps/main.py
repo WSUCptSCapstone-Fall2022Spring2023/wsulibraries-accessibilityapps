@@ -42,7 +42,7 @@ def main():
     #         print("error " + str(e))
 
     example_pdf = DATA_INPUT_DIR.joinpath("example.pdf")
-    doc1 = AccessibleDocument(str(example_pdf)) # retrieved from .../data/input/example.pdf
+    doc1 = AccessibleDocument(str(example_pdf), save_objects=True, search_saved_objects=True) # retrieved from .../data/input/example.pdf
     doc1.generate_tags()
 
 if __name__ == "__main__":
