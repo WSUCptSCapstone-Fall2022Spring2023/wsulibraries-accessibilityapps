@@ -137,11 +137,6 @@ class Document:
                     ofile = open(str(self.save_dir.joinpath('layout_blocks.obj')), 'wb') 
                     pickle.dump(self.layout_blocks, ofile)
 
-            for type, data in self.layout_blocks:
-                print (f"[{type}]")
-                print(data, end='\n\n')
-            quit()
-
             # calculate the keywords
             self.keywords = self._calculate_keywords()
 
