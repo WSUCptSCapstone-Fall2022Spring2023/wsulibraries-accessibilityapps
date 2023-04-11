@@ -71,7 +71,7 @@ def create_tag_tree_from_blocks(blocks : List[tuple[str, str]]):
             while tag_cmp(tree.Cursor.Up().get_tag(), TagFactory(new_tag)) > 0:
                 continue
 
-            print("\tMoved to parent tag: {}".format(tree.Cursor.get_tag().get_data()))
+            #print("\tMoved to parent tag: {}".format(tree.Cursor.get_tag().get_data()))
             
             # if moved to root of tree, make the new tag, the next sister of children from root.
             if tree.Cursor.get_tag() == '<document>':

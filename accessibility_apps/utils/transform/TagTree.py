@@ -423,6 +423,27 @@ class TagTree():
         ret += self.__traverse_tree_helper(current.get_child(), print_it)
         ret += self.__traverse_tree_helper(current.get_next(), print_it)
         return ret
+    
+    def get_tree_structure(self, print_it=True):
+        self.__tree_structure_helper(self.__root, "", print_it)
+    
+    def __tree_structure_helper(self, current, space_str, print_it=True):
+        if current.get_child() is not None:
+            line = "(+) " + str(current)
+            print(line)
+
+            n_space_str = space_str + " " * len(line)
+            print("{}--> ".format(n_space_str), end='')
+            n_space_str += " " * 4
+
+            self.__tree_structure_helper(current.get_child(), n_space_str, print_it)
+        else:
+            line = "(-) " + str(current)
+            print(line)
+
+        if current.get_next() is not None:
+                print("{}".format(space_str), end='')
+                self.__tree_structure_helper(current.get_next(), space_str, print_it)
 
 def tag_cmp(tag1 : Tag, tag2: Tag):
     """ Returns the difference in precedence of two tags, determining which one belongs at the top of a hierachy.
