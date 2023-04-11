@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
-""" This file contains main() which is where our application begins.
-It is used for testing purposes because the true application starts
-in terminal_application.py.
-"""
+""" This file is where our application begins."""
+
 # * Modules
 from utils.user_interface.app import AccessibilityApp
 

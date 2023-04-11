@@ -10,11 +10,13 @@
 import os
 from PyPDF2 import PdfReader
 
+raise Exception("This file is depricated and should not be used any more (see pdf_extractor.py instead)")
+
 # This path is where we can find PDFs for processing
-INPUT_DIRECTORY = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))) + "\\data\\input"
+INPUT_DIRECTORY = os.path.abspath(__file__) + "/../../../../data/input"
 
 # This path is where we can create or update our transformed PDF.
-OUTPUT_DIRECTORY = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))) + "\\data\\output"
+OUTPUT_DIRECTORY = os.path.abspath(__file__) + "/../../../../data/output"
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Initial implementation

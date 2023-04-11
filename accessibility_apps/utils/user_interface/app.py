@@ -19,15 +19,6 @@ LIGHT_GRAY = "#808080"
 CRIMSON = "#A60F2D"
 RED = "#CA1237"
 
-# TODO
-# - search by document id
-# - search by research unit
-# - filter by document set
-# - set input/output folder
-# - *input from local folder with metadata as csv file and pdfs
-# - *list of document ids input from a csv file
-# - error displaying
-
 def create_button(parent:object, text:str, command):
     """Instantiates a WSU custom stylized button with only the parent, text, and command needing to be specified.
     
@@ -410,13 +401,16 @@ class MultiDocumentSearchPage(tk.Frame):
         # reset the progress bar
         self.progress_bar["value"] = 0
 
-# TODO
 class SetInputOutputFoldersPage(tk.Frame):
     """A frame with a menu for setting the default input and output folder."""
 
     def __init__(self, parent, ui_controller):
         """Construct a frame widget with parent `parent` and the controller for switching frames as `ui_controller`."""
         super().__init__(parent)
+
+        self.ui_controller = ui_controller
+        self.selected_input_folder = None
+        self.selected_output_folder = None
 
         # setup the grid
         self.grid_columnconfigure(0, weight=1)
@@ -431,21 +425,39 @@ class SetInputOutputFoldersPage(tk.Frame):
         page_description_label.grid(row=0, column=0, columnspan=2)
 
         # create button for selecting the input folder
-        input_folder_select_button = create_button(self, "Select Input Folder", lambda: None) # TODO
+        input_folder_select_button = create_button(self, "Select Input Folder", self._select_input_folder)
         input_folder_select_button.grid(row=1, column=0)
 
         # create label to display selected input folder
-        folder_name_label = tk.Label(self, text="None", background=LIGHT_GRAY, fg="white", font=("Montserrat", 15), wraplength=350)
-        folder_name_label.grid(row=1, column=1)
+        self.input_folder_name_label = tk.Label(self, text="None", background=LIGHT_GRAY, fg="white", font=("Montserrat", 15), wraplength=350)
+        self.input_folder_name_label.grid(row=1, column=1)
 
         # create button for selecting the output folder
-        input_folder_select_button = create_button(self, "Select Output Folder", lambda: None) # TODO
-        input_folder_select_button.grid(row=2, column=0)
+        output_folder_select_button = create_button(self, "Select Output Folder", self._select_output_folder)
+        output_folder_select_button.grid(row=2, column=0)
         
         # create label to display selected output folder
-        folder_name_label = tk.Label(self, text="None", background=LIGHT_GRAY, fg="white", font=("Montserrat", 15), wraplength=350)
-        folder_name_label.grid(row=2, column=1)
+        self.output_folder_name_label = tk.Label(self, text="None", background=LIGHT_GRAY, fg="white", font=("Montserrat", 15), wraplength=350)
+        self.output_folder_name_label.grid(row=2, column=1)
 
         # create button to set the values
-        input_folder_select_button = create_button(self, "Set Values", lambda: None) # TODO
-        input_folder_select_button.grid(row=3, column=0, columnspan=2)
+        folder_set_button = create_button(self, "Set Values", self._set_selected_folders)
+        folder_set_button.grid(row=3, column=0, columnspan=2)
+
+    def _select_input_folder(self):
+        """Selects a folder to set for default input."""
+        self.selected_input_folder = filedialog.askdirectory()
+        self.input_folder_name_label["text"] = self.selected_input_folder
+
+    def _select_output_folder(self):
+        """Selects a folder to set for default output."""
+        self.selected_output_folder = filedialog.askdirectory()
+        self.output_folder_name_label["text"] = self.selected_output_folder
+
+    def _set_selected_folders(self):
+        """Sets the selected folders for input and output to be 
+        the corresponding folders in the backend of the program."""
+        if self.selected_input_folder == self.selected_output_folder:
+            messagebox.showerror("Error", "Input and output directories may not match.")
+        else:
+            self.ui_controller.app_controller.set_default_input_output_folders(self.selected_input_folder, self.selected_output_folder)

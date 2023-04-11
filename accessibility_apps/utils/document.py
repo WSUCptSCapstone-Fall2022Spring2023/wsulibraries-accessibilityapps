@@ -9,8 +9,7 @@ import csv
 from yake import KeywordExtractor
 from PyPDF2 import PdfReader, PdfWriter
 from utils.harvest.pdf_extractor import export_to_html
-from utils.export.document_exporter import export_document
-from utils.harvest.document_harvester import OUTPUT_DIRECTORY
+from utils.export.document_exporter import export_document_to_pdf
 from utils.harvest.pdf_extractor import extract_paragraphs_and_fonts_and_sizes
 
 # Last Edit By: Trent Bultsma
@@ -94,33 +93,31 @@ class Document:
 
     # Last Edit By: Trent Bultsma
     # * Edit Details: Use the pdf_extractor to extract and export data.
-    def export_document(self, file_path:str=None):
+    def export_document(self, pdf_file_path):
         """ Transforms the metadata from codable data structures back into a usable and readable
             format: HTML
 
             Args:
-            file_path (string): The path name of the html doc to be exported.
+                pdf_file_path (string): The path name of the pdf doc to be exported.
         """
+        html_file_path = pdf_file_path[:-len("pdf")] + "html"
 
-        # use the file path of the input file but change the extension to .html instead of .pdf if file path not specified
-        if file_path is None:
-            file_path = self.file_path[:-len("pdf")] + "html"
-
-        # export the document
-        export_to_html(self.paragraphs, file_path)
+        # export the document to html
+        export_to_html(self.paragraphs, html_file_path)
 
         # convert to pdf
-        export_document(self.get_filename()[:-len("pdf")] + "html")
+        export_document_to_pdf(html_file_path, pdf_file_path)
 
         # remove the html document
-        os.remove(file_path)
+        os.remove(html_file_path)
 
         # add metadata to the pdf
-        self._apply_metadata(OUTPUT_DIRECTORY + "/" + self.get_filename())
+        self._apply_metadata(pdf_file_path)
 
         # add document information to the export csv
-        export_csv_exists = "export_data.csv" in os.listdir(OUTPUT_DIRECTORY)
-        with open(OUTPUT_DIRECTORY + "/export_data.csv", "a", newline="") as export_csv:
+        output_folder = os.path.dirname(pdf_file_path)
+        export_csv_exists = "export_data.csv" in os.listdir(output_folder)
+        with open(output_folder + "/export_data.csv", "a", newline="") as export_csv:
             writer = csv.writer(export_csv)
 
             # write the header if the file was just created

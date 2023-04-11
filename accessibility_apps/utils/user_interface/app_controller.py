@@ -12,15 +12,16 @@ from threading import Event, Thread
 from utils.accessible_document import AccessibleDocument
 from utils.harvest.metadata_csv_reader import read_metadata_csv
 from utils.database_communication.downloader import DocumentDownloader
-from utils.harvest.document_harvester import INPUT_DIRECTORY, OUTPUT_DIRECTORY
 
 class AccessibilityAppController():
     """Serves as a bridge between the user interface of the accessibility application and the back end functionality."""
 
     def __init__(self):
+        self.input_directory = os.path.abspath(__file__) + "/../../../../data/input"
+        self.output_directory = os.path.abspath(__file__) + "/../../../../data/output"
         self.current_document = None
         self.auto_processed_docs_count = 0
-        self.downloader = DocumentDownloader(INPUT_DIRECTORY)
+        self.downloader = DocumentDownloader(self.input_directory)
         self.update_ui_current_auto_document = lambda document_name: None
         self.update_ui_current_document_count = lambda document_count: None
 
@@ -30,7 +31,7 @@ class AccessibilityAppController():
         Args:
             document (AccessibleDocument): The document to export.
         """
-        filename = OUTPUT_DIRECTORY + "/" + document.get_filename()[:-len("pdf")] + "html"
+        filename = self.output_directory + "/" + document.get_filename()
         document.export_document(filename)
     
     def _run_accessibility_pipeline(self, document:AccessibleDocument):
@@ -231,3 +232,14 @@ class AccessibilityAppController():
         # start the thread to process the documents
         folder_processing_thread = Thread(target=self._process_document_id_list, args=[id_list, progress_update_callback, finished_callback])
         folder_processing_thread.start()
+
+    def set_default_input_output_folders(self, input_folder, output_folder):
+        """Set the default input and output folder for the application.
+        
+        Args:
+            input_folder (str): The folder to input documents from (and download documents to for input).
+            output_folder (str): The folder to output documents to.
+        """
+        self.input_directory = input_folder
+        self.downloader.download_path = self.input_directory
+        self.output_directory = output_folder

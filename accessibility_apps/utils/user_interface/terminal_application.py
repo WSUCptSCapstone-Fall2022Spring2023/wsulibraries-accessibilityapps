@@ -3,12 +3,16 @@
 """ This file contains main() which is where our application begins.
 """
 # * Modules
+import os
 from termcolor import colored
 from threading import Event, Thread
 from colorama import just_fix_windows_console
 from utils.accessible_document import AccessibleDocument
 from utils.database_communication.downloader import DocumentDownloader
-from utils.harvest.document_harvester import INPUT_DIRECTORY, OUTPUT_DIRECTORY
+
+# file path constants
+INPUT_DIRECTORY = os.path.abspath(__file__) + "/../../../../data/input"
+OUTPUT_DIRECTORY = os.path.abspath(__file__) + "/../../../../data/output"
 
 
 # ? VSCode Extensions Used:
@@ -128,7 +132,7 @@ class TerminalApplication():
         Args:
             document (AccessibleDocument): The document to run the pipeline over.
         """
-        filename = OUTPUT_DIRECTORY + "/" + document.get_filename()[:-len("pdf")] + "html"
+        filename = OUTPUT_DIRECTORY + "/" + document.get_filename()
         document.export_document(filename)
     
     # Last Edit By: Reagan Kelley

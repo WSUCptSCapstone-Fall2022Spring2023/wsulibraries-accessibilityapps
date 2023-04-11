@@ -9,9 +9,11 @@
 #! Run This test from the parent directory or module (accessibility_apps) to avoid relative import errors.
 # python -m unittest -v tests.test_metadata_csv_reader
 
+import os
 import unittest
-from utils.harvest.document_harvester import INPUT_DIRECTORY
 from utils.harvest.metadata_csv_reader import read_metadata_csv
+
+INPUT_DIRECTORY = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) + "\\data\\input"
 
 class MetadataCsvTests(unittest.TestCase):
     """Tests csv metadata reading functions."""
