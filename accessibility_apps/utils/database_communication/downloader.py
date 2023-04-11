@@ -13,6 +13,7 @@ from utils.accessible_document import AccessibleDocument
 REPOSITORY_URL = "https://na01.alma.exlibrisgroup.com/view/oai/01ALLIANCE_WSU/request"
 OAI_STANDARD_PREFIX = ".//{http://www.openarchives.org/OAI/2.0/}"
 LIBRARY_STANDARD_PREFIX = ".//{http://www.loc.gov/MARC21/slim}"
+DOCUMENT_IDENTIFIER_PREFIX = "oai:alma.01ALLIANCE_WSU:"
 
 class DocumentDownloader():
     """Provides a stream of documents from the WSU research exchange repository."""
@@ -26,11 +27,14 @@ class DocumentDownloader():
         self.download_path = download_path
         self.resumption_token = None
         self.identifiers = self._get_identifier_batch()
+        # for keeping track of the id of the previous document 
+        # downloaded just in case it needs to be recovered
+        self.previous_document_identifier = None
 
     def _get_identifier_batch(self) -> list[str]:
         """Returns the next batch of identifiers."""
 
-        # setup the request paramaters
+        # setup the request parameters
         request_params = {
             "verb":"ListIdentifiers",
             "metadataPrefix":"esploro",
@@ -73,17 +77,23 @@ class DocumentDownloader():
         if len(self.identifiers) == 0:
             return None
 
-        return self.identifiers.pop()
+        # take note of the identifier and return it off the identifiers list
+        self.previous_document_identifier = self.identifiers.pop()
+        return self.previous_document_identifier
 
-    def get_next_document(self, delete_on_fail=False):
+    def get_next_document(self, delete_on_fail:bool=False, document_identifier_number:str=None):
         """Returns a Document object for the next document in the repository.
         
         Args:
             delete_on_fail (bool): Whether to delete documents that failed to open.
+            document_identifier_number (str): The identifier number of the document to get. Leave as `None` for the next one from the repo.
         """
-        
+
         # get the next document identifier and setup the request to grab using it
-        document_identifier = self._get_next_identifier()
+        if document_identifier_number is None:
+            document_identifier = self._get_next_identifier()
+        else:
+            document_identifier = DOCUMENT_IDENTIFIER_PREFIX + document_identifier_number
         request_params = {
             "verb":"GetRecord",
             "identifier":document_identifier,
@@ -131,4 +141,16 @@ class DocumentDownloader():
 
         document = AccessibleDocument(document_download_path, delete_on_fail)
         document.set_metadata(authors, title, description)
+        document.id = document_identifier[len(DOCUMENT_IDENTIFIER_PREFIX):]
         return document
+    
+    def restore_previous_identifier(self):
+        """Adds the previous document identifier back to the list of documents to process to recover that identifier."""
+        
+        # do nothing if there is no previous identifier
+        if self.previous_document_identifier is None:
+            return
+        
+        # add the identifier back to the list and clear the previous identifier
+        self.identifiers.append(self.previous_document_identifier)
+        self.previous_document_identifier = None
