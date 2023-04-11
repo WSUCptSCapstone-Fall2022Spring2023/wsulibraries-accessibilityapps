@@ -6,11 +6,14 @@
 # * Modules
 import os
 import csv
+from sys import platform
 from yake import KeywordExtractor
 from PyPDF2 import PdfReader, PdfWriter
+
 from utils.harvest.pdf_extractor import export_to_html
 from utils.export.document_exporter import export_document_to_pdf
 from utils.harvest.pdf_extractor import extract_paragraphs_and_fonts_and_sizes
+from utils.harvest.document_layout import document_layout
 
 # Last Edit By: Trent Bultsma
 # * Edit Details: Use the pdf_extractor to extract and export data.
@@ -76,10 +79,19 @@ class Document:
 
         # make sure the file is a pdf
         if file_path is not None and file_path.lower().endswith(".pdf"):
+            
             # extract the data
             self.paragraphs = extract_paragraphs_and_fonts_and_sizes(file_path)
+            
             # calculate the keywords
             self.keywords = self._calculate_keywords()
+
+            # get the layout of the document for tagging (it is ordered and includes tag type and data)
+            if platform == "linux" or platform == "linux2":
+                self.layout_blocks = document_layout(self.file_path, True)
+            else:
+                print("Layout Parsing Skipped: Non-Linux distributions not yet supported...")
+                self.layout_blocks = []
         else:
             raise ValueError("Invalid file path, must be a pdf file")
 

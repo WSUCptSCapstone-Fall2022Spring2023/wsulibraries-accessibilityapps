@@ -5,6 +5,7 @@
 # * Modules
 from utils.user_interface.app import AccessibilityApp
 
+
 # ? VSCode Extensions Used:
 # ?     - Better Comments
 # ?     - autoDocstring
