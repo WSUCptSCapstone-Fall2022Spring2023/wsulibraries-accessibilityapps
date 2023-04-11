@@ -282,7 +282,47 @@ class Figure(Tag):
         return "<Figure>"
     
     def precedent(self):
-        return 8
+        return 7
+    
+# Last Edit By: Reagan Kelley
+# * Edit Details: Initial implementation
+class L(Tag):
+    """	An image or figure
+
+    Args:
+        Tag (Parent Class): A Tag marks a PDF tags making it possible to identify
+        content such as headings, lists, tables, etc., and to include 
+        alternate text for images. This is an abstract class
+        which specific type of tags inherent.
+    """
+    def __init__(self):
+        super().__init__()
+    
+    def __str__(self):
+        return "<L>"
+    
+    def precedent(self):
+        return 7
+    
+# Last Edit By: Reagan Kelley
+# * Edit Details: Initial implementation
+class Table(Tag):
+    """	An image or figure
+
+    Args:
+        Tag (Parent Class): A Tag marks a PDF tags making it possible to identify
+        content such as headings, lists, tables, etc., and to include 
+        alternate text for images. This is an abstract class
+        which specific type of tags inherent.
+    """
+    def __init__(self):
+        super().__init__()
+    
+    def __str__(self):
+        return "<Table>"
+    
+    def precedent(self):
+        return 7
 
 class TagTree():
     class __cursor():

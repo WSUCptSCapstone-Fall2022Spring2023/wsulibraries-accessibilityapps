@@ -31,6 +31,10 @@ def type_to_tag(block_type):
         return '<P>'
     elif block_type == 'figure':
         return '<Figure>'
+    elif block_type == 'list':
+        return '<L>'
+    elif block_type == 'table':
+        return '<Table>'
     else:
         err_msg = f'Unknown block type: [{block_type}]. Cannot determine tag label.'
         raise Exception(err_msg)
@@ -39,8 +43,14 @@ def create_tag_tree_from_blocks(blocks : List[tuple[str, str]]):
     tree = TagTree()
 
     for tag_label, data in blocks:
+
+
         current_tag = tree.Cursor.get_tag()
         new_tag = type_to_tag(tag_label)
+        
+        #print(f"[{tag_label}]")
+        #print(data, end='\n')
+        #print("\tCurrent Tag: {}".format(current_tag.get_data()))
 
         precedence_val = tag_cmp(current_tag, TagFactory(new_tag))
 
@@ -60,6 +70,8 @@ def create_tag_tree_from_blocks(blocks : List[tuple[str, str]]):
             # move up tree until parent tag matches precedence or is of higher precedence 
             while tag_cmp(tree.Cursor.Up().get_tag(), TagFactory(new_tag)) > 0:
                 continue
+
+            print("\tMoved to parent tag: {}".format(tree.Cursor.get_tag().get_data()))
             
             # if moved to root of tree, make the new tag, the next sister of children from root.
             if tree.Cursor.get_tag() == '<document>':
@@ -73,6 +85,7 @@ def create_tag_tree_from_blocks(blocks : List[tuple[str, str]]):
                         last_sister = True
                 
             tree.Cursor.get_tag().set_next(new_tag, data)
+            tree.Cursor.Next()
     return tree
 
 
