@@ -17,7 +17,6 @@ from io import StringIO
 from bs4 import BeautifulSoup
 from pdfminer.layout import LAParams
 from pdfminer.high_level import extract_text_to_fp
-from pdfminer.high_level import extract_pages
 
 # constants
 FONT_SIZE_STR = 'font-size'
@@ -116,82 +115,48 @@ def extract_paragraphs_and_fonts_and_sizes(pdf_file_path: str) -> list[Paragraph
         pdf_file_path (str): The string path of the pdf file to extract data from.
     '''
 
-    num_pages = len(list(extract_pages(pdf_file_path)))
-    paragraphs = []
-
     # read the pdf
-    
-    for current_page in range(num_pages):
-        paragraph_batch = []
-        pdf_content = StringIO()
-        with open(pdf_file_path, 'rb') as fin:
-            extract_text_to_fp(fin, pdf_content, laparams=LAParams(), page_numbers=[current_page], output_type='html', codec=None)
+    pdf_content = StringIO()
+    with open(pdf_file_path, 'rb') as fin:
+        extract_text_to_fp(fin, pdf_content, laparams=LAParams(), output_type='html', codec=None)
 
-        # parse the html file
-        parsed_html = BeautifulSoup(pdf_content.getvalue(), 'html.parser')
+    # parse the html file
+    parsed_html = BeautifulSoup(pdf_content.getvalue(), 'html.parser')
 
-        for div in parsed_html.findAll('div'):
-            # keep track of the font sizes in the div, a list of tuples of (font size, text length using that size)
-            # used to get a normalized font size for the div, which usually just ends up being the font
-            # size for all the spans, but sometimes there are little variations and in that case, the most
-            # commonly appearing font size is used for a unified div. TODO may want to investigate this approach later
-            font_size_distribution = []
-            # also keep track of the font to get the average font
-            font_family_distribution = []
+    paragraphs = []
+    for div in parsed_html.findAll('div'):
+        # keep track of the font sizes in the div, a list of tuples of (font size, text length using that size)
+        # used to get a normalized font size for the div, which usually just ends up being the font
+        # size for all the spans, but sometimes there are little variations and in that case, the most
+        # commonly appearing font size is used for a unified div. TODO may want to investigate this approach later
+        font_size_distribution = []
+        # also keep track of the font to get the average font
+        font_family_distribution = []
 
-            # to store a list of tuples of (text, font style)
-            span_text_sections_and_font_style = []
-            for span in div.findAll('span'):
-                # get rid of the (cid:xxx) strings in the span text
-                span_text = _convert_cid_str(span.get_text())
+        # to store a list of tuples of (text, font style)
+        span_text_sections_and_font_style = []
+        for span in div.findAll('span'):
+            # get rid of the (cid:xxx) strings in the span text
+            span_text = _convert_cid_str(span.get_text())
 
-                # get the text from the span without indentation or line 
-                # breaks or double spaces or trailing/leading whitespace
-                span_text = span_text.replace('\n', '').replace(
-                    '\t', '').replace('  ', ' ').strip()
+            # get the text from the span without indentation or line 
+            # breaks or double spaces or trailing/leading whitespace
+            span_text = span_text.replace('\n', '').replace(
+                '\t', '').replace('  ', ' ').strip()
 
-                # skip over empty spans
-                if span_text == '':
-                    continue
-
-                span_attributes = _get_attributes(span.attrs['style'])
-                
-                # update the average font family
-                font_family = span_attributes[FONT_FAMILY_STR]
-                font_family_distribution.append((font_family, len(span_text)))
-
-                # store the text and font style from the span
-                span_text_sections_and_font_style.append((span_text, _get_font_style(font_family)))
-            
-                # update the average font size
-                font_size = span_attributes[FONT_SIZE_STR]
-                font_size_distribution.append((font_size, len(span_text)))
-            
-            # skip empty spans
-            if len(span_text_sections_and_font_style) == 0:
+            # skip over empty spans
+            if span_text == '':
                 continue
 
-            # calculate the most commonly appearing font size in the div
-            font_size_distribution_dict = {}
-            for font_size, text_len in font_size_distribution:
-                if font_size not in font_size_distribution_dict.keys():
-                    font_size_distribution_dict[font_size] = 0
-                font_size_distribution_dict[font_size] += text_len
-            div_font_size = sorted(font_size_distribution_dict.items(), key=lambda sizeLenTup : sizeLenTup[1], reverse=True)[0][0]
+            span_attributes = _get_attributes(span.attrs['style'])
+            
+            # update the average font family
+            font_family = span_attributes[FONT_FAMILY_STR]
+            font_family_distribution.append((font_family, len(span_text)))
 
-            # calculate the most commonly appearing font family in the div
-            font_family_distribution_dict = {}
-            for font_family, text_len in font_family_distribution:
-                if font_family not in font_family_distribution_dict.keys():
-                    font_family_distribution_dict[font_family] = 0
-                font_family_distribution_dict[font_family] += text_len
-            div_font_family = sorted(font_family_distribution_dict.items(), key=lambda sizeLenTup : sizeLenTup[1], reverse=True)[0][0]
-
-            # add the span data to the div info
-            paragraph_batch.append(Paragraph(span_text_sections_and_font_style, div_font_size, div_font_family))
-        paragraphs.append(paragraph_batch)
+            # store the text and font style from the span
+            span_text_sections_and_font_style.append((span_text, _get_font_style(font_family)))
         
-<<<<<<< HEAD
             # update the average font size
             font_size = span_attributes[FONT_SIZE_STR]
             font_size_distribution.append((font_size, len(span_text)))
@@ -221,8 +186,6 @@ def extract_paragraphs_and_fonts_and_sizes(pdf_file_path: str) -> list[Paragraph
         # add the span data to the div info
         paragraphs.append(Paragraph(span_text_sections_and_font_style, div_font_size, div_font_family))
     
-=======
->>>>>>> document-tagger
     return paragraphs
 
 def export_to_html(paragraphs: list[Paragraph], output_html_path: str):

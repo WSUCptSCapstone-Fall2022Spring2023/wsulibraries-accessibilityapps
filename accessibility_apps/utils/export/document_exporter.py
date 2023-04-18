@@ -9,8 +9,6 @@ import subprocess
 
 from bs4 import BeautifulSoup
 
-from accessibility_apps.utils.harvest.pdf_extractor import _get_font_style_delimeter
-
 path = os.path.abspath('../')
 if path not in sys.path:
     sys.path.append(path)
@@ -18,6 +16,7 @@ if path not in sys.path:
     from utils.transform.TagTree import TagTree
     from utils.accessible_document import *
     from utils.document import Document
+    from utils.harvest.pdf_extractor import _get_font_style_delimeter
 
 FONT_SIZE_STR = 'font-size'
 FONT_FAMILY_STR = 'font-family'
@@ -55,10 +54,10 @@ def export_document_to_pdf(input_file_path, output_file_path):
     return
 
 def export_to_html(doc : AccessibleDocument, output_html_path: str):
-    '''Exports the pdf data from the `paragraphs` list into an html file in the location `output_html_path`.
+    '''Exports the pdf data from the TagTree into an html file in the location `output_html_path`.
 
     Args:
-        paragraphs (list[Paragraph]): The data representing an extracted pdf file.
+        doc : The accessible document object.
         output_html_path (str): The file location to output the html file.
     '''
     #generate_tags(doc)
@@ -69,7 +68,7 @@ def export_to_html(doc : AccessibleDocument, output_html_path: str):
         output_file.write(formatted_output)
 
 def _get_exported_html_value (doc : AccessibleDocument) -> str: #(tree: list[TagTree]) -> str:
-    '''Returns the contents of the html exported from the provided list of `Paragraph`s.
+    '''Returns the contents of the html exported from the provided TagTree.
 
     Args:
         paragraphs (list[Paragraph]): The data representing an extracted pdf file.
@@ -90,8 +89,8 @@ def _get_exported_html_value (doc : AccessibleDocument) -> str: #(tree: list[Tag
         #h5 = 14 pt
         #h6 = 13 pt
     # add information to the html from the processed data
-    for Tag in doc.tree:
-        #text = Tag.get_data()
+    for Tag in doc.tree.traverse_tree():
+        #determine font size based on tag type
         if(doc.tree.getTag()=='<H1>'):
             font_size = '32px'
             font_family = 'TimesNewRoman'
@@ -120,7 +119,7 @@ def _get_exported_html_value (doc : AccessibleDocument) -> str: #(tree: list[Tag
             font_size = '12px'
             font_family = 'TimesNewRoman'
             font_style = 'STANDARD'
-
+        
         output_html_lines.append('<div style="' + FONT_SIZE_STR + ':' + font_size + '">')
         output_html_lines.append('<p style="' + FONT_FAMILY_STR + ':' + font_family + '">')
         for text, font_style in Tag.get_data():
@@ -138,4 +137,5 @@ def _get_exported_html_value (doc : AccessibleDocument) -> str: #(tree: list[Tag
     formatted_output = BeautifulSoup('\n'.join(output_html_lines), 'html.parser').prettify()
 
     return formatted_output
+
     # TODO: Implement solution with Document class attributes.
