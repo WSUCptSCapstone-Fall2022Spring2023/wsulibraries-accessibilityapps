@@ -6,9 +6,10 @@
 
 # * Modules
 from utils.document import Document
-from utils.transform.document_tagger import generate_tags
+from utils.transform.document_tagger import generate_tags, TagTree
 from utils.transform.alt_text_adder import check_alt_text, create_alternative_text
 from utils.transform.color_contrast_adder import check_color_contrast
+
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Added Generate Tags
@@ -19,14 +20,16 @@ class AccessibleDocument(Document):
         Document (Document): Parent Class
     """
 
-    def __init__(self, file_path:str, delete_on_fail=False):
+    def __init__(self, file_path:str, delete_on_fail=False, save_objects = False, search_saved_objects=False):
         """Create a new instance of AccessibleDocument.
 
         Args:
             file_path (string): The path name of the PDF that will be processed.
             delete_on_fail (bool): Whether to delete the document at the specified path if it fails to open.
         """
-        super().__init__(file_path, delete_on_fail)
+        self.tree : TagTree = None
+        super().__init__(file_path, delete_on_fail, save_objects, search_saved_objects)
+
 
     # Last Edit By: Reagan Kelley
     # * Edit Details: Initial implementation
@@ -34,6 +37,8 @@ class AccessibleDocument(Document):
         """Post-condition: Document will have proper tagging in accordance to W3C guidelines.
         """
         self = generate_tags(self)
+
+        self.tree.traverse_tree(print_it=True)
 
     # Last Edit By: Reagan Kelley
     # * Edit Details: Initial implementation

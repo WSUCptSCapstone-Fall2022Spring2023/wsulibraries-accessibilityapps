@@ -5,8 +5,13 @@
 
 # * Modules
 import os
+<<<<<<< HEAD:sample/utils/document.py
+from utils.pdf_extractor import export_to_html
+from utils.pdf_extractor import extract_paragraphs_and_fonts_and_sizes
+=======
 from utils.harvest.pdf_extractor import export_to_html
 from utils.harvest.pdf_extractor import extract_paragraphs_and_fonts_and_sizes
+>>>>>>> origin/main:bin/utils/document.py
 
 # Last Edit By: Trent Bultsma
 # * Edit Details: Use the pdf_extractor to extract and export data.

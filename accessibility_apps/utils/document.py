@@ -9,11 +9,31 @@ import csv
 from sys import platform
 from yake import KeywordExtractor
 from PyPDF2 import PdfReader, PdfWriter
+from typing import List
+from pathlib import Path
+import pickle
 
 from utils.harvest.pdf_extractor import export_to_html
 from utils.export.document_exporter import export_document_to_pdf
 from utils.harvest.pdf_extractor import extract_paragraphs_and_fonts_and_sizes
-from utils.harvest.document_layout import document_layout
+
+try:
+    from utils.harvest.document_layout import document_layout
+    skip_layout_parser = False
+except ImportError as e:
+    print("Warning [document_layout] - Caught Error : {}".format(e))
+    skip_layout_parser = True
+
+# find or create directory to save objects through pickle
+save_dir = Path(os.path.realpath(os.path.dirname(__file__))).parent.parent.absolute().joinpath('data')
+
+if not save_dir.exists():
+    raise FileNotFoundError(save_dir)
+
+save_dir = save_dir.joinpath("saved_objects")
+if not save_dir.exists():
+    save_dir.mkdir() 
+
 
 # Last Edit By: Trent Bultsma
 # * Edit Details: Use the pdf_extractor to extract and export data.
@@ -22,7 +42,7 @@ class Document:
     """
     # Last Edit By: Trent Bultsma
     # * Edit Details: Use the pdf_extractor to extract and export data.
-    def __init__(self, file_path:str, delete_on_fail=False):
+    def __init__(self, file_path:str, delete_on_fail=False, save_objects = False, search_saved_objects=False):
         """Create instance of Document class object.
 
         Args:
@@ -31,6 +51,7 @@ class Document:
         """
         self.file_path = file_path
         self.paragraphs = []
+        self.page_count = 0
 
         # setup metadata values
         self.author = ""
@@ -44,7 +65,17 @@ class Document:
 
         # for checking when the file is deleted
         self.deleted = False
-        
+
+        self.save = save_objects
+
+        # for saving pickle objects 
+        self.save_dir = save_dir.joinpath(self.get_filename().split('.')[0])
+        if not self.save_dir.exists():
+            self.save_dir.mkdir()
+            self.search_save_objects = False # if not created, don't bother looking
+        else:
+            self.search_save_objects = search_saved_objects
+
         # try to open the document
         try:
             self._open_document(file_path)
@@ -81,19 +112,39 @@ class Document:
         if file_path is not None and file_path.lower().endswith(".pdf"):
             
             # extract the data
-            self.paragraphs = extract_paragraphs_and_fonts_and_sizes(file_path)
+            self.batch_paragraphs = extract_paragraphs_and_fonts_and_sizes(file_path)
+            self.page_count = len(self.paragraphs)
             
+            self.paragraphs = [paragraph for batch in self.batch_paragraphs for paragraph in batch] 
+
+            # look for layout blocks in saved objects first (if option is true)
+            self.layout_blocks = []
+            if self.search_save_objects:
+                if self.save_dir.joinpath('layout_blocks.obj').exists():
+                    ifile = open(str(self.save_dir.joinpath('layout_blocks.obj')), 'rb') 
+                    self.layout_blocks = pickle.load(ifile)
+            
+            # if no layout blocks --> use layout parser
+            if len(self.layout_blocks) == 0:
+                if platform == "linux" or platform == "linux2":
+                    # using self.paragraphs to validate and optimize layout results. Creates a list of (p.font_size as int, p.raw_text)
+                    preprocessed_paragraphs = [[(int(''.join(c for c in p.font_size if c.isdigit())), p.get_raw_text()) for p in batch] for batch in self.batch_paragraphs]
+                    self.layout_blocks : List[str, str] = document_layout(self.file_path, preprocessed_paragraphs, debug=False)
+                else:
+                    print("Layout Parsing Skipped: Non-Linux distributions not yet supported...")
+                    self.layout_blocks = []
+            
+                # if save option is true --> Save to saved objects
+                if self.save:
+                    ofile = open(str(self.save_dir.joinpath('layout_blocks.obj')), 'wb') 
+                    pickle.dump(self.layout_blocks, ofile)
+
             # calculate the keywords
             self.keywords = self._calculate_keywords()
 
-            # get the layout of the document for tagging (it is ordered and includes tag type and data)
-            if platform == "linux" or platform == "linux2":
-                self.layout_blocks = document_layout(self.file_path, True)
-            else:
-                print("Layout Parsing Skipped: Non-Linux distributions not yet supported...")
-                self.layout_blocks = []
         else:
             raise ValueError("Invalid file path, must be a pdf file")
+        
 
     def is_open(self):
         """ Returns true if there is a file open for editing.

@@ -4,3 +4,8 @@ pillow
 fpdf
 colorama
 termcolor
+yake
+bs4
+pdfminer
+pdfminer-six
+requests
