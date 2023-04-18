@@ -65,7 +65,10 @@ No Add ons.
 ## Known Problems
 
 Some of the pipeline accessibility transformations are not operational at this time.
+
 Importer and Exporter functionality is still WIP. Need to provide path between these three modular components.
+
+Tag Tree generation is possible but not optimally accurate. Working on 2-factor validation between the document layout and paragraph list.
 
 ## Contributing
 
@@ -84,7 +87,12 @@ Importer and Exporter functionality is still WIP. Need to provide path between t
 * [Prototype Project Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Prototype%20Project%20Report.pdf)
 
 * [Requirements and Specifications](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Requirements%20and%20Specifications.pdf)
+
 * [Solution Approach](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Solution%20Approach.pdf)
+
+* [2023: Sprint 3 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Semester2Sprint3Report.md)
+
+* [2023: Sprint 2 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Semester2Sprint2Report.md)
 
 * [2023: Sprint 1 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Semester2Sprint1Report.md)
 
@@ -93,6 +101,8 @@ Importer and Exporter functionality is still WIP. Need to provide path between t
 * [2022: Sprint 2 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Sprint2Report.md)
 
 * [2022: Sprint 1 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Sprint1Report.md)
+
+* [2022: Sprint 2 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Semester2Sprint2Report.md)
 
 * [Team Inventory](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Team%20Inventory.pdf)
 

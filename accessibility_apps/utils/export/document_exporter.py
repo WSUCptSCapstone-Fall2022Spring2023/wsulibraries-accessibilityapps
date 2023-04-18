@@ -17,30 +17,15 @@ if path not in sys.path:
 
 # Last Edit By: Marisa Loyd
 # * Edit Details: Current code is from Marisa
-def export_document(filename):
+def export_document_to_pdf(input_file_path, output_file_path):
     """ Transforms the metadata from codable data structures back into a usable and readable
         format: PDF
 
     Args:
-        filename (string): File address location where the PDF will be sent.
+        input_file_path (str): File address of the input html.
+        output_file_path (str): File address of the output pdf.
     """
-
-    name = filename.split('.')
-    pdfName = name[0]+'_pdf'
-
-    # tag tree -> html
-    # font & size correct
-    #images ?
-    # each section of tag tree have set font size
-        #paragraph = 12 pt
-        #h1 = 32 pt
-        #h2 = 24 pt
-        #h3 = 19 pt
-        #h4 = 16 pt
-        #h5 = 14 pt
-        #h6 = 13 pt
-    
-    p = subprocess.Popen(['node', os.path.dirname(os.path.abspath(__file__)) + '/pdf_exporter.js', filename], stdout=subprocess.PIPE)
+    p = subprocess.Popen(['node', os.path.dirname(os.path.abspath(__file__)) + '/pdf_exporter.js', input_file_path, output_file_path], stdout=subprocess.PIPE)
     p.wait()
     print("export_document() -> pass.")
     return
