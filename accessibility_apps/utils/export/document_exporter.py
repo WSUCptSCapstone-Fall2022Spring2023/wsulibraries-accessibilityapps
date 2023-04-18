@@ -24,7 +24,7 @@ FONT_FAMILY_STR = 'font-family'
 
 # Last Edit By: Marisa Loyd
 # * Edit Details: Current code is from Marisa
-def export_document(filename):
+def export_document_to_pdf(input_file_path, output_file_path):
     """ Transforms the metadata from codable data structures back into a usable and readable
         format: PDF
 
@@ -32,8 +32,8 @@ def export_document(filename):
         filename (string): File address location where the PDF will be sent.
     """
 
-    name = filename.split('.')
-    pdfName = name[0]+'_pdf'
+    #name = filename.split('.')
+    #pdfName = name[0]+'_pdf'
 
     # tag tree -> html
     # font & size correct
@@ -91,14 +91,39 @@ def _get_exported_html_value (doc : AccessibleDocument) -> str: #(tree: list[Tag
         #h6 = 13 pt
     # add information to the html from the processed data
     for Tag in doc.tree:
-        text = Tag.get_data()
-        if(doc.tree.Cursor.getTag()=='<H1>'):
+        #text = Tag.get_data()
+        if(doc.tree.getTag()=='<H1>'):
             font_size = '32px'
             font_family = 'TimesNewRoman'
             font_style = 'BOLD'
-            output_html_lines.append('<div style="' + FONT_SIZE_STR + ':' + font_size + '">')
-            output_html_lines.append('<p style="' + FONT_FAMILY_STR + ':' + font_family + '">')
-        for text, font_style in paragraph.text_info:
+        elif(doc.tree.get_tag() == '<H2>'):
+            font_size = '24px'
+            font_family = 'TimesNewRoman'
+            font_style = 'BOLD'
+        elif(doc.tree.get_tag() == '<H3>'):
+            font_size = '19px'
+            font_family = 'TimesNewRoman'
+            font_style = 'BOLD'
+        elif(doc.tree.get_tag() == '<H4>'):
+            font_size = '16px'
+            font_family = 'TimesNewRoman'
+            font_style = 'BOLD'
+        elif(doc.tree.get_tag() == '<H5>'):
+            font_size = '14px'
+            font_family = 'TimesNewRoman'
+            font_style = 'BOLD'
+        elif(doc.tree.get_tag() == '<H6>'):
+            font_size = '13px'
+            font_family = 'TimesNewRoman'
+            font_style = 'BOLD'
+        else:
+            font_size = '12px'
+            font_family = 'TimesNewRoman'
+            font_style = 'STANDARD'
+
+        output_html_lines.append('<div style="' + FONT_SIZE_STR + ':' + font_size + '">')
+        output_html_lines.append('<p style="' + FONT_FAMILY_STR + ':' + font_family + '">')
+        for text, font_style in Tag.get_data():
             output_html_lines.append(_get_font_style_delimeter(font_style, True))
             output_html_lines.append(text)
             output_html_lines.append(_get_font_style_delimeter(font_style, False))

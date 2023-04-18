@@ -14,14 +14,7 @@ const run = (async () => {
 
     const page = await browser.newPage();
 
-<<<<<<< HEAD
-    var maxWidth = await page.evaluate(() => Math.max(document.body.scrollWidth, document.documentElement.clientWidth));
-
-    const web_url = path.join(__dirname, '..','..','..','data','output',htmlName);
-    const html = fs.readFileSync(web_url, 'utf-8');
-=======
     const html = fs.readFileSync(inputName, 'utf-8');
->>>>>>> main
     await page.setContent(html, {waitUntil: 'domcontentloaded'});
 
     await page.emulateMediaType('screen');
