@@ -4,19 +4,10 @@
 """
 
 import os
-import sys
 import subprocess
-
 from bs4 import BeautifulSoup
-
-path = os.path.abspath('../')
-if path not in sys.path:
-    sys.path.append(path)
-
-    from utils.transform.TagTree import TagTree
-    from utils.accessible_document import *
-    from utils.document import Document
-    from utils.harvest.pdf_extractor import _get_font_style_delimeter
+from utils.transform.TagTree import TagTree
+from utils.harvest.pdf_extractor import _get_font_style_delimeter
 
 FONT_SIZE_STR = 'font-size'
 FONT_FAMILY_STR = 'font-family'
@@ -50,10 +41,9 @@ def export_document_to_pdf(input_file_path, output_file_path):
     
     p = subprocess.Popen(['node', os.path.dirname(os.path.abspath(__file__)) + '/pdf_exporter.js', input_file_path, output_file_path], stdout=subprocess.PIPE)
     p.wait()
-    print("export_document() -> pass.")
     return
 
-def export_to_html(doc : AccessibleDocument, output_html_path: str):
+def export_to_html(doc, output_html_path: str):
     '''Exports the pdf data from the TagTree into an html file in the location `output_html_path`.
 
     Args:
@@ -67,7 +57,7 @@ def export_to_html(doc : AccessibleDocument, output_html_path: str):
     with open(output_html_path, 'w', encoding='utf-8') as output_file:
         output_file.write(formatted_output)
 
-def _get_exported_html_value (doc : AccessibleDocument) -> str: #(tree: list[TagTree]) -> str:
+def _get_exported_html_value (doc) -> str: #(tree: list[TagTree]) -> str:
     '''Returns the contents of the html exported from the provided TagTree.
 
     Args:

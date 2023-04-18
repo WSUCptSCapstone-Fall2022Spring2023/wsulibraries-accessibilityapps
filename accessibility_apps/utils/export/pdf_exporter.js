@@ -3,7 +3,6 @@ const fs = require('fs');
 const assert = require('assert');
 const os = require('node:os');
 const path = require('path');
-const { PDFDocument } = require('pdf-lib');
 
 const run = (async () => {
 
