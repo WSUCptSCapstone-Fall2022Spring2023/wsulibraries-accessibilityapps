@@ -5,17 +5,16 @@
 """
 
 # * Modules
-import os
-from bs4 import BeautifulSoup
-from accessibility_apps.utils.harvest.pdf_extractor import _get_font_style_delimeter
 from utils.document import Document
-from utils.transform.document_tagger import generate_tags, TagTree
+<<<<<<< HEAD:sample/utils/accessible_document.py
+from utils.pdf_transform.document_tagger import generate_tags
+from utils.pdf_transform.alt_text_adder import check_alt_text, create_alternative_text
+from utils.pdf_transform.color_contrast_adder import check_color_contrast
+=======
+from utils.transform.document_tagger import generate_tags
 from utils.transform.alt_text_adder import check_alt_text, create_alternative_text
 from utils.transform.color_contrast_adder import check_color_contrast
-from utils.export.document_exporter import export_to_html
-
-output_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+ "/data/output/"
-input_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+ "/data/input/"
+>>>>>>> origin/main:bin/utils/accessible_document.py
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Added Generate Tags
@@ -26,16 +25,13 @@ class AccessibleDocument(Document):
         Document (Document): Parent Class
     """
 
-    def __init__(self, file_path:str, delete_on_fail=False, save_objects = False, search_saved_objects=False):
+    def __init__(self, file_path=None):
         """Create a new instance of AccessibleDocument.
 
         Args:
             file_path (string): The path name of the PDF that will be processed.
-            delete_on_fail (bool): Whether to delete the document at the specified path if it fails to open.
         """
-        self.tree : TagTree = None
-        super().__init__(file_path, delete_on_fail, save_objects, search_saved_objects)
-
+        super().__init__(file_path)
 
     # Last Edit By: Reagan Kelley
     # * Edit Details: Initial implementation
@@ -43,11 +39,6 @@ class AccessibleDocument(Document):
         """Post-condition: Document will have proper tagging in accordance to W3C guidelines.
         """
         self = generate_tags(self)
-
-        self.tree.traverse_tree(print_it=True)
-        out_name = self.split(".")
-        export_to_html(self,output_folder+out_name[0]+".html")
-
 
     # Last Edit By: Reagan Kelley
     # * Edit Details: Initial implementation
@@ -64,5 +55,3 @@ class AccessibleDocument(Document):
             contrast and fixes it when it is not in-line with W3C standards.
         """
         self = check_color_contrast(self)
-    
-    # TODO: Implement solution with Document class attributes.

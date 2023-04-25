@@ -8,6 +8,7 @@ import inspect
 import sys
 from abc import ABC, abstractmethod
 
+
 # Last Edit By: Reagan Kelley
 # * Edit Details: Initial implementation
 def TagFactory(tag_name):
@@ -76,15 +77,15 @@ class Tag(ABC):
         """
         return self.__next
     
-    def set_child(self, child_tag_name, child_data=None):
+    def set_child(self, child_tag_name, data=None):
         """Sets the child of this tag.
 
         Args:
             child (Tag): This will lead to a lower hierarchy in the tree.
         """
         self.__child = TagFactory(child_tag_name)
-        if child_data is not None:
-            self.__child.set_data(child_data)
+        if data is not None:
+            self.__child.set_data(data)
         return self.__child
     
     def set_next(self, next_tag_name, next_data=None):
@@ -97,6 +98,9 @@ class Tag(ABC):
         if next_data is not None:
             self.__next.set_data(next_data)
         return self.__next
+    
+    def precedent(self):
+        return -1
     
 # ===========================================================
 # ALL DEFINED TAG TYPES BELOW
@@ -119,6 +123,9 @@ class DocumentTag(Tag):
     def __str__(self):
         return "<document>"
     
+    def precedent(self):
+        return 0
+    
 class H1(Tag):
     """	Hierarchical headings on levels 1 to 6 (this is 1)
 
@@ -133,6 +140,9 @@ class H1(Tag):
     
     def __str__(self):
         return "<H1>"
+
+    def precedent(self):
+        return 1
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Initial implementation
@@ -150,6 +160,9 @@ class H2(Tag):
     
     def __str__(self):
         return "<H2>"
+    
+    def precedent(self):
+        return 2
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Initial implementation
@@ -167,6 +180,9 @@ class H3(Tag):
     
     def __str__(self):
         return "<H3>"
+    
+    def precedent(self):
+        return 3
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Initial implementation
@@ -184,6 +200,9 @@ class H4(Tag):
     
     def __str__(self):
         return "<H4>"
+    
+    def precedent(self):
+        return 4
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Initial implementation
@@ -201,6 +220,9 @@ class H5(Tag):
     
     def __str__(self):
         return "<H5>"
+    
+    def precedent(self):
+        return 5
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Initial implementation
@@ -218,6 +240,9 @@ class H6(Tag):
     
     def __str__(self):
         return "<H6>"
+    
+    def precedent(self):
+        return 6
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Initial implementation
@@ -235,6 +260,69 @@ class P(Tag):
     
     def __str__(self):
         return "<P>"
+    
+    def precedent(self):
+        return 7
+
+# Last Edit By: Reagan Kelley
+# * Edit Details: Initial implementation
+class Figure(Tag):
+    """	An image or figure
+
+    Args:
+        Tag (Parent Class): A Tag marks a PDF tags making it possible to identify
+        content such as headings, lists, tables, etc., and to include 
+        alternate text for images. This is an abstract class
+        which specific type of tags inherent.
+    """
+    def __init__(self):
+        super().__init__()
+    
+    def __str__(self):
+        return "<Figure>"
+    
+    def precedent(self):
+        return 7
+    
+# Last Edit By: Reagan Kelley
+# * Edit Details: Initial implementation
+class L(Tag):
+    """	An image or figure
+
+    Args:
+        Tag (Parent Class): A Tag marks a PDF tags making it possible to identify
+        content such as headings, lists, tables, etc., and to include 
+        alternate text for images. This is an abstract class
+        which specific type of tags inherent.
+    """
+    def __init__(self):
+        super().__init__()
+    
+    def __str__(self):
+        return "<L>"
+    
+    def precedent(self):
+        return 7
+    
+# Last Edit By: Reagan Kelley
+# * Edit Details: Initial implementation
+class Table(Tag):
+    """	An image or figure
+
+    Args:
+        Tag (Parent Class): A Tag marks a PDF tags making it possible to identify
+        content such as headings, lists, tables, etc., and to include 
+        alternate text for images. This is an abstract class
+        which specific type of tags inherent.
+    """
+    def __init__(self):
+        super().__init__()
+    
+    def __str__(self):
+        return "<Table>"
+    
+    def precedent(self):
+        return 7
 
 class TagTree():
     class __cursor():
@@ -262,6 +350,7 @@ class TagTree():
             self.__parent.pop()
             while(self.__local_sister_count > 0):
                 self.__sister.pop()
+                self.__local_sister_count -= 1
             return self
         
         def Down(self):
@@ -326,10 +415,45 @@ class TagTree():
         ret = ""
         if current.get_data() != None:
             if print_it == True:
-                print(current.get_data())
+                print(f"[{current}]")
+                print(current.get_data(), end='\n\n')
             else:
                 ret = current.get_data()
 
         ret += self.__traverse_tree_helper(current.get_child(), print_it)
         ret += self.__traverse_tree_helper(current.get_next(), print_it)
         return ret
+    
+    def get_tree_structure(self, print_it=True):
+        self.__tree_structure_helper(self.__root, "", print_it)
+    
+    def __tree_structure_helper(self, current, space_str, print_it=True):
+        if current.get_child() is not None:
+            line = "(+) " + str(current)
+            print(line)
+
+            n_space_str = space_str + " " * len(line)
+            print("{}--> ".format(n_space_str), end='')
+            n_space_str += " " * 4
+
+            self.__tree_structure_helper(current.get_child(), n_space_str, print_it)
+        else:
+            line = "(-) " + str(current)
+            print(line)
+
+        if current.get_next() is not None:
+                print("{}".format(space_str), end='')
+                self.__tree_structure_helper(current.get_next(), space_str, print_it)
+
+def tag_cmp(tag1 : Tag, tag2: Tag):
+    """ Returns the difference in precedence of two tags, determining which one belongs at the top of a hierachy.
+
+    Args:
+        tag1 (Tag): The first tag to compare.
+        tag2 (Tag): The second tag to compare.
+
+    Returns:
+        int: Returns a negative number if tag1 takes precedence, a positive number if tag2 takes precedence, and 0 if they take the same precedence. 
+    """
+    return tag1.precedent() - tag2.precedent()
+
