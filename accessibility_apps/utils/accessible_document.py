@@ -14,8 +14,8 @@ from utils.transform.alt_text_adder import check_alt_text, create_alternative_te
 from utils.transform.color_contrast_adder import check_color_contrast
 from utils.export.document_exporter import export_to_html
 
-output_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+ "/data/output"
-input_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+ "/data/input"
+output_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+ "/data/output/"
+input_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+ "/data/input/"
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Added Generate Tags
@@ -45,7 +45,8 @@ class AccessibleDocument(Document):
         self = generate_tags(self)
 
         self.tree.traverse_tree(print_it=True)
-        export_to_html(self,output_folder+"example.html")
+        out_name = self.split(".")
+        export_to_html(self,output_folder+out_name[0]+".html")
 
 
     # Last Edit By: Reagan Kelley

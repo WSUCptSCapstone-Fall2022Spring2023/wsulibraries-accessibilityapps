@@ -6,10 +6,7 @@
 import os
 import subprocess
 from bs4 import BeautifulSoup
-#from data.saved_objects import *
-#from utils.transform.document_tagger import generate_tags
-from utils.transform.TagTree import Tag, TagTree
-#from utils.accessible_document import generate_tags
+from utils.transform.TagTree import Tag
 from utils.harvest.pdf_extractor import _get_font_style_delimeter
 
 
@@ -21,24 +18,7 @@ def export_document_to_pdf(input_file_path, output_file_path):
 
     Args:
         filename (string): File address location where the PDF will be sent.
-    """
-
-    #name = filename.split('.')
-    #pdfName = name[0]+'_pdf'
-
-    # tag tree -> html
-    # font & size correct
-    #images ?
-    # each section of tag tree have set font size
-        #paragraph = 12 pt
-        #h1 = 32 pt
-        #h2 = 24 pt
-        #h3 = 19 pt
-        #h4 = 16 pt
-        #h5 = 14 pt
-        #h6 = 13 pt
-        #script to set up python, node js, all other exceptions, maybe combine the two current ones
-        
+    """     
     
     p = subprocess.Popen(['node', os.path.dirname(os.path.abspath(__file__)) + '/pdf_exporter.js', input_file_path, output_file_path], stdout=subprocess.PIPE)
     p.wait()
@@ -51,7 +31,7 @@ def export_to_html(doc, output_html_path: str):
             doc : The accessible document object.
             output_html_path (str): The file location to output the html file.
         '''
-        
+ 
         formatted_output = _get_exported_html_value(doc)
 
     # write to an html file
@@ -62,7 +42,7 @@ def _get_exported_html_value (doc) -> str: #(tree: list[TagTree]) -> str:
     '''Returns the contents of the html exported from the provided TagTree.
 
     Args:
-        paragraphs (list[Paragraph]): The data representing an extracted pdf file.
+        doc : The accessible document.
     '''
     FONT_SIZE_STR = 'font-size'
     FONT_FAMILY_STR = 'font-family'
@@ -74,15 +54,9 @@ def _get_exported_html_value (doc) -> str: #(tree: list[TagTree]) -> str:
         '</head>',
         '<body>'
     ]
-#paragraph = 12 pt
-        #h1 = 32 pt
-        #h2 = 24 pt
-        #h3 = 19 pt
-        #h4 = 16 pt
-        #h5 = 14 pt
-        #h6 = 13 pt
+
     # add information to the html from the processed data
-    for Tag in doc.tree.traverse_tree():
+    for Tag.get_data in doc.tree.traverse_tree():
         #determine font size based on tag type
         if(doc.tree.getTag()=='<H1>'):
             font_size = '32px'
