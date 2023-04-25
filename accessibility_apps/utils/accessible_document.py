@@ -5,11 +5,17 @@
 """
 
 # * Modules
+import os
+from bs4 import BeautifulSoup
+from accessibility_apps.utils.harvest.pdf_extractor import _get_font_style_delimeter
 from utils.document import Document
 from utils.transform.document_tagger import generate_tags, TagTree
 from utils.transform.alt_text_adder import check_alt_text, create_alternative_text
 from utils.transform.color_contrast_adder import check_color_contrast
+from utils.export.document_exporter import export_to_html
 
+output_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+ "/data/output"
+input_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))+ "/data/input"
 
 # Last Edit By: Reagan Kelley
 # * Edit Details: Added Generate Tags
@@ -39,6 +45,8 @@ class AccessibleDocument(Document):
         self = generate_tags(self)
 
         self.tree.traverse_tree(print_it=True)
+        export_to_html(self,output_folder+"example.html")
+
 
     # Last Edit By: Reagan Kelley
     # * Edit Details: Initial implementation
@@ -55,3 +63,5 @@ class AccessibleDocument(Document):
             contrast and fixes it when it is not in-line with W3C standards.
         """
         self = check_color_contrast(self)
+    
+    # TODO: Implement solution with Document class attributes.

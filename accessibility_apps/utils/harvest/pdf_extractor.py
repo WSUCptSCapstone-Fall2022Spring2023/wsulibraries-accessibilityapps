@@ -160,8 +160,6 @@ def extract_paragraphs_and_fonts_and_sizes(pdf_file_path: str) -> list[Paragraph
             # update the average font size
             font_size = span_attributes[FONT_SIZE_STR]
             font_size_distribution.append((font_size, len(span_text)))
-            if(font_size<12):
-                font_size = 12
         
         # skip empty spans
         if len(span_text_sections_and_font_style) == 0:

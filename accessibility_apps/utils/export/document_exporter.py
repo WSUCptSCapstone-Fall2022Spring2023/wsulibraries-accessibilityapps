@@ -6,11 +6,12 @@
 import os
 import subprocess
 from bs4 import BeautifulSoup
-from utils.transform.TagTree import TagTree
+#from data.saved_objects import *
+#from utils.transform.document_tagger import generate_tags
+from utils.transform.TagTree import Tag, TagTree
+#from utils.accessible_document import generate_tags
 from utils.harvest.pdf_extractor import _get_font_style_delimeter
 
-FONT_SIZE_STR = 'font-size'
-FONT_FAMILY_STR = 'font-family'
 
 # Last Edit By: Marisa Loyd
 # * Edit Details: Current code is from Marisa
@@ -44,18 +45,18 @@ def export_document_to_pdf(input_file_path, output_file_path):
     return
 
 def export_to_html(doc, output_html_path: str):
-    '''Exports the pdf data from the TagTree into an html file in the location `output_html_path`.
+        '''Exports the pdf data from the TagTree into an html file in the location `output_html_path`.
 
-    Args:
-        doc : The accessible document object.
-        output_html_path (str): The file location to output the html file.
-    '''
-    #generate_tags(doc)
-    formatted_output = _get_exported_html_value(doc.tree)
+        Args:
+            doc : The accessible document object.
+            output_html_path (str): The file location to output the html file.
+        '''
+        
+        formatted_output = _get_exported_html_value(doc)
 
     # write to an html file
-    with open(output_html_path, 'w', encoding='utf-8') as output_file:
-        output_file.write(formatted_output)
+        with open(output_html_path, 'w', encoding='utf-8') as output_file:
+            output_file.write(formatted_output)
 
 def _get_exported_html_value (doc) -> str: #(tree: list[TagTree]) -> str:
     '''Returns the contents of the html exported from the provided TagTree.
@@ -63,6 +64,8 @@ def _get_exported_html_value (doc) -> str: #(tree: list[TagTree]) -> str:
     Args:
         paragraphs (list[Paragraph]): The data representing an extracted pdf file.
     '''
+    FONT_SIZE_STR = 'font-size'
+    FONT_FAMILY_STR = 'font-family'
     # start the output html lines
     output_html_lines = [
         '<html>',
@@ -112,7 +115,8 @@ def _get_exported_html_value (doc) -> str: #(tree: list[TagTree]) -> str:
         
         output_html_lines.append('<div style="' + FONT_SIZE_STR + ':' + font_size + '">')
         output_html_lines.append('<p style="' + FONT_FAMILY_STR + ':' + font_family + '">')
-        for text, font_style in Tag.get_data():
+        for text, font_style in Tag:
+            text = Tag.get_data()
             output_html_lines.append(_get_font_style_delimeter(font_style, True))
             output_html_lines.append(text)
             output_html_lines.append(_get_font_style_delimeter(font_style, False))
@@ -127,5 +131,3 @@ def _get_exported_html_value (doc) -> str: #(tree: list[TagTree]) -> str:
     formatted_output = BeautifulSoup('\n'.join(output_html_lines), 'html.parser').prettify()
 
     return formatted_output
-
-    # TODO: Implement solution with Document class attributes.

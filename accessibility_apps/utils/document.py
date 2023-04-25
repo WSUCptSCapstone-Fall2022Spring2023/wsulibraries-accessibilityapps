@@ -6,6 +6,7 @@
 # * Modules
 import os
 import csv
+from bs4 import BeautifulSoup
 from sys import platform
 from yake import KeywordExtractor
 from PyPDF2 import PdfReader, PdfWriter
@@ -13,9 +14,9 @@ from typing import List
 from pathlib import Path
 import pickle
 
-from utils.harvest.pdf_extractor import export_to_html
+from utils.export.document_exporter import export_to_html
 from utils.export.document_exporter import export_document_to_pdf
-from utils.harvest.pdf_extractor import extract_paragraphs_and_fonts_and_sizes
+from utils.harvest.pdf_extractor import _get_font_style_delimeter, extract_paragraphs_and_fonts_and_sizes
 
 try:
     from utils.harvest.document_layout import document_layout
@@ -167,7 +168,7 @@ class Document:
         html_file_path = pdf_file_path[:-len("pdf")] + "html"
 
         # export the document to html
-        export_to_html(self.paragraphs, html_file_path)
+        export_to_html(self.paragraphs, html_file_path) #self.tree ?
 
         # convert to pdf
         export_document_to_pdf(html_file_path, pdf_file_path)
@@ -264,3 +265,4 @@ class Document:
         
         # TODO need to remove words that are part of tables from the paragraphs so that labels do not become key phrases
         return keywords
+    
