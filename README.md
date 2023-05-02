@@ -48,7 +48,7 @@ No Add ons.
 1. Clone or download the repository
 2. Install prerequisites from the links above
 3. Run the `setup.bat` script to install required modules
-4. Run the `run_application.bat` script to start the software
+4. Run the `main.py` script to start the software
 
 ## Functionality
 
@@ -63,8 +63,6 @@ No Add ons.
 ## Known Problems
 
 Some of the pipeline accessibility transformations are not operational at this time.
-
-Importer and Exporter functionality is still WIP. Need to provide path between these three modular components.
 
 Tag Tree generation is possible but not optimally accurate. Working on 2-factor validation between the document layout and paragraph list.
 
@@ -87,6 +85,8 @@ Tag Tree generation is possible but not optimally accurate. Working on 2-factor 
 * [Requirements and Specifications](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Requirements%20and%20Specifications.pdf)
 
 * [Solution Approach](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Solution%20Approach.pdf)
+
+* [2023: Sprint 4 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Semester2Sprint4Report.md)
 
 * [2023: Sprint 3 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Semester2Sprint3Report.md)
 
