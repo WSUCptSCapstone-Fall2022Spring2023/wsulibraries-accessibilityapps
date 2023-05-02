@@ -34,14 +34,10 @@ into these more accessible versions.
 
 ## Installation
 
-1. Clone Repo or download and extract through ZIP.
-2. Run src code directly with *python accessibility_apps/terminal.application.py*
-2. Run with no dependency perquisites with  *bin/terminal_application.exe*
-
 ### Prerequisites
 
-* Latest Version of Python
-* Pip install all modules through requirements.txt
+* Latest version of Python from [here](https://www.python.org/downloads/) (make sure to add Python to PATH in the installer)
+* Latest version of Node JS from [here](https://nodejs.org/en/download)
 
 ### Add-ons
 
@@ -49,18 +45,20 @@ No Add ons.
 
 ### Installation Steps
 
-1. Clone repo
-2. Pip install -r requirements
-3. python accessibility_apps/terminal.application.py
-
+1. Clone or download the repository
+2. Install prerequisites from the links above
+3. Run the `setup.bat` script to install required modules
+4. Run the `run_application.bat` script to start the software
 
 ## Functionality
 
-* Run terminal_application.py to run CLI or Executable in Bin
-* (Terminal Option) Open a PDF for accessibility processing
-* (Terminal Option) Run accessibility pipeline
-* (Terminal Option) Export and download transformed document
-
+* Run the software from `main.py`
+* Automated document processing converting pdfs into their accessible counterparts
+* Pdf processing via the following input options:
+    * Iteration through the WSU Research Exchange repository
+    * Singular document identifier
+    * List of document identifiers
+    * Input folder of documents
 
 ## Known Problems
 
@@ -87,7 +85,12 @@ Tag Tree generation is possible but not optimally accurate. Working on 2-factor 
 * [Prototype Project Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Prototype%20Project%20Report.pdf)
 
 * [Requirements and Specifications](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Requirements%20and%20Specifications.pdf)
+
 * [Solution Approach](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Solution%20Approach.pdf)
+
+* [2023: Sprint 3 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Semester2Sprint3Report.md)
+
+* [2023: Sprint 2 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Semester2Sprint2Report.md)
 
 * [2023: Sprint 1 Report](https://github.com/WSUCptSCapstone-Fall2022Spring2023/wsulibraries-accessibilityapps/blob/main/docs/Semester2Sprint1Report.md)
 

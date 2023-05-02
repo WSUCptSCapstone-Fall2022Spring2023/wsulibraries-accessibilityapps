@@ -1,1 +1,4 @@
-pip install pdfminer.six bs4 pypdf2 termcolor fpdf colorama requests git+https://github.com/LIAAD/yake
+pip install -r requirements.txt
+cd accessibility_apps/utils/export
+npm i puppeteer
+pause
