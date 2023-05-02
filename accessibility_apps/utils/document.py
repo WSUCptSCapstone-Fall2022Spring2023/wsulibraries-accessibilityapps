@@ -124,12 +124,12 @@ class Document:
             
             # if no layout blocks --> use layout parser
             if len(self.layout_blocks) == 0:
-                if platform == "linux" or platform == "linux2":
+                if platform == "linux" or platform == "linux2" or 'win32':
                     # using self.paragraphs to validate and optimize layout results. Creates a list of (p.font_size as int, p.raw_text)
                     preprocessed_paragraphs = [[(int(''.join(c for c in p.font_size if c.isdigit())), p.get_raw_text()) for p in batch] for batch in self.batch_paragraphs]
                     self.layout_blocks : List[str, str] = document_layout(self.file_path, preprocessed_paragraphs, debug=False)
                 else:
-                    print("Layout Parsing Skipped: Non-Linux distributions not yet supported...")
+                    print("Layout Parsing Skipped: {} distributions not yet supported...".format(platform))
                     self.layout_blocks = []
             
                 # if save option is true --> Save to saved objects

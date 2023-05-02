@@ -38,7 +38,10 @@ class AccessibleDocument(Document):
         """
         self = generate_tags(self)
 
+        self.tree.get_tree_structure(print_it=True)
+        print("\n")
         self.tree.traverse_tree(print_it=True)
+    
 
     # Last Edit By: Reagan Kelley
     # * Edit Details: Initial implementation

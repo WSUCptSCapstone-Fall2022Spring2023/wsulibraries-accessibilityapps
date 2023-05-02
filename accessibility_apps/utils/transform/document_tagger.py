@@ -22,7 +22,18 @@ def generate_tags(doc : Document):
     doc.tree = create_tag_tree_from_blocks(doc.layout_blocks)
     return doc
 
-def type_to_tag(block_type):
+def type_to_tag(block_type : str):
+    """ Returns the tag equivalent to the layout parsers block types.
+
+    Args:
+        block_type (str): The str name of the type for the current layout block.
+
+    Raises:
+        Exception: Raises if the layout block name is not defined as a tag.
+
+    Returns:
+        str: The str name of the tag equivalent
+    """
     block_type = str.lower(block_type)
 
     if block_type == 'title':
@@ -40,6 +51,14 @@ def type_to_tag(block_type):
         raise Exception(err_msg)
 
 def create_tag_tree_from_blocks(blocks : List[tuple[str, str]]):
+    """ Creates a tag tree from a list of layout blocks (from the document parser)
+
+    Args:
+        blocks (List[tuple[str, str]]): A layout block where tuple[0] is the type of block and tuple[1] is the data.
+
+    Returns:
+        TagTree: A new tag tree data object.
+    """
     tree = TagTree()
 
     for tag_label, data in blocks:

@@ -9,3 +9,7 @@ bs4
 pdfminer
 pdfminer-six
 requests
+pdf2image
+layoutparser
+cython
+git+https://github.com/philferriere/cocoapi.git#subdirectory=PythonAPI
